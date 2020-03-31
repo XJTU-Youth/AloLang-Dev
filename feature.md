@@ -2,7 +2,7 @@
 
 ## 代码块
 
-支持`begin ... end`并可以在begin后面紧跟代码块命名。例如：
+支持`begin: ... end`并可以在begin后面紧跟代码块命名。例如：
 
 ``` alolang
 begin xxx
@@ -15,10 +15,10 @@ end xxx
 
 ## 控制语句
 
-支持`while() ... end while`、`for() ... end for`等
+支持`while(): ... end while`、`for(): ... end for`等
 
 ``` alolang
-while (i-->0)
+while (i-->0):
     //do
     //something
 end while
@@ -31,7 +31,7 @@ end while
 ``` alolang
 vector<int> items;
 items.assign({1,2,3,4,5});
-for each item in items
+for each item in items:
     printf(item);
 end for
 ```
