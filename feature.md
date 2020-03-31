@@ -2,7 +2,7 @@
 
 ## 代码块
 
-支持
+支持`begin ... end`并可以在begin后面紧跟代码块命名。例如：
 
 ``` alolang
 begin xxx
@@ -15,7 +15,7 @@ end xxx
 
 ## 控制语句
 
-支持
+支持`while() ... end while`、`for() ... end for`等
 
 ``` alolang
 while (i-->0)
@@ -26,7 +26,7 @@ end while
 
 以及代码块
 
-同时，应有for each的支持，如
+同时，应有for each的支持，如：
 
 ``` alolang
 vector<int> items;
