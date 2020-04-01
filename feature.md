@@ -26,7 +26,6 @@ end while
 
 以及代码块
 
-
 同时，应有for each的支持，如：
 
 ``` alolang
