@@ -40,6 +40,12 @@ end for
 
 ## 内置数据类型
 
+### 存储修饰符
+
+const以及static修饰符
+
+无指针以及有引用
+
 ### 基本数据类型
 
 |名称        |关键字  |说明                |
@@ -67,3 +73,4 @@ end for
 |四元数      |quaternion|类似complex实现的四元数          |
 |矩阵        |mat    |由double组成的矩阵，支持矩阵运算      |
 |向量        |vector |数学向量，使用double存储，支持向量运算 |
+
