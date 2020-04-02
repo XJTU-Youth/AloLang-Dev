@@ -26,8 +26,8 @@ int main(int argc, char* argv[])
 		std::string args[argc];
 		for (char i = 1; i < argc; i++)
 			args[i-1] = argv[i];
-		if (args[1]=="--help"||args[0]=="-h"){
-			cout << "Usage: " << argv[1] << "file\n";
+		if (args[0]=="--help"||args[0]=="-h"){
+			cout << "Usage: " << argv[0] << " file_name\n";
 			return 0;
 		}else {
 			input_file_name = args[1];
