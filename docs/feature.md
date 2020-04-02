@@ -1,5 +1,15 @@
 # 特性表
 
+## 包导入
+
+通过`#include <some_package>`的形式包含C++标准库，通过`%import "path_to_package"`的方法包含AloLang包
+
+## 函数链接性
+
+函数默认链接性均为内部，因此，导入AloLang包时只需进行文本替换，而不需要进行多文件编译生成。若要使编译器生成的.o文件作为C++库使用请使用`export`关键字将该函数的链接性声明为外部。
+
+推荐使用`#include "cpp_precompiled_alolang_path"`的方式在C++中使用AloLang算法。
+
 ## 代码块
 
 支持`begin: ... end`并可以在begin后面紧跟代码块命名。例如：
