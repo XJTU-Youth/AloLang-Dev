@@ -1,3 +1,5 @@
 aloc
 docs/draft/*
 libraries/draft/*
+/.project
+/.cproject
