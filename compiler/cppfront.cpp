@@ -33,11 +33,30 @@ int main(int argc, char* argv[])
 			return 0;
 		}else {//确定源文件名
 			input_file_name = args[1];
-			output_file_name = input_file_name + ".cc";
+			output_file_name = input_file_name + ".ac";
 		}
 		fin.open(input_file_name);
 		std::getline (fin,buff,char(EOF));
+		fin.close();
 		//todo: 编译用代码放下面
+		std::istringstream buffin(buff);
+		std::string output, temp;
+		while (std::getline(buffin, temp)){
+			if (temp.substr(0,6)=="%import"){//处理引入AloLang库
+				fin.open(temp.substr(8));
+				std::getline(fin, temp, char(EOF));
+				output += temp;
+				output += '\n';
+				temp.erase();
+			} else if (temp[0]=='#'){//C++编译器预处理指令照原样传递
+				output += temp;
+				output += '\n';
+				temp.erase();
+			} 
+		}
+		fout.open(output_file_name);
+		fout << output;
+		fout.close();
 	}
 	return 0;
 }
