@@ -40,23 +40,21 @@ int main(int argc, char* argv[])
 		fin.close();
 		//todo: 编译用代码放下面
 		std::istringstream buffin(buff);
-		std::string output, temp;
-		while (std::getline(buffin, temp)){
+		std::string preprocessoroutput, temp;
+		while (std::getline(buffin, temp)){//代码预处理
 			if (temp.substr(0,6)=="%import"){//处理引入AloLang库
 				fin.open(temp.substr(8));
 				std::getline(fin, temp, char(EOF));
-				output += temp;
-				output += '\n';
+				preprocessoroutput += temp;
+				preprocessoroutput += '\n';
 				temp.erase();
-			} else if (temp[0]=='#'){//C++编译器预处理指令照原样传递
-				output += temp;
-				output += '\n';
+			} else{
+				preprocessoroutput += temp;
+				preprocessoroutput += '\n';
 				temp.erase();
-			} 
+			}
 		}
-		fout.open(output_file_name);
-		fout << output;
-		fout.close();
+		//将编译结果输出到文件
 	}
 	return 0;
 }
