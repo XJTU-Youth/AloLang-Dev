@@ -2,11 +2,8 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-
 #include <exception>
-
 #include <regex>
-
 #include "compileerror.hpp"
 
 std::ifstream fin;
@@ -52,13 +49,11 @@ void preProcess() {
 		if (temp[0] == '%') {
 			std::pair<std::string, std::string> instruction = genFactor(temp); //解析后的预编译指令
 			//是预编译指令
-			switch (instruction.first) {
-			case "import":
+			if(instruction.first=="import") {
 				fin.open(instruction.second);
 				std::getline(fin, temp, char(EOF));
 				preprocessoroutput << temp << std::endl;
-				break;
-			default:
+			}else{
 				//TODO：错误处理
 			}
 		} else {
@@ -66,6 +61,8 @@ void preProcess() {
 		}
 		temp.erase();
 	}
+	//just for debug
+	cout<<preprocessoroutput.str();
 }
 
 int main(int argc, char *argv[]) {
@@ -85,7 +82,7 @@ int main(int argc, char *argv[]) {
 			cout << "Usage: " << argv[0] << " file_name\n";
 			return 0;
 		} else { //确定源文件名
-			input_file_name = args[1];
+			input_file_name = args[0];
 			output_file_name = input_file_name + ".ac";
 		}
 		fin.open(input_file_name);
