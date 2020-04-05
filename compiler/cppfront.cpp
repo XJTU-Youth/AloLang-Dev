@@ -15,7 +15,6 @@ using std::endl;
 
 std::string input_file_name;
 std::string output_file_name;
-std::string buff; //源码
 
 std::pair<std::string, std::string> genFactor(std::string line) {
 	//std::pair<std::string,std::string> result;//分别为指令和参数
@@ -24,7 +23,7 @@ std::pair<std::string, std::string> genFactor(std::string line) {
 		//TODO:错误处理
 	}
 	int i = 1;
-	for (int i = 1; i < line.length(); i++) {
+	for (; i < line.length(); i++) {
 		if (line[i] == ' ') {
 			break;
 		}
@@ -40,9 +39,14 @@ std::pair<std::string, std::string> genFactor(std::string line) {
 
 }
 
-//预处理
-void preProcess() {
-	std::istringstream buffin(buff);
+//递归预处理
+std::string preProcess(std::string code,int cnt) {
+	if(cnt==128)
+	{
+		CompileError e("preprocessor recursion too deep");
+		throw e;
+	}
+	std::istringstream buffin(code);
 	std::stringstream preprocessoroutput;
 	std::string temp;
 	while (std::getline(buffin, temp)) {
@@ -52,7 +56,8 @@ void preProcess() {
 			if(instruction.first=="import") {
 				fin.open(instruction.second);
 				std::getline(fin, temp, char(EOF));
-				preprocessoroutput << temp << std::endl;
+				fin.close();
+				preprocessoroutput << preProcess(temp,cnt+1) << std::endl;
 			}else{
 				//TODO：错误处理
 				CompileError e("Unrecognized preprocessor command");
@@ -63,8 +68,7 @@ void preProcess() {
 		}
 		temp.erase();
 	}
-	//just for debug
-	cout<<preprocessoroutput.str();
+	return preprocessoroutput.str();
 }
 
 int main(int argc, char *argv[]) {
@@ -88,10 +92,13 @@ int main(int argc, char *argv[]) {
 			output_file_name = input_file_name + ".ac";
 		}
 		fin.open(input_file_name);
+		std::string buff; //源码
 		std::getline(fin, buff, char(EOF));
 		fin.close();
 		try{
-			preProcess();
+			std::string preProcessed=preProcess(buff,0);
+			//just for debug
+			cout<<preProcessed;
 		}
 		catch (CompileError e){
 			cerr << "Compile Error: " << e.what() << endl <<"Compilation Terminated\n";
