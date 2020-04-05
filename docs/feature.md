@@ -83,4 +83,3 @@ const以及static修饰符
 |四元数      |quaternion|类似complex实现的四元数          |
 |矩阵        |mat    |由double组成的矩阵，支持矩阵运算      |
 |向量        |vector |数学向量，使用double存储，支持向量运算 |
-
