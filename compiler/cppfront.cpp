@@ -3,6 +3,8 @@
 #include <sstream>
 #include <fstream>
 
+#include <exception>
+
 #include <regex>
 
 std::ifstream fin;
@@ -16,6 +18,22 @@ std::string input_file_name;
 std::string output_file_name;
 std::string buff; //源码
 
+
+class CompileError: public std::exception {
+private:
+	std::string error;
+public:
+	const char *what() const throw()
+	{
+		return error.c_str();
+	}
+	CompileError(const char *whatError)
+	{
+		error = whatError;
+	}
+};
+
+
 //预处理
 void preProcesse() {
 	std::istringstream buffin(buff);
@@ -25,11 +43,16 @@ void preProcesse() {
 		if(temp[0]=='%')
 		{
 			//是预编译指令
-			if (temp.substr(0, 6) == "%import") { //处理引入AloLang库
+			if (temp.substr(0, 7) == "%import") { //处理引入AloLang库
 				fin.open(temp.substr(8));
 				std::getline(fin, temp, char(EOF));
 				preprocessoroutput << temp;
 				preprocessoroutput << '\n';
+			} else if(temp.substr(0, 4) == "%def") {
+				//def指令
+			} else {
+				CompileError preProcessError("Unreconized Preprocess Command");
+				throw (preProcessError);
 			}
 		}else{
 			preprocessoroutput << temp;
@@ -62,7 +85,12 @@ int main(int argc, char *argv[]) {
 		fin.open(input_file_name);
 		std::getline(fin, buff, char(EOF));
 		fin.close();
-		preProcesse();
+		try{
+			preProcesse();
+		}
+		catch (CompileError e){
+			cerr << "Compile Error: " << e.what() << endl <<"Compilation Terminated\n";
+		}
 		//todo: 编译用代码放下面
 
 		//将编译结果输出到文件
