@@ -1,4 +1,4 @@
-aloc: compiler/cppfront.cpp
+aloc: compiler/cppfront.cpp compiler/compileerror.hpp
 	g++ -o aloc compiler/cppfront.cpp -g
 
 .PHONY : clean,install
