@@ -7,6 +7,8 @@
 
 #include <regex>
 
+#include "compileerror.hpp"
+
 std::ifstream fin;
 std::ofstream fout;
 
@@ -17,22 +19,6 @@ using std::endl;
 std::string input_file_name;
 std::string output_file_name;
 std::string buff; //源码
-
-
-class CompileError: public std::exception {
-private:
-	std::string error;
-public:
-	const char *what() const throw()
-	{
-		return error.c_str();
-	}
-	CompileError(const char *whatError)
-	{
-		error = whatError;
-	}
-};
-
 
 std::pair<std::string, std::string> genFactor(std::string line) {
 	//std::pair<std::string,std::string> result;//分别为指令和参数
