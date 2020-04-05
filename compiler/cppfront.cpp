@@ -16,24 +16,49 @@ std::string input_file_name;
 std::string output_file_name;
 std::string buff; //源码
 
+std::pair<std::string, std::string> genFactor(std::string line) {
+	//std::pair<std::string,std::string> result;//分别为指令和参数
+	int len = line.length();
+	if (len < 2) {
+		//TODO:错误处理
+	}
+	int i = 1;
+	for (int i = 1; i < line.length(); i++) {
+		if (line[i] == ' ') {
+			break;
+		}
+	}
+	if (i == len) {
+		//预编译指令没有参数
+		return std::pair<std::string, std::string>(line.substr(1, len - 1), "");
+	} else {
+		//预编译指令有参数
+		return std::pair<std::string, std::string>(line.substr(1, i - 1),
+				line.substr(i + 1, line.length() - i - 1));
+	}
+
+}
+
 //预处理
 void preProcesse() {
 	std::istringstream buffin(buff);
 	std::stringstream preprocessoroutput;
 	std::string temp;
 	while (std::getline(buffin, temp)) {
-		if(temp[0]=='%')
-		{
+		if (temp[0] == '%') {
+			std::pair<std::string, std::string> instruction = genFactor(temp); //解析后的预编译指令
 			//是预编译指令
-			if (temp.substr(0, 6) == "%import") { //处理引入AloLang库
-				fin.open(temp.substr(8));
+			switch (instruction.first) {
+			case "import":
+				fin.open(instruction.second);
 				std::getline(fin, temp, char(EOF));
-				preprocessoroutput << temp;
-				preprocessoroutput << '\n';
+				preprocessoroutput << temp << std::endl;
+				break;
+			default:
+				//TODO：错误处理
 			}
-		}else{
-			preprocessoroutput << temp;
-			preprocessoroutput << '\n';
+		} else {
+			preprocessoroutput << temp << std::endl;
 		}
 		temp.erase();
 	}
