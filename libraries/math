@@ -1,4 +1,4 @@
-#lib math
+%lib math
 #def PI    3.141592653589793
 #def SQRT2 1.414213562373095
 #def SQRT3 1.730508075688772
