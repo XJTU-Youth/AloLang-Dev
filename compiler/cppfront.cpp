@@ -55,6 +55,8 @@ void preProcess() {
 				preprocessoroutput << temp << std::endl;
 			}else{
 				//TODO：错误处理
+				CompileError e("Unrecognized preprocessor command");
+				throw e;
 			}
 		} else {
 			preprocessoroutput << temp << std::endl;
