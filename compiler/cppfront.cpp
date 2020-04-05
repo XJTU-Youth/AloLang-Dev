@@ -55,6 +55,10 @@ std::string preProcess(std::string code,int cnt) {
 			//是预编译指令
 			if(instruction.first=="import") {
 				fin.open(instruction.second);
+				if (!fin.is_open()) {
+					CompileError e("import file not found");
+					throw e;
+				}
 				std::getline(fin, temp, char(EOF));
 				fin.close();
 				preprocessoroutput << preProcess(temp,cnt+1) << std::endl;
@@ -92,6 +96,10 @@ int main(int argc, char *argv[]) {
 			output_file_name = input_file_name + ".ac";
 		}
 		fin.open(input_file_name);
+		if (!fin.is_open()){
+			cerr << argv[0] << ": fatal error: file not found\ncompilation terminated\n";
+			return 1;
+		}
 		std::string buff; //源码
 		std::getline(fin, buff, char(EOF));
 		fin.close();
@@ -102,6 +110,7 @@ int main(int argc, char *argv[]) {
 		}
 		catch (CompileError e){
 			cerr << "Compile Error: " << e.what() << endl <<"Compilation Terminated\n";
+			return 1;
 		}
 		//todo: 编译用代码放下面
 
