@@ -3,6 +3,8 @@
 #include <sstream>
 #include <fstream>
 
+#include <exception>
+
 #include <regex>
 
 std::ifstream fin;
@@ -15,6 +17,21 @@ using std::endl;
 std::string input_file_name;
 std::string output_file_name;
 std::string buff; //源码
+
+class CompileError: public std::exception {
+private:
+	std::string error;
+public:
+	const char *what() const throw()
+	{
+		return error.c_str();
+	}
+	CompileError(const char *whatError)
+	{
+		error = whatError;
+	}
+};
+
 
 std::pair<std::string, std::string> genFactor(std::string line) {
 	//std::pair<std::string,std::string> result;//分别为指令和参数
@@ -40,7 +57,7 @@ std::pair<std::string, std::string> genFactor(std::string line) {
 }
 
 //预处理
-void preProcesse() {
+void preProcess() {
 	std::istringstream buffin(buff);
 	std::stringstream preprocessoroutput;
 	std::string temp;
@@ -87,7 +104,12 @@ int main(int argc, char *argv[]) {
 		fin.open(input_file_name);
 		std::getline(fin, buff, char(EOF));
 		fin.close();
-		preProcesse();
+		try{
+			preProcess();
+		}
+		catch (CompileError e){
+			cerr << "Compile Error: " << e.what() << endl <<"Compilation Terminated\n";
+		}
 		//todo: 编译用代码放下面
 
 		//将编译结果输出到文件
