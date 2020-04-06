@@ -1,0 +1,8 @@
+%import test02.alo
+%def con const
+
+fun main(int argc, char **argv) -> int{
+    con int a = 123;
+    print PI * a;
+    return 0;
+}
