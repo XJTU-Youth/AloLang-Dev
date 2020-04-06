@@ -4,6 +4,7 @@
 #include <fstream>
 #include <exception>
 #include <regex>
+#include <map>
 #include "compileerror.hpp"
 
 std::ifstream fin;

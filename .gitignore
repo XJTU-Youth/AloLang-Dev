@@ -1,4 +1,5 @@
 aloc
+compiler/test/*
 docs/draft/*
 libraries/draft/*
 /.project
