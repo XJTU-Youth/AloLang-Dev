@@ -1,3 +1,4 @@
+%def PI 4
 %import test02.alo
 %def con const
 
