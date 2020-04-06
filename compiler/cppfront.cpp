@@ -16,6 +16,8 @@ using std::endl;
 std::string input_file_name;
 std::string output_file_name;
 
+std::map<std::string, std::string> variable;
+
 std::pair<std::string, std::string> genFactor(std::string line) {
 	//std::pair<std::string,std::string> result;//分别为指令和参数
 	int len = line.length();
@@ -23,7 +25,7 @@ std::pair<std::string, std::string> genFactor(std::string line) {
 		//TODO:错误处理
 	}
 	int i = 1;
-	for (; i < line.length(); i++) {
+	for (; i < len; i++) {
 		if (line[i] == ' ') {
 			break;
 		}
@@ -34,15 +36,14 @@ std::pair<std::string, std::string> genFactor(std::string line) {
 	} else {
 		//预编译指令有参数
 		return std::pair<std::string, std::string>(line.substr(1, i - 1),
-				line.substr(i + 1, line.length() - i - 1));
+				line.substr(i + 1, len - i - 1));
 	}
 
 }
 
 //递归预处理
-std::string preProcess(std::string code,int cnt) {
-	if(cnt==128)
-	{
+std::string preProcess(std::string code, int cnt) {
+	if (cnt == 128) {
 		CompileError e("preprocessor recursion too deep");
 		throw e;
 	}
@@ -53,7 +54,7 @@ std::string preProcess(std::string code,int cnt) {
 		if (temp[0] == '%') {
 			std::pair<std::string, std::string> instruction = genFactor(temp); //解析后的预编译指令
 			//是预编译指令
-			if(instruction.first=="import") {
+			if (instruction.first == "import") {
 				fin.open(instruction.second);
 				if (!fin.is_open()) {
 					CompileError e("import file not found");
@@ -61,9 +62,39 @@ std::string preProcess(std::string code,int cnt) {
 				}
 				std::getline(fin, temp, char(EOF));
 				fin.close();
-				preprocessoroutput << preProcess(temp,cnt+1) << std::endl;
-			}else{
-				//TODO：错误处理
+				preprocessoroutput << preProcess(temp, cnt + 1) << std::endl;
+			} else if (instruction.first == "def") {
+				//解析宏定义
+				std::string var, data;
+				int len = instruction.second.length();
+				if (len == 0) {
+					//TODO:错误处理
+				}
+				int i = 1;
+				for (; i < len; i++) {
+					if (instruction.second[i] == ' ') {
+						break;
+					}
+				}
+				if (i == len) {
+					var = instruction.second.substr(0, len);
+					data = "";
+				} else {
+					var = instruction.second.substr(0, i);
+					data = instruction.second.substr(i + 1, len - i - 1);
+				}
+				variable[var]=data;
+			} else if (instruction.first == "rmdef") {
+				if(instruction.second.length()==0)
+				{
+					//TODO:错误处理
+				}
+				if(!variable.erase(instruction.second))
+				{
+					//找不到宏定义
+					//TODO:错误处理
+				}
+			} else {
 				CompileError e("Unrecognized preprocessor command");
 				throw e;
 			}
@@ -96,20 +127,21 @@ int main(int argc, char *argv[]) {
 			output_file_name = input_file_name + ".ac";
 		}
 		fin.open(input_file_name);
-		if (!fin.is_open()){
-			cerr << argv[0] << ": fatal error: file not found\ncompilation terminated\n";
+		if (!fin.is_open()) {
+			cerr << argv[0]
+					<< ": fatal error: file not found\ncompilation terminated\n";
 			return 1;
 		}
 		std::string buff; //源码
 		std::getline(fin, buff, char(EOF));
 		fin.close();
-		try{
-			std::string preProcessed=preProcess(buff,0);
+		try {
+			std::string preProcessed = preProcess(buff, 0);
 			//just for debug
-			cout<<preProcessed;
-		}
-		catch (CompileError e){
-			cerr << "Compile Error: " << e.what() << endl <<"Compilation Terminated\n";
+			cout << preProcessed;
+		} catch (CompileError e) {
+			cerr << "Compile Error: " << e.what() << endl
+					<< "Compilation Terminated\n";
 			return 1;
 		}
 		//todo: 编译用代码放下面
