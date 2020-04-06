@@ -25,6 +25,8 @@ std::pair<std::string, std::string> genFactor(std::string line) {
 	//std::pair<std::string,std::string> result;//分别为指令和参数
 	int len = line.length();
 	if (len < 2) {
+		CompileError e("empty % indicator");
+		throw e;
 		//TODO:错误处理
 	}
 	int i = 1;
@@ -76,6 +78,8 @@ std::string preProcess(std::string code, int cnt) {
 				std::string var, data;
 				int len = instruction.second.length();
 				if (len == 0) {
+					CompileError e("unknown error");
+					throw e;
 					//TODO:错误处理
 				}
 				int i = 1;
@@ -94,14 +98,20 @@ std::string preProcess(std::string code, int cnt) {
 				variable[var] = data;
 			} else if (instruction.first == "rmdef") {
 				if (instruction.second.length() == 0) {
+					CompileError e("unknown error");
+					throw e;
 					//TODO:错误处理
 				}
 				if (!variable.erase(instruction.second)) {
+					CompileError e("removing macro that doent exist");
+					throw e;
 					//找不到宏定义
 					//TODO:错误处理
 				}
 			} else if (instruction.first == "ifdef") {
 				if (instruction.second.length() == 0) {
+					CompileError e("unknown error");
+					throw e;
 					//TODO:错误处理
 				}
 				if (closeifstack > 0) {
@@ -113,6 +123,8 @@ std::string preProcess(std::string code, int cnt) {
 				currentifstack++;
 			} else if (instruction.first == "ifndef") {
 				if (instruction.second.length() == 0) {
+					CompileError e("unknown error");
+					throw e;
 					//TODO:错误处理
 				}
 				if (closeifstack > 0) {
@@ -124,6 +136,8 @@ std::string preProcess(std::string code, int cnt) {
 				currentifstack++;
 			} else if (instruction.first == "endif") {
 				if (currentifstack == 0) {
+					CompileError e("unknown error");
+					throw e;
 					//TODO:错误处理
 				}
 				if (closeifstack > 0) {
