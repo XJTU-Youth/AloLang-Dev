@@ -134,6 +134,14 @@ std::string processPreInstruction(std::string line, int cnt) {
 	}
 }
 
+std::string findRealData(std::string key) {
+	std::map<std::string, std::string>::iterator iter = variable.find(key);
+	if (iter != variable.end()) {
+		return findRealData(iter->second);
+	} else {
+		return key;
+	}
+}
 //宏替换
 std::string doReplace(std::string line) {
 	std::vector<std::string> words;
@@ -153,12 +161,7 @@ std::string doReplace(std::string line) {
 	}
 	std::stringstream ss;
 	for (std::string tmp : words) {
-		std::map<std::string, std::string>::iterator iter = variable.find(tmp);
-		if (iter != variable.end()) {
-			ss << iter->second;
-		} else {
-			ss << tmp;
-		}
+		ss << findRealData(tmp);
 	}
 	return ss.str();
 }
