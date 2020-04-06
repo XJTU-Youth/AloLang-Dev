@@ -78,7 +78,7 @@ std::string preProcess(std::string code, int cnt) {
 				std::string var, data;
 				int len = instruction.second.length();
 				if (len == 0) {
-					CompileError e("unknown error");
+					CompileError e("no second instruction");
 					throw e;
 					//TODO:错误处理
 				}
@@ -98,7 +98,7 @@ std::string preProcess(std::string code, int cnt) {
 				variable[var] = data;
 			} else if (instruction.first == "rmdef") {
 				if (instruction.second.length() == 0) {
-					CompileError e("unknown error");
+					CompileError e("no second instruction");
 					throw e;
 					//TODO:错误处理
 				}
@@ -110,7 +110,7 @@ std::string preProcess(std::string code, int cnt) {
 				}
 			} else if (instruction.first == "ifdef") {
 				if (instruction.second.length() == 0) {
-					CompileError e("unknown error");
+					CompileError e("no second instruction");
 					throw e;
 					//TODO:错误处理
 				}
@@ -123,7 +123,7 @@ std::string preProcess(std::string code, int cnt) {
 				currentifstack++;
 			} else if (instruction.first == "ifndef") {
 				if (instruction.second.length() == 0) {
-					CompileError e("unknown error");
+					CompileError e("no second instruction");
 					throw e;
 					//TODO:错误处理
 				}
@@ -136,7 +136,7 @@ std::string preProcess(std::string code, int cnt) {
 				currentifstack++;
 			} else if (instruction.first == "endif") {
 				if (currentifstack == 0) {
-					CompileError e("unknown error");
+					CompileError e("no second instruction");
 					throw e;
 					//TODO:错误处理
 				}
