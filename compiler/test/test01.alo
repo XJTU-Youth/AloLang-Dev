@@ -1,6 +1,8 @@
-%def PI 4
+
 %import test02.alo
 %def con const
+%rmdef PI
+%def PI TAO 
 
 fun main(int argc, char **argv) -> int{
     con int a = 123;
