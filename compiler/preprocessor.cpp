@@ -1,5 +1,6 @@
 #include "preprocessor.hpp"
 #include "compileerror.hpp"
+#include <vector>
 
 std::ifstream t_fin__;
 
@@ -9,7 +10,7 @@ int currentifstack = 0;
 
 char syntax[] = { '!', '%', '^', '&', '*', '(', ')', '-', '+', '=', '{', '}',
 		'|', '~', '[', ']', '\\', ';', '\'', ':', '"', ',', '<', '>', '?', '.',
-		'/', '#' };
+		'/', '#', ' ' };
 
 std::string preProcess(std::string code, int cnt);
 
@@ -46,17 +47,17 @@ std::pair<std::string, std::string> genFactor(std::string line) {
 
 }
 
-std::string processPreInstruction(std::string temp, int cnt) {
-	std::pair<std::string, std::string> instruction = genFactor(temp); //解析后的预编译指令
+std::string processPreInstruction(std::string line, int cnt) {
+	std::pair<std::string, std::string> instruction = genFactor(line); //解析后的预编译指令
 	if (instruction.first == "import") {
 		t_fin__.open(instruction.second);
 		if (!t_fin__.is_open()) {
 			CompileError e("import file not found");
 			throw e;
 		}
-		std::getline(t_fin__, temp, char(EOF));
+		std::getline(t_fin__, line, char(EOF));
 		t_fin__.close();
-		return preProcess(temp, cnt + 1);
+		return preProcess(line, cnt + 1);
 	} else if (instruction.first == "def") {
 		//解析宏定义
 		std::string var, data;
@@ -133,6 +134,35 @@ std::string processPreInstruction(std::string temp, int cnt) {
 	}
 }
 
+//宏替换
+std::string doReplace(std::string line) {
+	std::vector<std::string> words;
+	bool flag = false; //判断栈顶元素状态
+	for (int i = 0; i < line.length(); i++) {
+		if (isSyntax(line[i])) {
+			words.push_back(std::string(1, line[i]));
+			flag = false;
+		} else {
+			if (!flag) {
+				words.push_back(std::string(1, line[i]));
+				flag = true;
+			} else {
+				words[words.size() - 1] += std::string(1, line[i]);
+			}
+		}
+	}
+	std::stringstream ss;
+	for (std::string tmp : words) {
+		std::map<std::string, std::string>::iterator iter = variable.find(tmp);
+		if (iter != variable.end()) {
+			ss << iter->second;
+		} else {
+			ss << tmp;
+		}
+	}
+	return ss.str();
+}
+
 //递归预处理
 std::string preProcess(std::string code, int cnt) {
 	if (cnt == 128) {
@@ -151,7 +181,7 @@ std::string preProcess(std::string code, int cnt) {
 		if (temp[0] == '%') {
 			preprocessoroutput << processPreInstruction(temp, cnt) << std::endl;
 		} else {
-			preprocessoroutput << temp << std::endl;
+			preprocessoroutput << doReplace(temp) << std::endl;
 		}
 		temp.erase();
 	}
