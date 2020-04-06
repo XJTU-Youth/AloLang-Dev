@@ -17,6 +17,8 @@ std::string input_file_name;
 std::string output_file_name;
 
 std::map<std::string, std::string> variable;
+int closeifstack = 0;
+int currentifstack = 0;
 
 std::pair<std::string, std::string> genFactor(std::string line) {
 	//std::pair<std::string,std::string> result;//分别为指令和参数
@@ -51,6 +53,10 @@ std::string preProcess(std::string code, int cnt) {
 	std::stringstream preprocessoroutput;
 	std::string temp;
 	while (std::getline(buffin, temp)) {
+		if(closeifstack>0 && temp.substr(0,6)!="%endif" && temp.substr(0,7)!="%ifndef" && temp.substr(0,6)!="%ifdef")
+		{
+			continue;
+		}
 		if (temp[0] == '%') {
 			std::pair<std::string, std::string> instruction = genFactor(temp); //解析后的预编译指令
 			//是预编译指令
@@ -92,6 +98,28 @@ std::string preProcess(std::string code, int cnt) {
 					//找不到宏定义
 					//TODO:错误处理
 				}
+			} else if (instruction.first == "ifdef") {
+				if (instruction.second.length() == 0) {
+					//TODO:错误处理
+				}
+				if(closeifstack>0)
+				{
+					closeifstack++;
+				}
+				if(variable.find(instruction.second)==variable.end())
+				{
+					closeifstack++;
+				}
+				currentifstack++;
+			} else if (instruction.first == "endif") {
+				if(currentifstack==0){
+					//TODO:错误处理
+				}
+				if(closeifstack>0)
+				{
+					closeifstack--;
+				}
+				currentifstack--;
 			} else {
 				CompileError e("Unrecognized preprocessor command");
 				throw e;
