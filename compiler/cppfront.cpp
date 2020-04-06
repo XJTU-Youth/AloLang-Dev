@@ -18,9 +18,31 @@ using std::endl;
 std::string input_file_name;
 std::string output_file_name;
 
+std::string compile(const std::string & source)
+{
+	std::istringstream sin(source);
+	std::ostringstream sout;
+	std::string output, buff;
+	while(std::getline(sin, buff)){
+		//process
+		if (buff.empty())
+			continue;
+		buff.erase(0,buff.find_first_not_of(" "));
+    		buff.erase(buff.find_last_not_of(" ") + 1);
+		if (buff=="begin" || buff.substr(0,6)=="begin ")
+			buff = "{";
+		else if (buff=="end" || buff.substr(0,4)=="end ")
+			buff = "}";
+		// 继续加else if
+		sout << buff << endl;
+	}
+	return sout.str();
+}
 
 
-int main(int argc, char *argv[]) {
+
+int main(int argc, char *argv[]) 
+{
 	if (argc == 1) { //检测参数不足并报错退出
 		cerr << argv[0]
 				<< ": fatal error: no input files\ncompilation terminated\n";
@@ -48,9 +70,10 @@ int main(int argc, char *argv[]) {
 		}
 		std::string buff; //源码
 		std::getline(fin, buff, char(EOF));
+		std::string preProcessed;
 		fin.close();
 		try {
-			std::string preProcessed = preProcess(buff, 0);
+			preProcessed = preProcess(buff, 0);
 			//just for debug
 			cout << preProcessed;
 		} catch (CompileError e) {
@@ -59,8 +82,10 @@ int main(int argc, char *argv[]) {
 			return 1;
 		}
 		//todo: 编译用代码放下面
-
+		std::string compiled = compile(preProcessed);
 		//将编译结果输出到文件
+		fout.open(output_file_name);
+		fout << compiled;
 	}
 	return 0;
 }
