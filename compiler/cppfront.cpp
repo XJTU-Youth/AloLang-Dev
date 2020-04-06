@@ -53,8 +53,9 @@ std::string preProcess(std::string code, int cnt) {
 	std::stringstream preprocessoroutput;
 	std::string temp;
 	while (std::getline(buffin, temp)) {
-		if(closeifstack>0 && temp.substr(0,6)!="%endif" && temp.substr(0,7)!="%ifndef" && temp.substr(0,6)!="%ifdef")
-		{
+		if (closeifstack > 0 && temp.substr(0, 6) != "%endif"
+				&& temp.substr(0, 7) != "%ifndef"
+				&& temp.substr(0, 6) != "%ifdef") {
 			continue;
 		}
 		if (temp[0] == '%') {
@@ -102,21 +103,29 @@ std::string preProcess(std::string code, int cnt) {
 				if (instruction.second.length() == 0) {
 					//TODO:错误处理
 				}
-				if(closeifstack>0)
-				{
+				if (closeifstack > 0) {
 					closeifstack++;
 				}
-				if(variable.find(instruction.second)==variable.end())
-				{
+				if (variable.find(instruction.second) == variable.end()) {
+					closeifstack++;
+				}
+				currentifstack++;
+			} else if (instruction.first == "ifndef") {
+				if (instruction.second.length() == 0) {
+					//TODO:错误处理
+				}
+				if (closeifstack > 0) {
+					closeifstack++;
+				}
+				if (variable.find(instruction.second) != variable.end()) {
 					closeifstack++;
 				}
 				currentifstack++;
 			} else if (instruction.first == "endif") {
-				if(currentifstack==0){
+				if (currentifstack == 0) {
 					//TODO:错误处理
 				}
-				if(closeifstack>0)
-				{
+				if (closeifstack > 0) {
 					closeifstack--;
 				}
 				currentifstack--;
