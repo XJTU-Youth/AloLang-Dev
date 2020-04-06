@@ -83,14 +83,12 @@ std::string preProcess(std::string code, int cnt) {
 					var = instruction.second.substr(0, i);
 					data = instruction.second.substr(i + 1, len - i - 1);
 				}
-				variable[var]=data;
+				variable[var] = data;
 			} else if (instruction.first == "rmdef") {
-				if(instruction.second.length()==0)
-				{
+				if (instruction.second.length() == 0) {
 					//TODO:错误处理
 				}
-				if(!variable.erase(instruction.second))
-				{
+				if (!variable.erase(instruction.second)) {
 					//找不到宏定义
 					//TODO:错误处理
 				}
