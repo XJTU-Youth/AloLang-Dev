@@ -3,3 +3,4 @@ docs/draft/*
 libraries/draft/*
 /.project
 /.cproject
+compiler/*.o
