@@ -18,7 +18,7 @@ using std::endl;
 std::string input_file_name;
 std::string output_file_name;
 
-
+// Start Compiler
 // 替换字符串中所有给定序列
 std::string& replace_all(std::string& str,const std::string&old_value,const std::string& new_value)		
 {		
@@ -69,6 +69,7 @@ std::string compile(const std::string & source)
 	}
 	return sout.str();
 }
+// End Compiler
 
 
 
