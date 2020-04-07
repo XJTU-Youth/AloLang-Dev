@@ -363,11 +363,141 @@ variant_name = value;
 
 ## 语句
 
+Alolang 语句将按顺序执行，除非表达式语句、选择语句、迭代语句或跳转语句特意修改了顺序。
+
+### 标记语句
+
+标签用于将程序控制权直接转交给特定语句。标记语句使用冒号将某种标签与语句隔开。这种标签满足标识符的要求。
+
+只有goto语句可以将程序转到标签处运行。而这是不推荐使用的。
+
+标签具有函数范围，并且不能在函数中重新声明。 但是，相同的名称可用作不同函数中的标签。
+
+### 表达式语句
+
+表达式语句导致计算表达式。 出于表达式语句的原因，不会发生控制或迭代的传输。
+
+表达式语句的语法就是
+
+`[expression ] ;`
+
+在执行下一个语句前，将计算表达式语句中的所有表达式并完成所有副作用。 最常用的表达式语句是赋值和函数调用。 由于表达式是可选的，因此分号单独被视为空的表达式语句，称为null语句。
+
+### 复合语句
+
+复合语句由零个或多个括在大括号（ `{}` ）中的语句组成。 可以在任何期望语句出现的位置使用复合语句。
+
+在Alolang中，也可以使用这样的语法
+
+```Alolang
+begin [descriptions]:
+[statement list]
+end [descriptions];
+```
+其中description是对内容的描述，没有作用，是可选的。但是上下两处必须相同。
+
+### 选择语句
+
+#### if-else 语句
+
+```Alolang
+if ( expression )
+{
+   statement1;
+   ...
+}
+else  // optional
+{
+   statement2;
+   ...
+}
+```
+
+表示如果expression为真，则执行statement1...而不执行statement2...。否则执行statement2...，而不执行statement1...。
+
+#### switch语句
+
+```Alolang
+switch ( init; expression )
+   case constant-expression : statement
+   [default  : statement]
+```
+
+表示若expression的值等于constant-expression，则跳转到这行执行。若不等于任何一个，则跳转到default执行。
+
+### 迭代语句
+
+#### While 语句
+
+```Alolang
+while ( expression )
+   statement
+```
+
+表示重复执行语句，直到expression的计算结果为零。
+
+表达式的测试在每次执行循环之前发生;因此， while循环将执行零次或多次。 表达式的类型必须可以明确转换为整型。
+
+#### do-while 语句
+
+```Alolang
+do
+   statement
+while ( expression ) ;
+```
+
+表示重复执行语句，直到expression的计算结果为零。
+
+终止条件的测试在每次执行循环之后进行;因此， do循环会执行一次或多次，具体取决于终止表达式的值。表达式的类型必须可以明确转换为整型。
+
+#### for语句
+
+```Alolang
+for ( init-expression ; cond-expression ; loop-expression )
+    statement;
+```
+
+重复执行语句，直到条件变为 false。 
+
+### 跳转语句
+
+####　break 语句
+
+`break;`
+
+用于结束执行最近的封闭循环或它所在的条件语句。 控制权将传递给该语句结束之后的语句（如果有的话）。
+
+#### continue语句
+
+`continue;`
+
+强制将控制传输到最小封闭do、 for或while循环的控制表达式。
+
+#### return 语句 
+
+`return [expression];`
+
+终止函数的执行并返回对调用函数的控制（或对操作系统的控制，如果您从 main 函数转移控制）。 紧接在调用之后在调用函数中恢复执行。
+
+#### goto语句
+
+`goto identifier;`
+
+Goto语句无条件将控制转移到由指定的标识符标记的语句。
+
 <!--# 命名空间-->
 
 ## 枚举
 
+枚举是用户定义的类型，其中包含一组称为枚举器的命名的整型常数。
+
 ## Unions
+
+联合是用户定义的类型，其中的所有成员共享相同的内存位置。 这意味着在任何给定时间，联合都不能包含来自其成员列表的多个对象。 这还意味着无论联合具有多少成员，它始终仅使用足以存储最大成员的内存。
+
+具有大量对象和/或内存有限时，联合可用于节省内存。 但是，需要格外小心才能正确使用它们，因为由你负责确保可始终访问写入的最后一个成员。 如果任何成员类型具有不常用构造函数，则必须编写附加代码来显式构造和销毁该成员。
+
+`union [name]  { member-list };`
 
 ## 函数
 
@@ -381,10 +511,3 @@ variant_name = value;
 
 ## 断言和用户提供的消息
 
-## 模块
-
-## 模板
-
-## 事件处理
-
-## 编译器COM支持
