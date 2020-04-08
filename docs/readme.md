@@ -4,7 +4,7 @@
 
 [语法](syntax.html)
 
-    Copyright (C)  2020  AloLang Language Commitee.
+    Copyright (C)  2020  AloLang Language Committee.
     Permission is granted to copy, distribute and/or modify this document
     under the terms of the GNU Free Documentation License, Version 1.3
     or any later version published by the Free Software Foundation;
