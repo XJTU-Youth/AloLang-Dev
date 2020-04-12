@@ -10,3 +10,37 @@
 %def LG2   0.301029995663981
 %def LG3   0.477121254719662
 %def LG5   0.698970004336018
+fun gcd(long a,long b)->long
+{
+    if(a<b){long c=a;a=b;b=c;}
+    if(a%b==0) return b;
+    return gcd(a%b,b);
+}
+fun lcm(long a,long b)->long
+{
+    return a*b/gcd(a,b); 
+}
+fun q_pow(long a,long n,long mod)->long
+{
+    int ans=1;
+    while(n>0)
+    {
+     if(n%2==1) ans=ans*a%mod;
+     a=a*a%mod;
+     n/=2;
+    }
+    return ans;
+}
+fun isprime(long a)->bool
+{
+    if(a<2) return false;
+    if(a==2||a==3) return true;
+    if(a%6!=1&&a%6!=5) return false;
+    int i=5;
+    while(i*i<=a)
+    {
+     if(a%i==0) return false;
+     i+=6;
+    }
+    return true;
+}
