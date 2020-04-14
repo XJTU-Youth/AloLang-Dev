@@ -10,6 +10,7 @@
 %def LG2   0.301029995663981
 %def LG3   0.477121254719662
 %def LG5   0.698970004336018
+const double ERR=1e-9;
 fun gcd(long a,long b)->long
 {
     if(a<b){long c=a;a=b;b=c;}
@@ -43,4 +44,35 @@ fun isprime(long a)->bool
      i+=6;
     }
     return true;
+}
+fun abs(long a)->long
+{
+    if(a>=0) return a;
+    else return -a;
+}
+fun dabs(double a)->double
+{
+    if(a>=0) return a;
+    else return -a;
+}
+fun round(double a)->int
+{
+    if(a>0)return int(a+0.5);
+    else return int(a-0.5);
+}
+fun beint(double a)->int
+{
+    if(dabs(int(a)-a)<ERR) return true;
+    else return false;
+}
+fun floor(double a)->int
+{
+    if(beint(a)==true) return a;
+    if(a<0) return int(a)-1;
+    return int(a); 
+}
+fun ceil(double a)->int
+{
+    if(beint(a)==true) return a;
+    else return floor(a)+1;
 }

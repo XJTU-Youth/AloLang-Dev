@@ -47,3 +47,39 @@ $\pi(\text{PI}),e(\text{\_E}),\lg2,\lg3,\lg5(\text{LG2,LG3,LG5}),\sqrt 2,\sqrt 3
 调用:lcm(long a,long b)
 
 作用:返回a,b的最小公倍数
+
+5.绝对值
+
+调用
+
+abs(long a)
+
+dabs(double a)
+
+作用:返回a的绝对值
+
+6.四舍五入
+
+调用:round(double a)
+
+作用:四舍五入
+
+7.是否整数
+
+调用beint(double a)
+
+作用,若double a是一个整数，返回true，否则返回false
+
+p.s为啥函数名称不用 isint？是为了避免和sin联系到一起
+
+8.向下取整
+
+调用:floor(double a)
+
+作用:返回不大于a的最大整数
+
+9.向上取整
+
+调用:ceil(double a)
+
+作用:返回不小于a的最小整数
