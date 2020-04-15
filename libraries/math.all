@@ -10,6 +10,11 @@
 %def LG2   0.301029995663981
 %def LG3   0.477121254719662
 %def LG5   0.698970004336018
+struct complex
+{
+    double r;
+    double i;
+}
 const double ERR=1e-9;
 fun gcd(long a,long b)->long
 {

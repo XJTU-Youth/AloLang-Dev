@@ -22,7 +22,25 @@ $\pi(\text{PI}),e(\text{\_E}),\lg2,\lg3,\lg5(\text{LG2,LG3,LG5}),\sqrt 2,\sqrt 3
 
 某些用法源自C++库，有些虽然和C++的函数名称相同，但是作用，时间复杂度却不同
 
-## 二.内部函数
+## 2新数据类型
+
+虚数: complex
+
+由实部和虚部组成，double r和double i;
+
+访问或更改complex，请看如下事例
+
+``` alolang
+complex a;
+a.r=1;
+a.i=1;
+或者
+a=1+I;//存疑
+```
+
+
+
+## 三.内部函数
 
 1.判断质数 
 
@@ -99,4 +117,20 @@ p.s为啥函数名称不用 isint？是为了避免和sin联系到一起
 作用，返回$a^b$ 类型为double
 
 备注:请不要超过double的精度范围！！！
+
+12.开根号
+
+调用:lsqrt( long a)
+
+作用:返回$\sqrt a$ 保留整数，类型为long
+
+调用:sqrt(double a)
+
+作用:返回$\sqrt a$为double类型
+
+备注:请不要传入一个小于0的数，会返回NaN,若想对负数开根，请采用complex部分的isqrt
+
+
+
+
 
