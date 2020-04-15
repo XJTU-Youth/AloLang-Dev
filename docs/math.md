@@ -83,3 +83,20 @@ p.s为啥函数名称不用 isint？是为了避免和sin联系到一起
 调用:ceil(double a)
 
 作用:返回不小于a的最小整数
+
+10.整数乘方
+
+调用:lpow(long a,long b)
+
+作用:返回$a^b$ 类型为long
+
+备注:a请不要传入浮点数，精度损失会很严重
+
+11.浮点数乘方
+
+调用:dpow(double a,double b)
+
+作用，返回$a^b$ 类型为double
+
+备注:请不要超过double的精度范围！！！
+
