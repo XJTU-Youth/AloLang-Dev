@@ -18,26 +18,58 @@ using std::endl;
 std::string input_file_name;
 std::string output_file_name;
 
+// Start Compiler
+// 替换字符串中所有给定序列
+std::string& replace_all(std::string& str,const std::string&old_value,const std::string& new_value)		
+{		
+		for(std::string::size_type	 pos(0);	 pos!=std::string::npos;	 pos+=new_value.length()) {		
+				if(	 (pos=str.find(old_value,pos))!=std::string::npos	 )		
+						str.replace(pos,old_value.length(),new_value);		
+				else	 break;		
+		}		
+		return	 str;		
+}		
+
 std::string compile(const std::string & source)
 {
 	std::istringstream sin(source);
 	std::ostringstream sout;
 	std::string output, buff;
+	bool cpp_flag;
 	while(std::getline(sin, buff)){
 		//process
 		if (buff.empty())
 			continue;
 		buff.erase(0,buff.find_first_not_of(" "));
-    		buff.erase(buff.find_last_not_of(" ") + 1);
-		if (buff=="begin" || buff.substr(0,6)=="begin ")
+		buff.erase(buff.find_last_not_of(" ") + 1);
+
+		if (buff.substr(0,7) == "__cpp__")
+			cpp_flag = true;
+		if (buff.substr(0,11) == "__end_cpp__")
+			cpp_flag = false;
+		if (cpp_flag)
+			continue;
+		// 结构控制符替换
+		if (buff == "begin" || buff.substr(0,6) == "begin ")
 			buff = "{";
-		else if (buff=="end" || buff.substr(0,4)=="end ")
+		else if (buff == "end" || buff.substr(0,4) == "end ")
 			buff = "}";
 		// 继续加else if
+
+		// 下面是类型替换
+		replace_all(buff, "int ", "int64_t");
+		replace_all(buff, "complex ", "complex<vector>");
+
+
+		// 函数头替换
+
+		
+		// 存储当前行
 		sout << buff << endl;
 	}
 	return sout.str();
 }
+// End Compiler
 
 
 

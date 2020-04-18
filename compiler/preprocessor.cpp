@@ -175,6 +175,7 @@ std::string preProcess(std::string code, int cnt) {
 	std::istringstream buft_fin__(code);
 	std::stringstream preprocessoroutput;
 	std::string temp;
+	bool isCommented = false;
 	while (std::getline(buft_fin__, temp)) {
 		if (closeifstack > 0 && temp.substr(0, 6) != "%endif"
 				&& temp.substr(0, 7) != "%ifndef"
@@ -182,9 +183,41 @@ std::string preProcess(std::string code, int cnt) {
 			continue;
 		}
 		if (temp[0] == '%') {
-			preprocessoroutput << processPreInstruction(temp, cnt) << std::endl;
+			std::string processedPreInstruction = processPreInstruction(temp,
+					cnt);
+			if (processedPreInstruction.size() > 0)
+				preprocessoroutput << processedPreInstruction << std::endl;
 		} else {
-			preprocessoroutput << doReplace(temp) << std::endl;
+			std::string replaced = doReplace(temp);
+			//处理块注释
+			int position = replaced.find("*/");
+			if (position != replaced.npos) {
+				if (!isCommented) {
+					//TODO:错误处理
+				}
+				replaced = replaced.substr(position + 2,
+						replaced.length() - position - 2);
+				isCommented = false;
+			}
+			if (isCommented) {
+				replaced = "";
+			}
+			position = replaced.find("/*");
+			if (position != replaced.npos) {
+				replaced = replaced.substr(0, position);
+				isCommented = true;
+			}
+
+			//处理行注释
+			position = replaced.find("//");
+			if (position != replaced.npos) {
+				replaced = replaced.substr(0, position);
+			}
+
+			int plen = replaced.length();
+			if (plen > 0) {
+				preprocessoroutput << replaced << std::endl;
+			}
 		}
 		temp.erase();
 	}
