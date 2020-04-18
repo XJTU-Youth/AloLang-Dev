@@ -3,22 +3,46 @@
 */
 #include <cstdio>
 #include <vector>
-#include <cstring>
 
 using namespace std;
 
 const int BSYS=10;//Basic
 
+bool max(vector <int> x,vector <int> y){
+	if (x.size() > y.size())	
+		return true;
+	else if (x.size() < y.size())
+		return false;
+	else
+		for (int i = 0;i <= x.size();i++)
+			if (x[i] > y[i])
+				return true;
+	return false;
+}
+
+void sub(vector <int> a,vector <int> b,vector <int> &c){
+	int len,i;
+    len = a.size();
+    for (i = 0;i < len;i++)
+    	c.push_back(a[i]);
+    len = b.size();
+   	for (i = 0;i < len;i++)
+    	c[i] -= b[i];
+    for (i = 0;i < a.size();i++){
+    	if (c[i] < 0){
+    		c[i] += BSYS;
+    		c[i+1] -= 1;
+		}
+	}
+	while (c[c.size()-1] == 0)
+		c.pop_back();
+}
+
 struct HighAccuracyAlgorithm{
     vector <int> number;//number
     int sign;//Pos or Neg
     void Change_to_HAA(int origin_number){
-    	if (origin_number < 0)
-    		sign = -1;
-		else if (origin_number == 0)
-			sign = 0;
-		else
-			sign = 1;
+    	
         while (origin_number){
             number.push_back(origin_number%10);
             origin_number /= BSYS;
@@ -27,10 +51,42 @@ struct HighAccuracyAlgorithm{
     HighAccuracyAlgorithm operator +(HighAccuracyAlgorithm addend){//add
     	int i,j,len;
     	HighAccuracyAlgorithm out;
-    	if (sign == -1 && addend.sign == -1){
-    		out.sign == -1;
+    	if (sign + addend.sign == 0){
+    		if (addend.sign == -1){	
+    			if (max(number,addend.number)){
+    				sub(number,addend.number,out.number);
+					return out;
+				}
+				else if (max(addend.number,number)){
+					out.sign = -1;
+					sub(addend.number,number,out.number);
+					return out;
+				}
+				else{
+					out.sign = 0;
+					return out;
+				}
+			}
+			if (sign == -1){
+				if (max(number,addend.number)){
+					out.sign = -1;
+					sub(number,addend.number,out.number);
+					return out;
+				}
+				else if (max(addend.number,number)){
+					sub(addend.number,number,out.number);
+					return out;
+				}
+				else{
+					out.sign = 0;
+					return out;
+				}
+			}
 		}
-    	len=addend.number.size()>number.size() ? addend.number.size() : number.size();
+    	if (sign == -1 && addend.sign == -1){
+    		out.sign = -1;
+		}
+    	len = addend.number.size()>number.size() ? addend.number.size() : number.size();
     	for (i = 0;i < len;i++)
     		out.number.push_back(number[i]);
     	for (i = 0;i < len;i++)
@@ -42,7 +98,7 @@ struct HighAccuracyAlgorithm{
 			}
 		}
 		if (out.number[number.size()-1] / BSYS > 0){
-			out.number[number.size()] = out.number[number.size()-1] / BSYS;
+			out.number.push_back(out.number[number.size()-1] / BSYS);
 			out.number[number.size()-1] %= BSYS;
 		}
 		return out;
@@ -67,22 +123,40 @@ struct HighAccuracyAlgorithm{
 		}
 	}
 	void scan(){//in
-		int i=0,j,len;
-		char in[100001];
-		scanf("%s",in);
-		if (in[0] == '-'){
-			sign = -1;
-			i++;
+		int i = 0,j = 0,len = 0;
+		vector <char> init;
+		char in;
+		while (1){
+			scanf("%c",&in);
+			if (in == ' ' || in == '\n' ||((in < '0' || in > '9') && in != '-')){
+				if ((in < '0' || in > '9') && in != '-' && in != ' ' && in != '\n'){
+					sign = 0;
+					return;
+				}
+				if (!j){
+					continue;
+				}
+				break;
+			}
+			init.push_back(in);
+			j = 1;
 		}
-		else if (in[0] == '0'){
+		len = init.size() - 1;
+		if (len == -1 || (len == 0 && init[0] < '0' || init[0] > '9')){
 			sign = 0;
+			return;
 		}
-		else{
+		j = 0;
+		for(int i = len;i >= 0;i--){
+			if (init[i] == '-' ){
+				sign = -1;
+				continue;
+			}
+			number.push_back(init[i] - '0');
+			j = 1;
 			sign = 1;
 		}
-		len = strlen(in) - 1;
-		for (j = len;j >= i;j--){
-			number.push_back(in[j]-'0');
-		}
+		while (number[number.size()-1] == 0)
+			number.pop_back();
 	}
 };
