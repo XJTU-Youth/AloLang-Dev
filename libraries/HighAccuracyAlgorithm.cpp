@@ -42,7 +42,14 @@ struct HighAccuracyAlgorithm{
     vector <int> number;//number
     int sign;//Pos or Neg
     void Change_to_HAA(int origin_number){
-    	
+    	if (origin_number < 0){
+    		sign = -1;
+    		origin_number=0-origin_number;
+		}
+      	else if (origin_number == 0)
+            sign = 0;
+        else
+            sign = 1;
         while (origin_number){
             number.push_back(origin_number%10);
             origin_number /= BSYS;
