@@ -96,3 +96,11 @@ fun dpow(double a,double b)->double
 {
     //todo
 }
+fun degrees(double x)->double
+{
+    return x*180/PI
+}
+fun radians(double x)->double
+{
+    return x*PI/180
+}
