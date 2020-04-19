@@ -20,7 +20,7 @@ bool max(vector <int> x,vector <int> y){
 	return false;
 }
 
-void sub(vector <int> a,vector <int> b,vector <int> &c){
+void sub(vector <int> a,vector <int> b,vector <int> &c){//sub
 	int len,i;
     len = a.size();
     for (i = 0;i < len;i++)
@@ -36,6 +36,25 @@ void sub(vector <int> a,vector <int> b,vector <int> &c){
 	}
 	while (c[c.size()-1] == 0)
 		c.pop_back();
+}
+
+void add(vector <int> a,vector <int> b,vector <int> &c){//add
+	int i,j,len;
+	len = b.size()>a.size() ? b.size() : a.size();
+    for (i = 0;i < len;i++)
+    	c.push_back(a[i]);
+    for (i = 0;i < len;i++)
+    	c[i] += b[i];
+    for (i = 1;i < a.size();i++){
+    	if (c[i-1]/BSYS > 0){
+    		c[i] += c[i-1] / BSYS;
+    		c[i-1] %= BSYS;
+		}
+	}
+	if (c[a.size()-1] / BSYS > 0){
+		c.push_back(c[a.size()-1] / BSYS);
+		c[a.size()-1] %= BSYS;
+	}
 }
 
 struct HighAccuracyAlgorithm{
@@ -58,8 +77,8 @@ struct HighAccuracyAlgorithm{
     HighAccuracyAlgorithm operator +(HighAccuracyAlgorithm addend){//add
     	int i,j,len;
     	HighAccuracyAlgorithm out;
-    	if (sign + addend.sign == 0){
-    		if (addend.sign == -1){	
+    	if (sign + addend.sign == 0){//Pos add Neg equals to sub.
+    		if (addend.sign == -1){
     			if (max(number,addend.number)){
     				sub(number,addend.number,out.number);
 					return out;
@@ -90,24 +109,11 @@ struct HighAccuracyAlgorithm{
 				}
 			}
 		}
-    	if (sign == -1 && addend.sign == -1){
+    	if (sign == -1 && addend.sign == -1)//both are Neg
     		out.sign = -1;
-		}
-    	len = addend.number.size()>number.size() ? addend.number.size() : number.size();
-    	for (i = 0;i < len;i++)
-    		out.number.push_back(number[i]);
-    	for (i = 0;i < len;i++)
-    		out.number[i] += addend.number[i];
-    	for (i = 1;i < number.size();i++){
-    		if (out.number[i-1]/BSYS > 0){
-    			out.number[i] += out.number[i-1] / BSYS;
-    			out.number[i-1] %= BSYS;
-			}
-		}
-		if (out.number[number.size()-1] / BSYS > 0){
-			out.number.push_back(out.number[number.size()-1] / BSYS);
-			out.number[number.size()-1] %= BSYS;
-		}
+		else
+			sign = 1;
+		add(number,addend.number,out.number);
 		return out;
 	}
 	void print(){//out
@@ -130,6 +136,7 @@ struct HighAccuracyAlgorithm{
 		}
 	}
 	void scan(){//in
+		number.clear();//clear  the number in order to avoid mistakes
 		int i = 0,j = 0,len = 0;
 		vector <char> init;
 		char in;
