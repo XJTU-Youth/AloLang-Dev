@@ -116,6 +116,53 @@ struct HighAccuracyAlgorithm{
 		add(number,addend.number,out.number);
 		return out;
 	}
+	HighAccuracyAlgorithm operator -(HighAccuracyAlgorithm subend){//sub
+		HighAccuracyAlgorithm out;
+		if ((sign + subend.sign) == 0){//Pos and Neg
+		if (sign == -1){
+				out.sign = -1;
+				add(number,subend.number,out.number);
+				return out;
+			}
+			else{
+				out.sign = 1;
+				add(number,subend.number,out.number);
+				return out;
+			}
+		}
+		else if (sign == -1 && subend.sign == -1){
+			if (max(number,subend.number)){
+				out.sign = -1;
+				sub(number,subend.number,out.number);
+				return out;
+			}
+			else if (max(subend.number,number)){
+				out.sign == 1;
+				sub(subend.number,number,out.number);
+				return out;
+			}
+			else{
+				out.sign = 0;
+				return out;
+			}
+		}
+		else{
+			if (max(number,subend.number)){
+				out.sign == 1;
+				sub(number,subend.number,out.number);
+				return out;
+			}
+			else if (max(subend.number,number)){
+				out.sign = -1;
+				sub(subend.number,number,out.number);
+				return out;
+			}
+			else{
+				out.sign = 0;
+				return out;
+			}
+		}
+	}
 	void print(){//out
 		int i,flag=0;
 		if (sign == -1){
