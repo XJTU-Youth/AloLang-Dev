@@ -26,18 +26,6 @@ $\pi(\text{PI}),e(\text{\_E}),\lg2,\lg3,\lg5(\text{LG2,LG3,LG5}),\sqrt 2,\sqrt 3
 
 虚数: complex
 
-由实部和虚部组成，double r和double i;
-
-访问或更改complex，请看如下事例
-
-``` alolang
-complex a;
-a.r=1;
-a.i=1;
-或者
-a=1+I;//存疑
-```
-
 
 
 ## 三.内部函数
@@ -130,7 +118,11 @@ p.s为啥函数名称不用 isint？是为了避免和sin联系到一起
 
 备注:请不要传入一个小于0的数，会返回NaN,若想对负数开根，请采用complex部分的isqrt
 
+13.角度制和弧度制相互转换
 
+调用:degrees(double a) 弧度->角度
+
+​        radians(double a)角度->弧度
 
 
 
