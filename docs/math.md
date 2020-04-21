@@ -1,4 +1,4 @@
-# math库文档
+﻿# math库文档
 
 ## 一.math库概述
 
@@ -120,9 +120,9 @@ p.s为啥函数名称不用 isint？是为了避免和sin联系到一起
 
 13.角度制和弧度制相互转换
 
-调用:degrees(double a) 弧度->角度
+调用:deg(double a) 弧度->角度
 
-​        radians(double a)角度->弧度
+​        rad(double a)角度->弧度
 
 
 
