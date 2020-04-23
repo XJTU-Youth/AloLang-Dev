@@ -1,4 +1,8 @@
 %lib math
+__CPP__
+{
+#include<cmath>
+}
 %def PI    3.141592653589793
 %def SQRT2 1.414213562373095
 %def SQRT3 1.730508075688772
@@ -10,11 +14,6 @@
 %def LG2   0.301029995663981
 %def LG3   0.477121254719662
 %def LG5   0.698970004336018
-struct complex
-{
-    double r;
-    double i;
-}
 const double ERR=1e-9;
 fun gcd(long a,long b)->long
 {
@@ -94,7 +93,37 @@ fun lpow(long a,long b)->long
 }
 fun dpow(double a,double b)->double
 {
-    //todo
+    __CPP__
+    {
+       double c;
+       c=pow(a,b);
+       return c;
+    }
+}
+fun ln(double a)->double
+{
+    __CPP__
+    {
+        return log(a);
+    }
+}
+fun lg(double a)->double
+{
+    __CPP__
+   {
+       return log10(a);
+   }
+}
+fun log(double a,double x)->double//aÊÇµ×Êý
+{
+    return ln(x)/ln(a);
+}
+fun exp(double a)->double
+{
+    __CPP__
+    {
+        return exp(a);
+    }
 }
 fun deg(double x)->double
 {
