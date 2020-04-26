@@ -1,4 +1,4 @@
-# math库文档
+﻿# math库文档
 
 ## 一.math库概述
 
@@ -25,18 +25,6 @@ $\pi(\text{PI}),e(\text{\_E}),\lg2,\lg3,\lg5(\text{LG2,LG3,LG5}),\sqrt 2,\sqrt 3
 ## 2新数据类型
 
 虚数: complex
-
-由实部和虚部组成，double r和double i;
-
-访问或更改complex，请看如下事例
-
-``` alolang
-complex a;
-a.r=1;
-a.i=1;
-或者
-a=1+I;//存疑
-```
 
 
 
@@ -128,9 +116,64 @@ p.s为啥函数名称不用 isint？是为了避免和sin联系到一起
 
 作用:返回$\sqrt a$为double类型
 
-备注:请不要传入一个小于0的数，会返回NaN,若想对负数开根，请采用complex部分的isqrt
+备注:请不要传入一个小于0的数，会返回NaN,若对负数开根，请不要用这个函数
 
+13.角度制和弧度制相互转换
 
+调用:deg(double a) 弧度->角度
+
+​        rad(double a)角度->弧度
+14.一系列对数
+调用:ln(double x)
+作用:返回x的自然对数
+lg(double x)
+作用:返回x以10为底的对数
+log(double a,double x)
+作用:返回x以a为底的对数
+备注：当x<0时，请不要用这个函数
+15.e的乘方
+exp(double x)
+作用:返回$e^x$为double类型
+
+###三角函数部分
+1.弧度系列
+sin(double radians)
+cos(double radians)
+tan(double radians)
+cot(double radians)
+sec(double radians)
+csc(double radians)
+sinh(double radians)
+cosh(double radians)
+tanh(double radians)
+coth(double radians)
+sech(double radians)
+csch(double radians)
+作用:传入一个角的弧度，返回它的某三角函数或者双曲函数值
+2.角度系列
+dsin(double degrees)
+dcos(double degrees)
+dtan(double degrees)
+dcot(double degrees)
+dsec(double degrees)
+dcsc(double degrees)
+dsinh(double degrees)
+dcosh(double degrees)
+dtanh(double degrees)
+dcoth(double degrees)
+dsech(double degrees)
+dcsch(double degrees)
+作用:传入一个角的角度，返回它的某三角函数或者双曲函数值
+3.long degree的函数
+备注：long这部分如果采用弧度制可能产生精度的丢失，所以这里请传入角度制
+返回值仍然为double类型
+lsin(long degrees)
+lcos(long degrees)
+ltan(long degrees)
+lcot(long degrees)
+lsec(long degrees)
+lcsc(long degrees)
+由于双曲函数中exp的存在，long会有严重的精度丢失，所以没有他们对应的long形式
 
 
 
