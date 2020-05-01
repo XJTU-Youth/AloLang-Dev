@@ -29,7 +29,7 @@ std::string& replace_all(std::string& str,const std::string&old_value,const std:
 		}		
 		return	 str;		
 }		
-
+/*
 std::string compile(const std::string & source)
 {
 	std::istringstream sin(source);
@@ -70,8 +70,7 @@ std::string compile(const std::string & source)
 	return sout.str();
 }
 // End Compiler
-
-
+*/
 
 int main(int argc, char *argv[]) 
 {
@@ -104,6 +103,9 @@ int main(int argc, char *argv[])
 		std::getline(fin, buff, char(EOF));
 		std::string preProcessed;
 		fin.close();
+		std::string header = "%import types\n";
+		buff = header + buff;
+		cout << "Before Preproccess:\n" << buff;
 		try {
 			preProcessed = preProcess(buff, 0);
 			//just for debug
@@ -114,10 +116,10 @@ int main(int argc, char *argv[])
 			return 1;
 		}
 		//todo: 编译用代码放下面
-		std::string compiled = compile(preProcessed);
+		//std::string compiled = compile(preProcessed);
 		//将编译结果输出到文件
 		fout.open(output_file_name);
-		fout << compiled;
+		//fout << compiled;
 	}
 	return 0;
 }
