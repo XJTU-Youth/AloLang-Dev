@@ -7,6 +7,7 @@
 #include <map>
 #include "compileerror.hpp"
 #include "preprocessor.hpp"
+#include <utils.h>
 
 std::ifstream fin;
 std::ofstream fout;
@@ -20,60 +21,111 @@ std::string output_file_name;
 
 // Start Compiler
 // 替换字符串中所有给定序列
-std::string& replace_all(std::string& str,const std::string&old_value,const std::string& new_value)		
-{		
-		for(std::string::size_type	 pos(0);	 pos!=std::string::npos;	 pos+=new_value.length()) {		
-				if(	 (pos=str.find(old_value,pos))!=std::string::npos	 )		
-						str.replace(pos,old_value.length(),new_value);		
-				else	 break;		
-		}		
-		return	 str;		
-}		
-/*
-std::string compile(const std::string & source)
-{
-	std::istringstream sin(source);
-	std::ostringstream sout;
-	std::string output, buff;
-	bool cpp_flag;
-	while(std::getline(sin, buff)){
-		//process
-		if (buff.empty())
-			continue;
-		buff.erase(0,buff.find_first_not_of(" "));
-		buff.erase(buff.find_last_not_of(" ") + 1);
-
-		if (buff.substr(0,7) == "__cpp__")
-			cpp_flag = true;
-		if (buff.substr(0,11) == "__end_cpp__")
-			cpp_flag = false;
-		if (cpp_flag)
-			continue;
-		// 结构控制符替换
-		if (buff == "begin" || buff.substr(0,6) == "begin ")
-			buff = "{";
-		else if (buff == "end" || buff.substr(0,4) == "end ")
-			buff = "}";
-		// 继续加else if
-
-		// 下面是类型替换
-		replace_all(buff, "int ", "int64_t");
-		replace_all(buff, "complex ", "complex<vector>");
-
-
-		// 函数头替换
-
-		
-		// 存储当前行
-		sout << buff << endl;
+std::string& replace_all(std::string &str, const std::string &old_value,
+		const std::string &new_value) {
+	for (std::string::size_type pos(0); pos != std::string::npos; pos +=
+			new_value.length()) {
+		if ((pos = str.find(old_value, pos)) != std::string::npos)
+			str.replace(pos, old_value.length(), new_value);
+		else
+			break;
 	}
-	return sout.str();
+	return str;
 }
-// End Compiler
-*/
+/*
+ * 修饰规则：
+ * 加上_alolang_前缀
+ * 每个段前面加上长度
+ * 比如fun foobar(long a, int b)修饰为_alolang_6foobar4long3int
+ */
+std::string demangle(const std::string &line) {
+	std::vector<std::string> words;
+	bool flag = false; //判断栈顶元素状态，如果为false则代表栈顶元素为符号
+	for (int i = 0; i < line.length(); i++) {
+		if (isSyntax(line[i])) {
+			words.push_back(std::string(1, line[i]));
+			flag = false;
+		} else {
+			if (!flag) {
+				words.push_back(std::string(1, line[i]));
+				flag = true;
+			} else {
+				words[words.size() - 1] += std::string(1, line[i]);
+			}
+		}
+	}
+	std::stringstream ss;
+	ss << "_alolang_";
+	int i = -1; //处理指针
+	skipSpace(words, i);
+	if (words[i] != "fun") {
+		//TODO:异常处理
+	}
+	skipSpace(words, i);
+	ss << words[i].length() << words[i];
+	skipSpace(words, i);
+	if (words[i] != "(") {
+		//TODO:异常处理
+	}
+	while (true) {
+		skipSpace(words, i);
+		ss << words[i].length() << words[i]; //得到类型
+		skipSpace(words, i); //得到变量名，但在这个阶段没用
+		skipSpace(words, i);
+		if (words[i] == ")") {
+			break;
+		}
 
-int main(int argc, char *argv[]) 
-{
+		if (words[i] != ",") {
+			//TODO:异常处理（逗号）
+		}
+	}
+	return ss.str();
+}
+/*
+ std::string compile(const std::string & source)
+ {
+ std::istringstream sin(source);
+ std::ostringstream sout;
+ std::string output, buff;
+ bool cpp_flag;
+ while(std::getline(sin, buff)){
+ //process
+ if (buff.empty())
+ continue;
+ buff.erase(0,buff.find_first_not_of(" "));
+ buff.erase(buff.find_last_not_of(" ") + 1);
+
+ if (buff.substr(0,7) == "__cpp__")
+ cpp_flag = true;
+ if (buff.substr(0,11) == "__end_cpp__")
+ cpp_flag = false;
+ if (cpp_flag)
+ continue;
+ // 结构控制符替换
+ if (buff == "begin" || buff.substr(0,6) == "begin ")
+ buff = "{";
+ else if (buff == "end" || buff.substr(0,4) == "end ")
+ buff = "}";
+ // 继续加else if
+
+ // 下面是类型替换
+ replace_all(buff, "int ", "int64_t");
+ replace_all(buff, "complex ", "complex<vector>");
+
+
+ // 函数头替换
+
+
+ // 存储当前行
+ sout << buff << endl;
+ }
+ return sout.str();
+ }
+ // End Compiler
+ */
+
+int main(int argc, char *argv[]) {
 	if (argc == 1) { //检测参数不足并报错退出
 		cerr << argv[0]
 				<< ": fatal error: no input files\ncompilation terminated\n";
