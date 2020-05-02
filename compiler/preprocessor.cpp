@@ -1,27 +1,17 @@
 #include "preprocessor.hpp"
 #include "compileerror.hpp"
 #include <vector>
-
+#include "utils.h"
 std::ifstream t_fin__;
 
 std::map<std::string, std::string> variable;
 int closeifstack = 0;
 int currentifstack = 0;
 
-char syntax[] = { '!', '%', '^', '&', '*', '(', ')', '-', '+', '=', '{', '}',
-		'|', '~', '[', ']', '\\', ';', '\'', ':', '"', ',', '<', '>', '?', '.',
-		'/', '#', ' ' };
+
 
 std::string preProcess(std::string code, int cnt);
 
-bool isSyntax(char c) {
-	for (char tmp : syntax) {
-		if (c == tmp) {
-			return true;
-		}
-	}
-	return false;
-}
 
 std::pair<std::string, std::string> genFactor(std::string line) {
 	//std::pair<std::string,std::string> result;//分别为指令和参数
