@@ -106,8 +106,8 @@ Alolang 保留了下列关键字。
 ``` alolang
 begin    bool
 break    case    catch    char    const    delete    continue    do    double    else    enum    end
-extern    false    finally    float    for    friend    goto    if    inline    int    long    new
-operator    sizeof    static    struct    switch    template    this    throw    true    try    typedef
+extern    false    finally    float    for    friend    goto    if    inline    int    input    long    new
+operator   output    sizeof    static    struct    switch    template    this    throw    true    try    typedef
 typeid    typename    union    virtual    void    volatile    while    __cpp__
 ```
 
@@ -364,6 +364,32 @@ variant_name = value;
 ## 语句
 
 Alolang 语句将按顺序执行，除非表达式语句、选择语句、迭代语句或跳转语句特意修改了顺序。
+
+### IO语句
+
+IO语句有两种：输入语句和输出语句。
+
+#### 输入语句
+
+输入语句使用`input ... from ...`关键字标识。它的基本使用方法为：
+
+```alolang
+input variable from source;
+```
+
+其中`variable`为写入变量，`source`为数据来源文件的绝对路径或者`stdin`，当`source`为`stdin`的时候采用标准输入流进行输入，
+否则采用指定文件进行输入。
+
+#### 输出语句
+
+输入语句使用`output ... to ...`关键字标识。它的基本使用方法为：
+
+```alolang
+output variable from destination;
+```
+
+其中`variable`为要输出的变量，destination为数据目的输出文件的绝对路径或者`stdout`或者`stderr`，当`destination`为`stdout`的时候采用标准输出流进行输出，
+当`destination`为`stderr`是采用标准错误流进行输出，否则采用指定文件进行输出。
 
 ### 标记语句
 
