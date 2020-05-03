@@ -78,7 +78,7 @@ fun round(double a)->int
     if(a>0)return int(a+0.5);
     else return int(a-0.5);
 }
-fun beint(double a)->int
+fun beint(double a)->bool
 {
     if(dabs(int(a)-a)<ERR) return true;
     else return false;
@@ -128,7 +128,7 @@ fun lg(double a)->double
        return log10(a);
    }
 }
-fun log(double a,double x)->double//aÊÇµ×Êý
+fun log(double a,double x)->double//aæ˜¯åº•æ•°
 {
     return ln(x)/ln(a);
 }
