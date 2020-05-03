@@ -164,16 +164,3 @@ dcoth(double degrees)
 dsech(double degrees)
 dcsch(double degrees)
 作用:传入一个角的角度，返回它的某三角函数或者双曲函数值
-3.long degree的函数
-备注：long这部分如果采用弧度制可能产生精度的丢失，所以这里请传入角度制
-返回值仍然为double类型
-lsin(long degrees)
-lcos(long degrees)
-ltan(long degrees)
-lcot(long degrees)
-lsec(long degrees)
-lcsc(long degrees)
-由于双曲函数中exp的存在，long会有严重的精度丢失，所以没有他们对应的long形式
-
-
-

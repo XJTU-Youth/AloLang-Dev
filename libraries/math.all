@@ -1,9 +1,21 @@
 %lib math
+%import complex
 __CPP__
 {
 #include<cmath>
-#include<complex>
-using namespace std;
+using std::pow;
+using std::exp;
+using std::log;
+using std::log10;
+using std::sin;
+using std::sinh;
+using std::cosh;
+using std::cos;
+using std::asin;
+using std::acos;
+using std::tan;
+using std::tanh;
+using std::atan;
 }
 %def PI    3.141592653589793
 %def SQRT2 1.414213562373095
