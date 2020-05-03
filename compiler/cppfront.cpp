@@ -7,7 +7,7 @@
 #include <map>
 #include "compileerror.hpp"
 #include "preprocessor.hpp"
-#include <utils.h>
+#include "utils.h"
 
 std::ifstream fin;
 std::ofstream fout;
@@ -60,12 +60,16 @@ std::string demangle(const std::string &line) {
 	skipSpace(words, i);
 	if (words[i] != "fun") {
 		//TODO:异常处理
+		CompileError s("demangle error 0x1");
+		throw(s);
 	}
 	skipSpace(words, i);
 	ss << words[i].length() << words[i];
 	skipSpace(words, i);
 	if (words[i] != "(") {
 		//TODO:异常处理
+		CompileError s("demangle error 0x2");
+		throw(s);
 	}
 	while (true) {
 		skipSpace(words, i);
@@ -78,6 +82,8 @@ std::string demangle(const std::string &line) {
 
 		if (words[i] != ",") {
 			//TODO:异常处理（逗号）
+			CompileError s("demangle error 0x3");
+			throw(s);
 		}
 	}
 	return ss.str();
