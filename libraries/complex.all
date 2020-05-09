@@ -1,6 +1,4 @@
 %lib complex
-%ifndef _GLIBCXX_COMPLEX
-%define _GLIBCXX_COMPLEX 1
 __CPP__
 {
 #pragma GCC system_header
