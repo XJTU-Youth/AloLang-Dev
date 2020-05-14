@@ -8,8 +8,6 @@ std::map<std::string, std::string> variable;
 int closeifstack = 0;
 int currentifstack = 0;
 
-
-
 std::string preProcess(std::string code, int cnt);
 
 
