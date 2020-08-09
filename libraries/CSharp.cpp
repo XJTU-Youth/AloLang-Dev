@@ -7,13 +7,17 @@
 #include<iostream>
 #include<algorithm>
 
-#ifdef WIN32
+#if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
 
 #include<Windows.h>
 
-void csharp(string name)
+string CSCompilerPath;
 
-#else
+
+
+
+#elif defined(__linux) || defined(__linux__) || defined(linux)
 
 #include <sys/types.h>  
-#include <sys/stat.h> 
+#include <sys/stat.h>
+
