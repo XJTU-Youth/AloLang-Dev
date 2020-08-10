@@ -1,6 +1,7 @@
 CC = g++
-AR = ar
-CFLAG = -W -Wall -g -I /usr/include/llvm-10/ -I /usr/include/llvm-c-10/
+AR = ar  
+
+CFLAG = -W -Wall -g
 
 AST_SRCS := $(wildcard compiler/ast/*.cpp)
 AST_OBJS := $(AST_SRCS:.cpp=.o)
