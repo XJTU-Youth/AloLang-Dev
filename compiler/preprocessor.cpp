@@ -134,7 +134,7 @@ std::string findRealData(std::string key) {
 std::string doReplace(std::string line) {
 	std::vector<std::string> words;
 	bool flag = false; //判断栈顶元素状态
-	for (int i = 0; i < line.length(); i++) {
+	for (long unsigned int i = 0; i < line.length(); i++) {
 		if (isSyntax(line[i])) {
 			words.push_back(std::string(1, line[i]));
 			flag = false;
@@ -178,7 +178,7 @@ std::string preProcess(std::string code, int cnt) {
 		} else {
 			std::string replaced = doReplace(temp);
 			//处理块注释
-			int position = replaced.find("*/");
+			long unsigned int position = replaced.find("*/");
 			if (position != replaced.npos) {
 				if (!isCommented) {
 					//TODO:错误处理

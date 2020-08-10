@@ -9,7 +9,7 @@
 #define COMPILER_UTILS_H_
 
 bool isSyntax(char c);
-void skipSpace(const std::vector<std::string> &words, int& i);
+void skipSpace(const std::vector<std::string> &words, long unsigned int& i);
 
 
 
