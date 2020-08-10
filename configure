@@ -1,0 +1,4 @@
+#!/bin/bash
+./make-config > tmpcfg
+cat tmpcfg Makefile.content > Makefile
+rm tmpcfg
