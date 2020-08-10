@@ -27,7 +27,7 @@ install: aloc readytomake
 	mv aloc /usr/bin/
 clean:
 	-rm -r aloc build
-readytomake: clean
+readytomake:
 	mkdir build
 	mkdir build/compiler
 	mkdir build/compiler/ast
