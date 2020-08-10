@@ -1,21 +1,30 @@
-aloc: compiler/cppfront.o compiler/preprocessor.o compiler/utils.o compiler/ast.o
-	g++ -g -o aloc compiler/cppfront.o compiler/preprocessor.o compiler/utils.o compiler/ast.o
+CC = g++
+AR = ar  
 
-compiler/preprocessor.o: compiler/preprocessor.cpp compiler/preprocessor.hpp compiler/compileerror.hpp
-	g++ -g -c -I ./compiler/ compiler/preprocessor.cpp -o compiler/preprocessor.o
+CFLAG = -W -Wall -g
 
-compiler/cppfront.o: compiler/cppfront.cpp compiler/preprocessor.hpp compiler/compileerror.hpp
-	g++ -g -c -I ./compiler/ compiler/cppfront.cpp -o compiler/cppfront.o
+AST_SRCS := $(wildcard compiler/ast/*.cpp)
+AST_OBJS := $(AST_SRCS:.cpp=.o)
+AST_OBJS_BUILD := $(addprefix build/,${AST_OBJS})
+OBJ_DIR = build/
+
+aloc: build/compiler/cppfront.o build/compiler/preprocessor.o build/compiler/utils.o $(AST_OBJS_BUILD)
+	$(CC) $(CFLAG) build/compiler/cppfront.o build/compiler/preprocessor.o build/compiler/utils.o $(AST_OBJS_BUILD) -lLLVM -o aloc 
+
+build/compiler/preprocessor.o: compiler/preprocessor.cpp compiler/preprocessor.hpp compiler/compileerror.hpp
+	$(CC) $(CFLAG) -c -I ./compiler/ compiler/preprocessor.cpp -o build/compiler/preprocessor.o
+
+build/compiler/cppfront.o: compiler/cppfront.cpp compiler/preprocessor.hpp compiler/compileerror.hpp
+	$(CC) $(CFLAG) -c -I ./compiler/ compiler/cppfront.cpp -o build/compiler/cppfront.o
 	
-compiler/utils.o: compiler/utils.cpp
-	g++ -g -c -I ./compiler/ compiler/utils.cpp -o compiler/utils.o
+build/compiler/utils.o: compiler/utils.cpp
+	$(CC) $(CFLAG) -c -I ./compiler/ compiler/utils.cpp -o build/compiler/utils.o
 
-compiler/ast.o: compiler/ast/AST_Base.cpp compiler/ast/AST_Expr.cpp
-	g++ -g -c -I ./compiler/ ./compiler/ast/AST_Base.cpp ./compiler/ast/AST_Expr.cpp -o compiler/ast.o
-
+$(AST_OBJS_BUILD):$(OBJ_DIR)%.o : %.cpp
+	$(CXX) $(CFLAGS) -c $< -o $@ 
 
 .PHONY : clean,install
 install: aloc
 	mv aloc /usr/bin/
 clean:
-	-rm aloc compiler/*.o 
+	-rm aloc build/compiler/*.o build/compiler/ast/*.o 

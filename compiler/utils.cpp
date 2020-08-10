@@ -20,7 +20,7 @@ bool isSyntax(char c) {
 	return false;
 }
 //从pos查找到下一个非空格字段
-void skipSpace(const std::vector<std::string> &words, int& i) {
+void skipSpace(const std::vector<std::string> &words, long unsigned int& i) {
 	while (true) {
 		i++;
 		if (i >= words.size()) {
