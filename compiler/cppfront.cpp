@@ -41,7 +41,7 @@ std::string& replace_all(std::string &str, const std::string &old_value,
 std::string demangle(const std::string &line) {
 	std::vector<std::string> words;
 	bool flag = false; //判断栈顶元素状态，如果为false则代表栈顶元素为符号
-	for (int i = 0; i < line.length(); i++) {
+	for (long unsigned int i = 0; i < line.length(); i++) {
 		if (isSyntax(line[i])) {
 			words.push_back(std::string(1, line[i]));
 			flag = false;
@@ -56,7 +56,7 @@ std::string demangle(const std::string &line) {
 	}
 	std::stringstream ss;
 	ss << "_alolang_";
-	int i = -1; //处理指针
+	long unsigned int i = -1; //处理指针
 	skipSpace(words, i);
 	if (words[i] != "fun") {
 		//TODO:异常处理
@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
 		return 1;
 	} else {
 		std::string args[argc];
-		for (char i = 1; i < argc; i++)
+		for (int i = 1; i < argc; i++)
 			args[i - 1] = argv[i];
 		if (args[0] == "--help" || args[0] == "-h") { //显示帮助信息
 			cout << "Usage: " << argv[0] << " file_name\n";
@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
 			preProcessed = preProcess(buff, 0);
 			//just for debug
 			cout << preProcessed;
-		} catch (CompileError e) {
+		} catch (const CompileError& e) {
 			cerr << "Compile Error: " << e.what() << endl
 					<< "Compilation Terminated\n";
 			return 1;
