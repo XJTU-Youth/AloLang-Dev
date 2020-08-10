@@ -1,7 +1,6 @@
 
 AST_SRCS := $(wildcard compiler/ast/*.cpp)
-AST_OBJS := $(AST_SRCS:.cpp=.o)
-AST_OBJS_BUILD := $(addprefix build/,${AST_OBJS})
+AST_OBJS_BUILD := $(addprefix build/,$(AST_SRCS:.cpp=.o))
 OBJ_DIR = build/
 
 aloc: build/compiler/cppfront.o build/compiler/preprocessor.o build/compiler/utils.o build/compiler/code_parser.o $(AST_OBJS_BUILD) readytomake
@@ -28,6 +27,6 @@ install: aloc readytomake
 clean:
 	-rm -r aloc build
 readytomake:
-	mkdir build
-	mkdir build/compiler
-	mkdir build/compiler/ast
+	mkdir -p build
+	mkdir -p build/compiler
+	mkdir -p build/compiler/ast
