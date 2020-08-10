@@ -34,4 +34,4 @@ clean:
 readytomake: clean
 	mkdir build
 	mkdir build/compiler
-	mkdir build/ast
+	mkdir build/compiler/ast
