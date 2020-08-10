@@ -5,4 +5,4 @@ libraries/draft/*
 /.cproject
 compiler/*.o
 build/*
-Makefile
+/Makefile
