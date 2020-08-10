@@ -4,3 +4,5 @@ libraries/draft/*
 /.project
 /.cproject
 compiler/*.o
+build/*
+readytomake
