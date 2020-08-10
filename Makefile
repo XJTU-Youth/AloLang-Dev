@@ -26,7 +26,7 @@ build/compiler/code_parser.o: compiler/code_parser.cpp readytomake
 $(AST_OBJS_BUILD):$(OBJ_DIR)%.o : %.cpp readytomake
 	$(CXX) $(CFLAGS) -c $< -o $@ 
 
-readytomake:
+readytomake: clean
 	mkdir build
 	mkdir build/compiler
 	mkdir build/ast
@@ -36,4 +36,4 @@ readytomake:
 install: aloc readytomake
 	mv aloc /usr/bin/
 clean:
-	-rm -r aloc build
+	-rm -r aloc build readytomake
