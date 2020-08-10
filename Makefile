@@ -8,7 +8,7 @@ AST_OBJS := $(AST_SRCS:.cpp=.o)
 AST_OBJS_BUILD := $(addprefix build/,${AST_OBJS})
 OBJ_DIR = build/
 
-aloc: build/compiler/cppfront.o build/compiler/preprocessor.o build/compiler/utils.o $(AST_OBJS_BUILD)
+aloc: build/compiler/cppfront.o build/compiler/preprocessor.o build/compiler/utils.o build/compiler/code_parser.o $(AST_OBJS_BUILD)
 	$(CC) $(CFLAG) build/compiler/cppfront.o build/compiler/preprocessor.o build/compiler/utils.o $(AST_OBJS_BUILD) -lLLVM -o aloc 
 
 build/compiler/preprocessor.o: compiler/preprocessor.cpp compiler/preprocessor.hpp compiler/compileerror.hpp
@@ -19,6 +19,10 @@ build/compiler/cppfront.o: compiler/cppfront.cpp compiler/preprocessor.hpp compi
 	
 build/compiler/utils.o: compiler/utils.cpp
 	$(CC) $(CFLAG) -c -I ./compiler/ compiler/utils.cpp -o build/compiler/utils.o
+
+build/compiler/code_parser.o: compiler/code_parser.cpp
+	$(CC) $(CFLAG) -c -I ./compiler/ compiler/code_parser.cpp -o build/compiler/code_parser.o
+
 
 $(AST_OBJS_BUILD):$(OBJ_DIR)%.o : %.cpp
 	$(CXX) $(CFLAGS) -c $< -o $@ 
