@@ -14,6 +14,8 @@
 #include <fstream>
 #include <iostream>
 
+void createIRWithIRBuilder();
+
 std::istringstream sis;
 
 double numVal;
@@ -33,13 +35,15 @@ int next_tok() {
 			return tok_fun;
 		if (identifierStr == "extern")
 			return tok_extern;
+		if(identifierStr == "return")
+			return tok_return;
 		return tok_identifier;
 	}
 	if (std::isdigit(lastChar) || lastChar == '.') {   // 数字: [0-9.]+
 		std::string NumStr;
 		do {
 			NumStr += lastChar;
-			lastChar = getchar();
+			lastChar = sis.get();
 		} while (std::isdigit(lastChar) || lastChar == '.');
 		numVal = strtod(NumStr.c_str(), 0);
 		return tok_number;
@@ -48,9 +52,8 @@ int next_tok() {
 		return tok_eof;
 
 	int thisChar = lastChar;
-	lastChar = getchar();
+	lastChar = sis.get();
 	return thisChar;
-
 }
 
 void compile(const std::string &source) {
@@ -59,4 +62,5 @@ void compile(const std::string &source) {
 		curTok=next_tok();
 		std::cout<<"Read token:"<<curTok<<std::endl;
 	}while(curTok!=tok_eof);
+	createIRWithIRBuilder();
 }
