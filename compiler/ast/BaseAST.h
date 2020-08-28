@@ -2,6 +2,9 @@
 #define COMPILER_AST_ASTBASE_H_
 
 #include <llvm/IR/Value.h>
+#include <llvm/IR/Function.h>
+
+int next_tok();
 
 class BaseAST {
 public:

@@ -25,7 +25,7 @@ void createIRWithIRBuilder() {
 	builder.SetInsertPoint(entry);
 
 	//5、添加全局字符串（IR中字符串全部为全局变量，使用数据序列来表示，每个元素是一个char类型）
-	Value *helloWorld = builder.CreateGlobalStringPtr("hello world!\n");
+	Value *helloWorld = builder.CreateGlobalStringPtr("hi world!\n");
 	//6、创建put函数
 	//1)指定函数参数类型，装在一个数组中`
 	std::vector<Type*> putsargs;
@@ -34,7 +34,9 @@ void createIRWithIRBuilder() {
 	//2）指定函数返回值类型
 	FunctionType *putsType = FunctionType::get(builder.getInt32Ty(), argsRef,
 			false);
+	//FunctionType *mainType = FunctionType::get(builder.getInt32Ty(), false);
 	//3)创建“函数调用”，而不是创建函数
+	//FunctionCallee mainFunc = mod->getOrInsertFunction("_alolang_4main",);
 	FunctionCallee putsFunc = mod->getOrInsertFunction("puts", putsType);
 
 	//7、调用函数（<#理解：通过createXXX创建出来的所有指令都在SetInsertPoint后面#>）
