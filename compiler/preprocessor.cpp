@@ -1,4 +1,4 @@
-#include "preprocessor.hpp"
+#include "preprocessor.h"
 #include "compileerror.hpp"
 #include <vector>
 #include "utils.h"
@@ -9,7 +9,6 @@ int closeifstack = 0;
 int currentifstack = 0;
 
 std::string preProcess(std::string code, int cnt);
-
 
 std::pair<std::string, std::string> genFactor(std::string line) {
 	//std::pair<std::string,std::string> result;//分别为指令和参数
@@ -40,7 +39,7 @@ std::string processPreInstruction(std::string line, int cnt) {
 	if (instruction.first == "import") {
 		t_fin__.open(instruction.second);
 		if (!t_fin__.is_open()) {
-			CompileError e("import file not found");
+			CompileError e("import file " + instruction.second + " not found");
 			throw e;
 		}
 		std::getline(t_fin__, line, char(EOF));
@@ -75,7 +74,9 @@ std::string processPreInstruction(std::string line, int cnt) {
 			throw e;
 		}
 		if (!variable.erase(instruction.second)) {
-			CompileError e("removing macro that doent exist");
+			CompileError e(
+					"removing macro " + instruction.second
+							+ " that doent exist");
 			throw e;
 			//找不到宏定义
 		}

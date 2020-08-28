@@ -1,11 +1,11 @@
-#include "AST_Expr.h"
+#include "ExprAST.h"
 
-AST_Expr::AST_Expr() {
+ExprAST::ExprAST() {
 	// TODO Auto-generated constructor stub
 
 }
 
-AST_Expr::~AST_Expr() {
+ExprAST::~ExprAST() {
 	// TODO Auto-generated destructor stub
 }
 

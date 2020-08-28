@@ -6,6 +6,7 @@
  */
 #include <vector>
 #include <string>
+#include <sstream>
 
 char syntax[] = { '!', '%', '^', '&', '*', '(', ')', '-', '+', '=', '{', '}',
 		'|', '~', '[', ']', '\\', ';', '\'', ':', '"', ',', '<', '>', '?', '.',
@@ -30,4 +31,14 @@ void skipSpace(const std::vector<std::string> &words, long unsigned int& i) {
 			break;
 		}
 	}
+}
+
+void skipSpace(std::istream& in)
+{
+    while (in.good() && isspace(in.peek()))
+    {
+        // Read and discard the space character
+        in.ignore();
+        in.get();
+    }
 }

@@ -5,14 +5,14 @@
  *      Author: zbc
  */
 
-#include "AST_Base.h"
+#include "BaseAST.h"
 
-AST_Base::AST_Base() {
+BaseAST::BaseAST() {
 	// TODO Auto-generated constructor stub
 
 }
 
-AST_Base::~AST_Base() {
+BaseAST::~BaseAST() {
 	// TODO Auto-generated destructor stub
 }
 
