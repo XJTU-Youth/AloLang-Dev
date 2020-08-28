@@ -22,7 +22,7 @@ build/compiler/code_gen.o: compiler/code_gen.cpp readytomake
 	$(CC) $(CFLAG) -c -I ./compiler/ compiler/code_gen.cpp -o build/compiler/code_gen.o
 
 $(AST_OBJS_BUILD):$(OBJ_DIR)%.o : %.cpp readytomake
-	$(CXX) $(CFLAGS) -c $< -o $@ 
+	$(CC) $(CFLAG) -c $< -o $@ 
 
 .PHONY : clean,install,readytomake
 install: aloc readytomake
