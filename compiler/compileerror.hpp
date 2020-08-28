@@ -16,5 +16,10 @@ public:
 	{
 		error = whatError;
 	}
+	CompileError(const std::string &whatError)
+	{
+		error = whatError;
+	}
+
 };
 #endif

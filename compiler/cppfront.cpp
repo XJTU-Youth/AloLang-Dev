@@ -6,9 +6,8 @@
 #include <regex>
 #include <map>
 #include "compileerror.hpp"
-#include "preprocessor.hpp"
+#include "preprocessor.h"
 #include "utils.h"
-
 
 std::ifstream fin;
 std::ofstream fout;
@@ -22,6 +21,9 @@ std::string output_file_name;
 
 // Start Compiler
 // 替换字符串中所有给定序列
+
+void compile(const std::string &source);
+
 std::string& replace_all(std::string &str, const std::string &old_value,
 		const std::string &new_value) {
 	for (std::string::size_type pos(0); pos != std::string::npos; pos +=
@@ -89,48 +91,6 @@ std::string demangle(const std::string &line) {
 	}
 	return ss.str();
 }
-/*
- std::string compile(const std::string & source)
- {
- std::istringstream sin(source);
- std::ostringstream sout;
- std::string output, buff;
- bool cpp_flag;
- while(std::getline(sin, buff)){
- //process
- if (buff.empty())
- continue;
- buff.erase(0,buff.find_first_not_of(" "));
- buff.erase(buff.find_last_not_of(" ") + 1);
-
- if (buff.substr(0,7) == "__cpp__")
- cpp_flag = true;
- if (buff.substr(0,11) == "__end_cpp__")
- cpp_flag = false;
- if (cpp_flag)
- continue;
- // 结构控制符替换
- if (buff == "begin" || buff.substr(0,6) == "begin ")
- buff = "{";
- else if (buff == "end" || buff.substr(0,4) == "end ")
- buff = "}";
- // 继续加else if
-
- // 下面是类型替换
- replace_all(buff, "int ", "int64_t");
- replace_all(buff, "complex ", "complex<vector>");
-
-
- // 函数头替换
-
-
- // 存储当前行
- sout << buff << endl;
- }
- return sout.str();
- }
- // End Compiler
- */
 
 int main(int argc, char *argv[]) {
 	if (argc == 1) { //检测参数不足并报错退出
@@ -162,14 +122,14 @@ int main(int argc, char *argv[]) {
 		std::getline(fin, buff, char(EOF));
 		std::string preProcessed;
 		fin.close();
-		std::string header = "%import types\n";
-		buff = header + buff;
-		cout << "Before Preproccess:\n" << buff;
+		//std::string header = "%import types\n";
+		//buff = header + buff;
 		try {
 			preProcessed = preProcess(buff, 0);
-			//just for debug
-			cout << preProcessed;
-		} catch (const CompileError& e) {
+			//cout << preProcessed;
+			//todo:这行代码写的极不规范，尽快修改
+			compile(preProcessed);
+		} catch (const CompileError &e) {
 			cerr << "Compile Error: " << e.what() << endl
 					<< "Compilation Terminated\n";
 			return 1;
@@ -177,7 +137,7 @@ int main(int argc, char *argv[]) {
 		//todo: 编译用代码放下面
 		//std::string compiled = compile(preProcessed);
 		//将编译结果输出到文件
-		fout.open(output_file_name);
+		//fout.open(output_file_name);
 		//fout << compiled;
 	}
 	return 0;
