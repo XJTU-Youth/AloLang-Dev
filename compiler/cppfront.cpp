@@ -35,65 +35,12 @@ std::string& replace_all(std::string &str, const std::string &old_value,
 	}
 	return str;
 }
-/*
- * 修饰规则：
- * 加上_alolang_前缀
- * 每个段前面加上长度
- * 比如fun foobar(long a, int b)修饰为_alolang_6foobar4long3int
- */
-std::string demangle(const std::string &line) {
-	std::vector<std::string> words;
-	bool flag = false; //判断栈顶元素状态，如果为false则代表栈顶元素为符号
-	for (long unsigned int i = 0; i < line.length(); i++) {
-		if (isSyntax(line[i])) {
-			words.push_back(std::string(1, line[i]));
-			flag = false;
-		} else {
-			if (!flag) {
-				words.push_back(std::string(1, line[i]));
-				flag = true;
-			} else {
-				words[words.size() - 1] += std::string(1, line[i]);
-			}
-		}
-	}
-	std::stringstream ss;
-	ss << "_alolang_";
-	long unsigned int i = -1; //处理指针
-	skipSpace(words, i);
-	if (words[i] != "fun") {
-		//TODO:异常处理
-		CompileError s("demangle error 0x1");
-		throw(s);
-	}
-	skipSpace(words, i);
-	ss << words[i].length() << words[i];
-	skipSpace(words, i);
-	if (words[i] != "(") {
-		//TODO:异常处理
-		CompileError s("demangle error 0x2");
-		throw(s);
-	}
-	while (true) {
-		skipSpace(words, i);
-		ss << words[i].length() << words[i]; //得到类型
-		skipSpace(words, i); //得到变量名，但在这个阶段没用
-		skipSpace(words, i);
-		if (words[i] == ")") {
-			break;
-		}
-
-		if (words[i] != ",") {
-			//TODO:异常处理（逗号）
-			CompileError s("demangle error 0x3");
-			throw(s);
-		}
-	}
-	return ss.str();
-}
 
 int main(int argc, char *argv[]) {
-	if (argc == 1) { //检测参数不足并报错退出
+	std::string args[argc];
+	for (int i = 1; i < argc; i++)
+		args[i - 1] = argv[i];
+	 if (argc == 1) { //检测参数不足并报错退出
 		cerr << argv[0]
 				<< ": fatal error: no input files\ncompilation terminated\n";
 		return 1;
@@ -102,9 +49,6 @@ int main(int argc, char *argv[]) {
 				<< ": fatal error: too many arguments\ncompilation terminated\n";
 		return 1;
 	} else {
-		std::string args[argc];
-		for (int i = 1; i < argc; i++)
-			args[i - 1] = argv[i];
 		if (args[0] == "--help" || args[0] == "-h") { //显示帮助信息
 			cout << "Usage: " << argv[0] << " file_name\n";
 			return 0;
@@ -129,6 +73,9 @@ int main(int argc, char *argv[]) {
 			//cout << preProcessed;
 			//todo:这行代码写的极不规范，尽快修改
 			compile(preProcessed);
+			//下面代码仅用来方便调试
+			system("llc ./module --relocation-model=pic");
+			system("gcc ./module.s -fPIE");
 		} catch (const CompileError &e) {
 			cerr << "Compile Error: " << e.what() << endl
 					<< "Compilation Terminated\n";
