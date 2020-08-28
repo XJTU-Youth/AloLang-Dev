@@ -16,3 +16,8 @@ VariableExprAST::~VariableExprAST() {
 	// TODO Auto-generated destructor stub
 }
 
+llvm::Value* VariableExprAST::Codegen() {
+	//todo:待实现
+	return nullptr;
+}
+

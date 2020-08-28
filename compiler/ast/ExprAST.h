@@ -1,7 +1,6 @@
 #ifndef COMPILER_AST_ASTEXPR_H_
 #define COMPILER_AST_ASTEXPR_H_
 
-#include <llvm/IR/Value.h>
 #include "BaseAST.h"
 
 class ExprAST: public BaseAST {

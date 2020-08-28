@@ -1,5 +1,5 @@
-fun main(int argc, char **argv) -> int{
-    con int a = 123;
-    print PI * a;
+fun main() -> int{
+    int a = 123;
+    print(2 * a);
     return 0;
 }

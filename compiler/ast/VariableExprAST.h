@@ -14,6 +14,7 @@ class VariableExprAST: public ExprAST {
 public:
 	VariableExprAST();
 	virtual ~VariableExprAST();
+	virtual llvm::Value *Codegen();
 };
 
 #endif /* COMPILER_AST_VARIABLEEXPRAST_H_ */
