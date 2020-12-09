@@ -12,10 +12,11 @@ ignore = ["_sidebar.md"]
 
 
 def dfs_showdir(path, depth):
+    q=queue.Queue()
+
     for item in os.listdir(path):
         if item in ignore:
             continue
-        q=queue.Queue()
 
         newitem = path + '/' + item
         if os.path.isdir(newitem):
@@ -33,8 +34,8 @@ def dfs_showdir(path, depth):
                         break
             print("  " * depth + "* [" + show_item +
                   "](" + path[2:] + "/index)")
-        while not q.empty():
-            dfs_showdir(q.get(), depth + 1)
+    while not q.empty():
+        dfs_showdir(q.get(), depth + 1)
 
 if __name__ == '__main__':
     dfs_showdir('.', 0)
