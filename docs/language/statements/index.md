@@ -1,4 +1,4 @@
-## 控制语句
+# 控制语句
 
 支持`while(): ... end while`、`for(): ... end for`等
 

@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import os
+import os.path
+
+ignore = ["_sidebar.md"]
+
+#translate = {"language": "语言","preprocessor":"预处理器", "conditional": "条件编译"}
+
+
+def dfs_showdir(path, depth):
+    for item in os.listdir(path):
+        if item in ignore:
+            continue
+
+        newitem = path + '/' + item
+        if os.path.isdir(newitem):
+            dfs_showdir(newitem, depth + 1)
+        else:
+            if item != "index.md":
+                continue
+            show_item="未定义"
+            with open(path + '/' + item, encoding='utf-8') as file:
+                for line in file.readlines():
+                    line = line.strip('\n')
+                    #print(line[0:2])
+                    if line[0:2]=='# ':
+                        show_item=line[2:]
+                        break
+            print("  " * depth + "* [" + show_item +
+                  "](" + path[2:] + "/index)")
+
+
+if __name__ == '__main__':
+    dfs_showdir('.', 0)
