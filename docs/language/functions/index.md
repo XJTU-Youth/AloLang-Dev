@@ -5,7 +5,7 @@
 // 函数名：“isodd”
 // 形参列表拥有一个形参，具有名字“n”和类型 int
 // 返回类型是 bool
-isodd(int n) -> bool   // 函数名(参数列表) -> 返回类型列表
+func isodd(int n) -> bool   // 函数名(参数列表) -> 返回类型列表
 {                      // 函数体的开始
     return n % 2;      // 函数体
 }                      // 函数体的结束
@@ -14,7 +14,7 @@ isodd(int n) -> bool   // 函数名(参数列表) -> 返回类型列表
 调用函数时，例如在函数调用表达式中，以各个实参（argument）（可为调用场所提供的，或为默认的）来初始化各个形参，然后执行函数体中的语句。
 
 ```
-main() -> int
+func main() -> int
 {
     for(int arg : {-3, -2, -1, 0, 1, 2, 3})
         output(stdout)({isodd(arg),' '}); // isodd 被调用 7 次，
