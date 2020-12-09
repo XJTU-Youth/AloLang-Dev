@@ -4,6 +4,8 @@
 import os
 import os.path
 
+import queue
+
 ignore = ["_sidebar.md"]
 
 #translate = {"language": "语言","preprocessor":"预处理器", "conditional": "条件编译"}
@@ -13,10 +15,11 @@ def dfs_showdir(path, depth):
     for item in os.listdir(path):
         if item in ignore:
             continue
+        q=queue.Queue()
 
         newitem = path + '/' + item
         if os.path.isdir(newitem):
-            dfs_showdir(newitem, depth + 1)
+            q.put(newitem)
         else:
             if item != "index.md":
                 continue
@@ -30,7 +33,8 @@ def dfs_showdir(path, depth):
                         break
             print("  " * depth + "* [" + show_item +
                   "](" + path[2:] + "/index)")
-
+        while not q.empty():
+            dfs_showdir(q.get(), depth + 1)
 
 if __name__ == '__main__':
     dfs_showdir('.', 0)
