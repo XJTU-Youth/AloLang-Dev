@@ -5,5 +5,5 @@
 * 多语言协作方便
 * 语法简洁
 
-[快速开始](#Quick Start)
+[快速开始](index)
 [Git Hub](https://github.com/xjtu-youth/AloLang/)
