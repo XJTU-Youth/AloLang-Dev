@@ -6,3 +6,4 @@ libraries/draft/*
 compiler/*.o
 build/*
 /Makefile
+/docs/_sidebar.md
