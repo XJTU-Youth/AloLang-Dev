@@ -2,7 +2,7 @@
     * [TODO](language/translation_phases/index)
     * [预处理器](language/preprocessor/index)
       * [源文件包含](language/preprocessor/import/index)
-      * [TODO](language/preprocessor/replace/index)
+      * [宏定义](language/preprocessor/replace/index)
       * [条件包含](language/preprocessor/conditional/index)
     * [基本概念](language/basic_concepts/index)
       * [基本数据类型](language/basic_concepts/basic_types/index)
