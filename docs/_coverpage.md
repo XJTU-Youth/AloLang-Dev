@@ -1,6 +1,6 @@
 <img src="/_media/logo.webp" width=1000px>
 
-# Alolang语言参考文档
+# AloLang语言参考文档
 > Make algorithm programming easy and comfortable
 
 * 静态编译强类型语言
