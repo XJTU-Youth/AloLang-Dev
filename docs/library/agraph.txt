@@ -1,0 +1,24 @@
+图(数据结构)
+
+图包括图类型agraph
+
+	graph_num_of_points()是用来表示图的顶点的数目的值
+	graph_side[].x与graph_side[].y用来表示图的边，将x与y交换不会造成任何变化
+	
+	graph_side_add(int x0,int y0) -> void表示在图中第x0和第y0个点间加一条边
+	graph_side_del(int x0,int y0) ->void表示将图中第x0和第y0个点间的边去除
+	graph_radd(int i) ->void表示在顶点最后加一个
+	graph_rdel(int i) ->void表示将图中最后一个顶点的删除
+	graph_radd(int i) ->void表示在顶点最前加一个，其他顶点右移
+	graph_rdel(int i) ->void表示将图中最前一个顶点删除，其他顶点左移
+
+	operator && (agraph your_graph1) ->agraph表示将两个图的边集合取交集，顶点数按最大的计算
+	operator || (agraph your_graph1) ->agraph表示将两个图的边集合取并集，顶点数按最大的计算
+	operator ！ () -> agraph表示将一个图取补
+
+	get_num_of_points() -> int返回顶点数目
+	get_num_of_sides() -> int返回边的数目
+	is_connected() -> bool返回是否为连通图
+	is_completed() -> bool返回是否为完全图
+	circle_existed() -> bool返回是否成环
+	max_completed_part() -> int返回最大完全图的顶点数
