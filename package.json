@@ -1,0 +1,23 @@
+{
+  "devDependencies": {
+    "docsify-cli": "^4.4.2"
+  },
+  
+  "name": "alolang",
+  "scripts": {
+    "start": "docsify start . -c docs/ssr.config.js"
+  },
+  "files": [
+    "docs"
+  ],
+  "docsify": {
+    "config": {
+      "basePath": "http://127.0.0.1/",
+      "loadSidebar": true,
+      "loadNavbar": true,
+      "coverpage": true,
+      "name": "AloLang 语言参考文档"
+    }
+  }
+
+}
