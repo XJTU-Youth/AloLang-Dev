@@ -1,0 +1,8 @@
+
+> start
+> docsify start . -c docs/ssr.config.js
+
+
+[SSR] Serving . now.
+Listening at http://localhost:4000
+
