@@ -11,11 +11,13 @@ auto
 bool
 char
 double
+enum
 float
 long
 int
 signed
 string
+struct
 unsigned
 void
 ```
