@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 			return 0;
 		} else { //确定源文件名
 			input_file_name = args[0];
-			output_file_name = input_file_name + ".ac";
+			output_file_name = "alo.out";
 		}
 		fin.open(input_file_name);
 		if (!fin.is_open()) {
@@ -71,17 +71,12 @@ int main(int argc, char *argv[]) {
 			CompileUnit(preProcessed).compile();
 			//下面代码仅用来方便调试
 			system("llc ./module --relocation-model=pic");
-			system("gcc ./module.s -fPIE");
+			system("gcc ./module.s -fPIE -o alo.out");
 		} catch (const CompileError &e) {
 			cerr << "Compile Error: " << e.what() << endl
 					<< "Compilation Terminated\n";
 			return 1;
 		}
-		//todo: 编译用代码放下面
-		//std::string compiled = compile(preProcessed);
-		//将编译结果输出到文件
-		//fout.open(output_file_name);
-		//fout << compiled;
 	}
 	return 0;
 }
