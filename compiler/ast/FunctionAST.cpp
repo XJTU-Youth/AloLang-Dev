@@ -7,6 +7,7 @@
 
 #include "FunctionAST.h"
 
+
 FunctionAST::FunctionAST() {
 	// TODO Auto-generated constructor stub
 
@@ -21,8 +22,12 @@ llvm::Function* FunctionAST::Codegen() {
 	return nullptr;
 }
 
-FunctionAST* FunctionAST::ParseDefinition() {
-	next_tok();  // eat def.
+FunctionAST* FunctionAST::ParseDefinition(CompileUnit* unit) {
+	int nexToken=unit->next_tok();  // eat func.
+	if(nexToken!=tok_identifier)
+	{
+		//TODO:异常处理
+	}
 	/*PrototypeAST *Proto = ParsePrototype();
 	if (Proto == 0)
 		return 0;

@@ -3,8 +3,8 @@
 
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Function.h>
-
-int next_tok();
+#include "./../Token.h"
+#include "./../CompileUnit.h"
 
 class BaseAST {
 public:
