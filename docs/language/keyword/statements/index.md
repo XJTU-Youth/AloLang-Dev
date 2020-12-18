@@ -8,14 +8,16 @@
 break
 continue
 case
-do....while
+do
 else
 for
+foreach
 goto
 if
 return
 switch
-try...catch
+try
+catch
 while
 ```
 
