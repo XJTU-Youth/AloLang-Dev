@@ -7,6 +7,7 @@
 #include "compileerror.hpp"
 #include "preprocessor.h"
 #include "utils.h"
+#include "CompileUnit.h"
 
 std::ifstream fin;
 std::ofstream fout;
@@ -18,11 +19,7 @@ using std::endl;
 std::string input_file_name;
 std::string output_file_name;
 
-// Start Compiler
 // 替换字符串中所有给定序列
-
-void compile(const std::string &source);
-
 std::string& replace_all(std::string &str, const std::string &old_value,
 		const std::string &new_value) {
 	for (std::string::size_type pos(0); pos != std::string::npos; pos +=
@@ -53,7 +50,7 @@ int main(int argc, char *argv[]) {
 			return 0;
 		} else { //确定源文件名
 			input_file_name = args[0];
-			output_file_name = input_file_name + ".ac";
+			output_file_name = "alo.out";
 		}
 		fin.open(input_file_name);
 		if (!fin.is_open()) {
@@ -71,20 +68,15 @@ int main(int argc, char *argv[]) {
 			preProcessed = preProcess(buff, 0);
 			//cout << preProcessed;
 			//todo:这行代码写的极不规范，尽快修改
-			compile(preProcessed);
+			CompileUnit(preProcessed).compile();
 			//下面代码仅用来方便调试
 			system("llc ./module --relocation-model=pic");
-			system("gcc ./module.s -fPIE");
+			system("gcc ./module.s -fPIE -o alo.out");
 		} catch (const CompileError &e) {
 			cerr << "Compile Error: " << e.what() << endl
 					<< "Compilation Terminated\n";
 			return 1;
 		}
-		//todo: 编译用代码放下面
-		//std::string compiled = compile(preProcessed);
-		//将编译结果输出到文件
-		//fout.open(output_file_name);
-		//fout << compiled;
 	}
 	return 0;
 }
