@@ -15,7 +15,7 @@ public:
 	FunctionAST();
 	virtual ~FunctionAST();
 	llvm::Function *Codegen();
-	static FunctionAST* ParseDefinition();
+	static FunctionAST* ParseDefinition(CompileUnit* unit);
 };
 
 #endif /* COMPILER_AST_FUNCTIONAST_H_ */

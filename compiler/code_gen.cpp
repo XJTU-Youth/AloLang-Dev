@@ -49,7 +49,9 @@ void createIRWithIRBuilder() {
 	llvm::VerifierAnalysis::Result Res;
 	Res.IRBroken = llvm::verifyModule(*mod, &dbgs(), &Res.DebugInfoBroken);
 	std::error_code EC;
-	llvm::raw_fd_ostream OS("module", EC, llvm::sys::fs::F_None);
+	//TODO:OpenFlag对LLVM11兼容性的更改
+	llvm::raw_fd_ostream OS("module", EC);
+
 	llvm::WriteBitcodeToFile(*mod, OS);
 	OS.flush();
 	//mod->print(llvm::errs(), nullptr);
