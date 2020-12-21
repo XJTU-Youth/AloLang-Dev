@@ -30,39 +30,39 @@ Token CompileUnit::next_tok() {
 	Token token;
 	skipSpace(sis);
 	char lastChar = sis.get();
-	std::string identifierStr;
+	std::string dataStr;
 	if (std::isalpha(lastChar) || lastChar == '-' || lastChar == '>') { // 标志符: [a-zA-Z][a-zA-Z0-9]*
-		identifierStr = lastChar;
+		dataStr = lastChar;
 		while (std::isalnum((lastChar = sis.get())))
-			identifierStr += lastChar;
-		if (identifierStr == "fun") {
+			dataStr += lastChar;
+		if (dataStr == "fun") {
 			token.type = tok_fun;
 			return token;
 		}
-		if (identifierStr == "extern") {
+		if (dataStr == "extern") {
 			token.type = tok_extern;
 			return token;
 		}
-		if (identifierStr == "return") {
+		if (dataStr == "return") {
 			token.type = tok_return;
 			return token;
 		}
-		if (identifierStr == "->") {
+		if (dataStr == "->") {
 			token.type = tok_return_type;
 			return token;
 		}
-		token.tokenValue = identifierStr;
+		token.tokenValue = dataStr;
 		token.type = tok_identifier;
 		return token;
 	}
+	unsigned short numTypeFlag = 10; //进制数
 	if (std::isdigit(lastChar) || lastChar == '.') {   // 数字: [0-9.]+
-		std::string NumStr;
 		do {
-			NumStr += lastChar;
+			dataStr += lastChar;
 			lastChar = sis.get();
 		} while (std::isdigit(lastChar) || lastChar == '.');
 		token.type = tok_number;
-		token.tokenValue = NumStr;
+		token.tokenValue = dataStr;
 		return token;
 	}
 	if (lastChar == EOF) {

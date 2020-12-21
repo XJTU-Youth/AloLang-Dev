@@ -23,7 +23,7 @@ llvm::Function* FunctionAST::Codegen() {
 }
 
 FunctionAST* FunctionAST::ParseDefinition(CompileUnit* unit) {
-	Token nexToken=unit->next_tok();  // eat func.
+	Token nexToken=unit->next_tok();  // identifier.
 	if(nexToken.type!=tok_identifier)
 	{
 		//TODO:异常处理

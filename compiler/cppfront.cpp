@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 	std::string args[argc];
 	for (int i = 1; i < argc; i++)
 		args[i - 1] = argv[i];
-	 if (argc == 1) { //检测参数不足并报错退出
+	if (argc == 1) { //检测参数不足并报错退出
 		cerr << argv[0]
 				<< ": fatal error: no input files\ncompilation terminated\n";
 		return 1;
