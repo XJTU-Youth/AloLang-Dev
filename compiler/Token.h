@@ -19,7 +19,8 @@ enum TokenType {
 	tok_number = -5,
 	tok_type = -6,
 	tok_return = -7,
-	tok_return_type = -8
+	tok_return_type = -8,
+	tok_syntax = -9
 };
 
 class Token {

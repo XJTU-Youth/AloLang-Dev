@@ -48,6 +48,9 @@ std::string Token::dump() {
 	case tok_return_type:
 		typeStr = "tok_return_type";
 		break;
+	case tok_syntax:
+		typeStr = "tok_syntax";
+		break;
 	default:
 		typeStr = "未定义";
 	}
