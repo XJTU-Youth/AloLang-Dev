@@ -40,6 +40,6 @@ void skipSpace(std::istream& in)
     {
         // Read and discard the space character
         in.ignore();
-        in.get();
+        //in.get();
     }
 }
