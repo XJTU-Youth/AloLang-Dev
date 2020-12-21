@@ -26,6 +26,7 @@ class Token {
 public:
 	Token();
 	virtual ~Token();
+	std::string dump();
 	TokenType type;
 	std::string tokenValue;
 };
