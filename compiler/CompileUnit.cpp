@@ -81,7 +81,7 @@ void CompileUnit::compile() {
 			FunctionAST::ParseDefinition(this);
 			break;
 		}
-		std::cout << "Read token:" << curTok.type << std::endl;
+		std::cout << "Read token:" << curTok.dump() << std::endl;
 	} while (curTok.type != tok_eof);
 	createIRWithIRBuilder();
 }
