@@ -1,10 +1,10 @@
+#include <CompileError.hpp>
 #include <iostream>
 #include <sstream>
 #include <fstream>
 #include <exception>
 #include <regex>
 #include <map>
-#include "compileerror.hpp"
 #include "preprocessor.h"
 #include "utils.h"
 #include "CompileUnit.h"
