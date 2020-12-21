@@ -6,6 +6,10 @@
 
 fun main(int argc, char **argv) -> int{
     con int a = 123;
+    int b = 0777;
+    int c = 0Xabcd;
+    int d = 0b1001;
+    int zero = 0;
     print PI * a;
     return 0;
 }
