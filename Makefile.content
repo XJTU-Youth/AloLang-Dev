@@ -3,25 +3,28 @@ AST_SRCS := $(wildcard compiler/ast/*.cpp)
 AST_OBJS_BUILD := $(addprefix build/,$(AST_SRCS:.cpp=.o))
 OBJ_DIR = build/
 
-aloc: build/compiler/cppfront.o build/compiler/preprocessor.o build/compiler/utils.o build/compiler/code_parser.o build/compiler/code_gen.o $(AST_OBJS_BUILD) readytomake
-	$(CC) $(CFLAG) build/compiler/cppfront.o build/compiler/preprocessor.o build/compiler/utils.o build/compiler/code_parser.o build/compiler/code_gen.o $(AST_OBJS_BUILD) -lLLVM-11 -o aloc 
+aloc: build/compiler/cppfront.o build/compiler/preprocessor.o build/compiler/utils.o build/compiler/CompileUnit.o build/compiler/Token.o build/compiler/code_gen.o $(AST_OBJS_BUILD)
+	$(CC) $(CFLAG) build/compiler/cppfront.o build/compiler/preprocessor.o build/compiler/utils.o build/compiler/CompileUnit.o build/compiler/Token.o build/compiler/code_gen.o $(AST_OBJS_BUILD) -lLLVM-11 -o aloc 
 
-build/compiler/preprocessor.o: compiler/preprocessor.cpp compiler/compileerror.hpp readytomake
+build/compiler/preprocessor.o: compiler/preprocessor.cpp compiler/CompileError.hpp
 	$(CC) $(CFLAG) -c -I ./compiler/ compiler/preprocessor.cpp -o build/compiler/preprocessor.o
 
-build/compiler/cppfront.o: compiler/cppfront.cpp readytomake
+build/compiler/cppfront.o: compiler/cppfront.cpp
 	$(CC) $(CFLAG) -c -I ./compiler/ compiler/cppfront.cpp -o build/compiler/cppfront.o
 	
-build/compiler/utils.o: compiler/utils.cpp readytomake
+build/compiler/utils.o: compiler/utils.cpp
 	$(CC) $(CFLAG) -c -I ./compiler/ compiler/utils.cpp -o build/compiler/utils.o
 
-build/compiler/code_parser.o: compiler/code_parser.cpp readytomake
-	$(CC) $(CFLAG) -c -I ./compiler/ compiler/code_parser.cpp -o build/compiler/code_parser.o
+build/compiler/CompileUnit.o: compiler/CompileUnit.cpp
+	$(CC) $(CFLAG) -c -I ./compiler/ compiler/CompileUnit.cpp -o build/compiler/CompileUnit.o
 
-build/compiler/code_gen.o: compiler/code_gen.cpp readytomake
+build/compiler/Token.o: compiler/Token.cpp
+	$(CC) $(CFLAG) -c -I ./compiler/ compiler/Token.cpp -o build/compiler/Token.o
+
+build/compiler/code_gen.o: compiler/code_gen.cpp
 	$(CC) $(CFLAG) -c -I ./compiler/ compiler/code_gen.cpp -o build/compiler/code_gen.o
 
-$(AST_OBJS_BUILD):$(OBJ_DIR)%.o : %.cpp readytomake
+$(AST_OBJS_BUILD):$(OBJ_DIR)%.o : %.cpp
 	$(CC) $(CFLAG) -c $< -o $@ 
 
 .PHONY : clean,install,readytomake

@@ -57,7 +57,7 @@ Token CompileUnit::next_tok() {
 	}
 	int numTypeFlag = 10; //进制数
 	int statusFlag = 0;//0未处理进制标识，1正在处理进制标识，2已处理进制标识
-	//TODO 对浮点数的支持
+	//TODO 对浮点数的支持，对非long型数的支持
 	if (std::isdigit(lastChar) || lastChar == '.') {   // 数字: [0-9.]+
 		do {
 			if (statusFlag==1) {
@@ -93,8 +93,9 @@ Token CompileUnit::next_tok() {
 		token.type = tok_eof;
 		return token;
 	}
-	token.type = tok_err;
-	return token;   //todo:错误处理
+	token.type = tok_syntax;
+	token.tokenValue=lastChar;
+	return token;//todo:可能不严谨，仔细test
 }
 
 void CompileUnit::compile() {
