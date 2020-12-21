@@ -1,5 +1,6 @@
+0xaaa
 fun main() -> int{
-    int a = 123;
+    int a = 0xaaa;
     print(2 * a);
     return 0;
 }

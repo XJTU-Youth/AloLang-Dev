@@ -61,7 +61,6 @@ Token CompileUnit::next_tok() {
 	if (std::isdigit(lastChar) || lastChar == '.') {   // 数字: [0-9.]+
 		do {
 			if (statusFlag==1) {
-				lastChar = sis.get();
 				if (lastChar == 'b') {
 					numTypeFlag = 2;
 				} else if (lastChar == 'x') {
@@ -78,11 +77,12 @@ Token CompileUnit::next_tok() {
 			}
 			if (lastChar == '0' && statusFlag==0) {
 				statusFlag = 1;
+				lastChar = sis.get();
 				continue;
 			}
 			dataStr += lastChar;
 			lastChar = sis.get();
-		} while (std::isdigit(lastChar) || lastChar == '.');
+		} while (!isSyntax(lastChar));
 		token.type = tok_number;
 		char tmp[256];
 		sprintf(tmp, "%ld", strtol(dataStr.c_str(), NULL, numTypeFlag));
