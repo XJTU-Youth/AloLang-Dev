@@ -1,6 +1,6 @@
-0xaaa
+
 fun main() -> int{
-    int a = 0xaaa;
+    int a = 0xabcd;
     print(2 * a);
     return 0;
 }

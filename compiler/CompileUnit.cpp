@@ -56,14 +56,14 @@ Token CompileUnit::next_tok() {
 		return token;
 	}
 	int numTypeFlag = 10; //进制数
-	int statusFlag = 0;//0未处理进制标识，1正在处理进制标识，2已处理进制标识
+	int statusFlag = 0; //0未处理进制标识，1正在处理进制标识，2已处理进制标识
 	//TODO 对浮点数的支持，对非long型数的支持
 	if (std::isdigit(lastChar) || lastChar == '.') {   // 数字: [0-9.]+
 		do {
-			if (statusFlag==1) {
+			if (statusFlag == 1) {
 				if (lastChar == 'b') {
 					numTypeFlag = 2;
-				} else if (lastChar == 'x') {
+				} else if (lastChar == 'x' || lastChar == 'X') {
 					numTypeFlag = 16;
 				} else if (std::isdigit(lastChar)) {
 					numTypeFlag = 8;
@@ -75,7 +75,7 @@ Token CompileUnit::next_tok() {
 				lastChar = sis.get();
 				continue;
 			}
-			if (lastChar == '0' && statusFlag==0) {
+			if (lastChar == '0' && statusFlag == 0) {
 				statusFlag = 1;
 				lastChar = sis.get();
 				continue;
@@ -94,8 +94,8 @@ Token CompileUnit::next_tok() {
 		return token;
 	}
 	token.type = tok_syntax;
-	token.tokenValue=lastChar;
-	return token;//todo:可能不严谨，仔细test
+	token.tokenValue = lastChar;
+	return token;   //todo:可能不严谨，仔细test
 }
 
 void CompileUnit::compile() {
