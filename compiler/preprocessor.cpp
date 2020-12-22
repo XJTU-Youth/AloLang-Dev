@@ -8,9 +8,7 @@ std::map<std::string, std::string> variable;
 int closeifstack = 0;
 int currentifstack = 0;
 
-std::string preProcess(std::string code, int cnt);
-
-std::pair<std::string, std::string> genFactor(std::string line) {
+std::pair<std::string, std::string> genFactor(const std::string& line) {
 	//std::pair<std::string,std::string> result;//分别为指令和参数
 	int len = line.length();
 	if (len < 2) {
@@ -34,7 +32,7 @@ std::pair<std::string, std::string> genFactor(std::string line) {
 
 }
 
-std::string processPreInstruction(std::string line, int cnt) {
+std::string processPreInstruction(const std::string& line, int cnt) {
 	std::pair<std::string, std::string> instruction = genFactor(line); //解析后的预编译指令
 	if (instruction.first == "import") {
 		t_fin__.open(instruction.second);
@@ -42,9 +40,10 @@ std::string processPreInstruction(std::string line, int cnt) {
 			CompileError e("import file " + instruction.second + " not found");
 			throw e;
 		}
-		std::getline(t_fin__, line, char(EOF));
+		std::string importFileContent;
+		std::getline(t_fin__, importFileContent, char(EOF));
 		t_fin__.close();
-		return preProcess(line, cnt + 1);
+		return preProcess(importFileContent, cnt + 1);
 	} else if (instruction.first == "def") {
 		//解析宏定义
 		std::string var, data;
@@ -123,7 +122,7 @@ std::string processPreInstruction(std::string line, int cnt) {
 	}
 }
 
-std::string findRealData(std::string key) {
+std::string findRealData(std::string& key) {
 	std::map<std::string, std::string>::iterator iter = variable.find(key);
 	if (iter != variable.end()) {
 		return findRealData(iter->second);
@@ -132,7 +131,7 @@ std::string findRealData(std::string key) {
 	}
 }
 //宏替换
-std::string doReplace(std::string line) {
+std::string doReplace(std::string& line) {
 	std::vector<std::string> words;
 	bool flag = false; //判断栈顶元素状态
 	for (long unsigned int i = 0; i < line.length(); i++) {
@@ -156,7 +155,7 @@ std::string doReplace(std::string line) {
 }
 
 //递归预处理
-std::string preProcess(std::string code, int cnt) {
+std::string preProcess(const std::string& code, int cnt) {
 	if (cnt == 128) {
 		CompileError e("preprocessor recursion too deep");
 		throw e;

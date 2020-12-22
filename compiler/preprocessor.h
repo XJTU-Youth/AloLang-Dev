@@ -8,7 +8,7 @@
 #include <sstream>
 
 
-std::string preProcess(std::string code, int cnt);
+std::string preProcess(const std::string& code, int cnt);
 
 
 
