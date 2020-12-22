@@ -12,7 +12,7 @@
 
 class VariableExprAST: public ExprAST {
 public:
-	VariableExprAST();
+	VariableExprAST(CompileUnit* unit);
 	virtual ~VariableExprAST();
 	virtual llvm::Value *Codegen();
 };

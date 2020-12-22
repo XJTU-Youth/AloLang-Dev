@@ -12,7 +12,7 @@
 
 class NumberExprAST: public ExprAST {
 public:
-	NumberExprAST();
+	NumberExprAST(CompileUnit* unit);
 	virtual ~NumberExprAST();
 	int val;
 };

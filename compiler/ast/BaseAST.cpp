@@ -7,9 +7,8 @@
 
 #include "BaseAST.h"
 
-BaseAST::BaseAST() {
-	// TODO Auto-generated constructor stub
-
+BaseAST::BaseAST(CompileUnit* unit) {
+	this->unit=unit;
 }
 
 BaseAST::~BaseAST() {

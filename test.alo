@@ -1,9 +1,10 @@
-fun test()      {
+fun test(){
+	int b=010;
 }
 
 
 fun main() -> int{
-    int a = 0Xabcd;
-    print(2 * a);
-    return 0;
+	int a = 0Xabcd;
+	print(2 * a);
+	return 0;
 }
