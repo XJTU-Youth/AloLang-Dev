@@ -9,13 +9,14 @@
 #define COMPILER_AST_FUNCTIONAST_H_
 
 #include "BaseAST.h"
+#include "PrototypeAST.h"
 
 class FunctionAST: public BaseAST {
 public:
 	FunctionAST();
 	virtual ~FunctionAST();
 	llvm::Function *Codegen();
-	static FunctionAST* ParseDefinition(CompileUnit* unit);
+	static PrototypeAST* ParseDefinition(CompileUnit* unit);
 };
 
 #endif /* COMPILER_AST_FUNCTIONAST_H_ */
