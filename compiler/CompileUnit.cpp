@@ -20,6 +20,8 @@ void createIRWithIRBuilder();
 CompileUnit::CompileUnit(std::string source) {
 	this->source = source;
 	this->sis = std::istringstream(source);
+	context=new llvm::LLVMContext();
+	module = new llvm::Module("test.ll", *context);
 }
 
 CompileUnit::~CompileUnit() {
@@ -112,7 +114,7 @@ void CompileUnit::compile() {
 		curTok = next_tok();
 		switch (curTok.type) {
 		case tok_fun:
-			FunctionAST::ParseDefinition(this);
+			FunctionAST::ParseFunction(this);
 			break;
 		}
 		std::cout << "Read token:" << curTok.dump() << std::endl;
