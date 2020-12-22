@@ -1,3 +1,6 @@
+fun test()      {
+}
+
 
 fun main() -> int{
     int a = 0Xabcd;
