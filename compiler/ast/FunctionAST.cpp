@@ -21,7 +21,7 @@ llvm::Function* FunctionAST::Codegen() {
 	return nullptr;
 }
 
-FunctionAST* FunctionAST::ParseDefinition(CompileUnit *unit) {
+PrototypeAST* FunctionAST::ParseDefinition(CompileUnit *unit) {
 	Token nexToken = unit->next_tok();  // identifier.
 	if (nexToken.type != tok_identifier) {
 		//TODO:异常处理
@@ -33,7 +33,7 @@ FunctionAST* FunctionAST::ParseDefinition(CompileUnit *unit) {
 		//TODO:异常处理
 		//return ErrorP("Expected '(' in prototype");
 	}
-	//TODO:实现参数解析
+	//TODO:实现参数解析,名称修饰
 	nexToken = unit->next_tok();  // identifier.
 
 	if (nexToken.type != tok_syntax || nexToken.tokenValue != ")") {
@@ -41,14 +41,7 @@ FunctionAST* FunctionAST::ParseDefinition(CompileUnit *unit) {
 		//return ErrorP("Expected '(' in prototype");
 	}
 
-	//return new PrototypeAST(FnName, ArgNames);
+	return new PrototypeAST(FnName, std::vector<std::string>());
 
-	/*PrototypeAST *Proto = ParsePrototype();
-	 if (Proto == 0)
-	 return 0;
-
-	 if (ExprAST *E = ParseExpression())
-	 return new FunctionAST(Proto, E);*/
-	return 0;
 }
 
