@@ -27,7 +27,7 @@ llvm::Function* PrototypeAST::Codegen() {
 	std::vector<llvm::Type*> args;
 	llvm::FunctionType *FT = llvm::FunctionType::get(llvm::Type::getVoidTy(*unit->context),args, false);
 
-	llvm::Function *F = llvm::Function::Create(FT, llvm::Function::InternalLinkage, name,
+	llvm::Function *F = llvm::Function::Create(FT, llvm::Function::ExternalLinkage, name,
 			unit->module);
 
 	// If F conflicted, there was already something named 'Name'.  If it has a

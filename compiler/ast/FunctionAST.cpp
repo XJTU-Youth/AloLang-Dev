@@ -9,7 +9,9 @@
 #include <iostream>
 #include <llvm/IR/IRBuilder.h>
 
-FunctionAST::FunctionAST(CompileUnit* unit,PrototypeAST *proto, std::vector<ExprAST*>):BaseAST(unit) {
+FunctionAST::FunctionAST(CompileUnit *unit, PrototypeAST *proto,
+		std::vector<ExprAST*>) :
+		BaseAST(unit) {
 	this->proto = proto;
 }
 
@@ -19,26 +21,28 @@ FunctionAST::~FunctionAST() {
 
 llvm::Function* FunctionAST::Codegen() {
 	llvm::IRBuilder<> builder(*unit->context);
-	llvm::Function *TheFunction = proto->Codegen();
+	llvm::Function *func = proto->Codegen();
+	llvm::BasicBlock *entry = llvm::BasicBlock::Create(*unit->context, proto->name,
+			func);
+	builder.SetInsertPoint(entry);
+
+	builder.CreateRetVoid();
 
 	// Create a new basic block to start insertion into.
 	//llvm::BasicBlock *BB = llvm::BasicBlock::Create(context, "entry",
-			//TheFunction);
+	//TheFunction);
 	//llvm::Builder.SetInsertPoint(BB);
 
 	/*if (llvm::Value *RetVal = ->Codegen()) {
-		// Finish off the function.
-		llvm::Builder.CreateRet(RetVal);
+	 // Finish off the function.
+	 llvm::Builder.CreateRet(RetVal);
 
-		// Validate the generated code, checking for consistency.
-		llvm::verifyFunction(*TheFunction);
+	 // Validate the generated code, checking for consistency.
+	 llvm::verifyFunction(*TheFunction);
 
-		return TheFunction;
-	}*/
-	return TheFunction;
-
-	//todo:异常处理
-	return 0;
+	 return TheFunction;
+	 }*/
+	return func;
 }
 
 FunctionAST* FunctionAST::ParseFunction(CompileUnit *unit) {
@@ -81,8 +85,8 @@ FunctionAST* FunctionAST::ParseFunction(CompileUnit *unit) {
 
 	}
 
-	return new FunctionAST(unit,new PrototypeAST(unit,FnName, std::vector<std::string>()),
-			body);
+	return new FunctionAST(unit,
+			new PrototypeAST(unit, FnName, std::vector<std::string>()), body);
 
 }
 
