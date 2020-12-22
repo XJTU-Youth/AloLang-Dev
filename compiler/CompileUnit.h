@@ -20,6 +20,7 @@ public:
 	virtual ~CompileUnit();
 	void compile();
 	Token next_tok();
+	void build();
 
 	std::string source;
 	std::istringstream sis;

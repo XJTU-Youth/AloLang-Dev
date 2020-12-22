@@ -9,6 +9,8 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Verifier.h>
+#include <llvm/Bitcode/BitcodeWriter.h>
+
 #include <ast/ExprAST.h>
 #include <ast/FunctionAST.h>
 #include <utils.h>
@@ -20,7 +22,7 @@ void createIRWithIRBuilder();
 CompileUnit::CompileUnit(std::string source) {
 	this->source = source;
 	this->sis = std::istringstream(source);
-	context=new llvm::LLVMContext();
+	context = new llvm::LLVMContext();
 	module = new llvm::Module("test.ll", *context);
 }
 
@@ -62,14 +64,13 @@ Token CompileUnit::next_tok() {
 	int numTypeFlag = 10; //进制数
 	int statusFlag = 0; //0未处理进制标识，1正在处理进制标识，2已处理进制标识
 	//TODO 对浮点数的支持，对非long型数的支持
-	bool firstRun=true;
+	bool firstRun = true;
 	if (std::isdigit(lastChar) || lastChar == '.') {   // 数字: [0-9.]+
 		do {
-			if(!firstRun)
-			{
+			if (!firstRun) {
 				sis.get();
-			}else{
-				firstRun=false;
+			} else {
+				firstRun = false;
 			}
 			if (statusFlag == 1) {
 				if (lastChar == 'b') {
@@ -114,10 +115,19 @@ void CompileUnit::compile() {
 		curTok = next_tok();
 		switch (curTok.type) {
 		case tok_fun:
-			FunctionAST::ParseFunction(this);
+			FunctionAST::ParseFunction(this)->Codegen();
 			break;
 		}
 		std::cout << "Read token:" << curTok.dump() << std::endl;
 	} while (curTok.type != tok_eof);
-	createIRWithIRBuilder();
+	build();
+	//createIRWithIRBuilder();
+}
+
+void CompileUnit::build() {
+	std::error_code EC;
+	//TODO:OpenFlag对LLVM11兼容性的更改
+	llvm::raw_fd_ostream OS("module", EC);
+	llvm::WriteBitcodeToFile(*module, OS);
+	OS.flush();
 }
