@@ -1,4 +1,4 @@
-<img src="/_media/logo.webp" width=1000px>
+<img src="/_media/logo.png" width=1000px>
 
 # AloLang语言参考文档
 > Make algorithm programming easy and comfortable
