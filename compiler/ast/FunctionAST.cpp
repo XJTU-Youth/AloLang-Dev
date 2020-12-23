@@ -6,6 +6,7 @@
  */
 
 #include "FunctionAST.h"
+#include "PrototypeAST.h"
 #include <iostream>
 #include <llvm/IR/IRBuilder.h>
 
@@ -22,8 +23,8 @@ FunctionAST::~FunctionAST() {
 llvm::Function* FunctionAST::Codegen() {
 	llvm::IRBuilder<> builder(*unit->context);
 	llvm::Function *func = proto->Codegen();
-	llvm::BasicBlock *entry = llvm::BasicBlock::Create(*unit->context, proto->name,
-			func);
+	llvm::BasicBlock *entry = llvm::BasicBlock::Create(*unit->context,
+			proto->name, func);
 	builder.SetInsertPoint(entry);
 
 	builder.CreateRetVoid();
@@ -45,27 +46,10 @@ llvm::Function* FunctionAST::Codegen() {
 	return func;
 }
 
-FunctionAST* FunctionAST::ParseFunction(CompileUnit *unit) {
-	Token nexToken = unit->next_tok();  // identifier.
-	if (nexToken.type != tok_identifier) {
-		std::cout << "error1" << std::endl;
-		//TODO:异常处理
-	}
-	std::string FnName = nexToken.tokenValue;
-	nexToken = unit->next_tok();  // identifier.
-
-	if (nexToken.type != tok_syntax || nexToken.tokenValue != "(") {
-		std::cout << "error2" << std::endl;
-		//TODO:异常处理
-	}
-	//TODO:实现参数解析,返回值解析,名称修饰
-	nexToken = unit->next_tok();  // identifier.
-
-	if (nexToken.type != tok_syntax || nexToken.tokenValue != ")") {
-		std::cout << "error3" << std::endl;
-		//TODO:异常处理
-	}
-	nexToken = unit->next_tok();
+FunctionAST* FunctionAST::ParseFunction(CompileUnit* unit) {
+	PrototypeAST* protoType=PrototypeAST::ParsePrototype(unit);
+	std::cout << "Function definition found:" << protoType->name << std::endl;
+	Token nexToken = unit->next_tok();
 	if (nexToken.type != tok_syntax || nexToken.tokenValue != "{") {
 		std::cout << "error4" << std::endl;
 		//todo:错误处理
@@ -80,13 +64,12 @@ FunctionAST* FunctionAST::ParseFunction(CompileUnit *unit) {
 			break;
 		}
 		body.push_back(ExprAST::ParseExpression(nexToken, unit));
-		std::cout << "Read token in function:" << FnName << ",that is:"
+		std::cout << "Read token in function:" << protoType->name << ",that is:"
 				<< nexToken.dump() << std::endl;
 
 	}
 
-	return new FunctionAST(unit,
-			new PrototypeAST(unit, FnName, std::vector<std::string>()), body);
+	return new FunctionAST(unit,protoType, body);
 
 }
 

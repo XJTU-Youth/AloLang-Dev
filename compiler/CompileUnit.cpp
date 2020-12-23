@@ -13,6 +13,7 @@
 
 #include <ast/ExprAST.h>
 #include <ast/FunctionAST.h>
+#include <ast/ExternAST.h>
 #include <utils.h>
 #include <fstream>
 #include <iostream>
@@ -42,6 +43,10 @@ Token CompileUnit::next_tok() {
 			dataStr += lastChar;
 		}
 		if (dataStr == "fun") {
+			token.type = tok_fun;
+			return token;
+		}
+		if (dataStr == "func") {
 			token.type = tok_fun;
 			return token;
 		}
@@ -113,12 +118,23 @@ Token CompileUnit::next_tok() {
 void CompileUnit::compile() {
 	do {
 		curTok = next_tok();
+		std::cout << "Read token:" << curTok.dump() << std::endl;
+
 		switch (curTok.type) {
 		case tok_fun:
 			FunctionAST::ParseFunction(this)->Codegen();
 			break;
+		case tok_extern:
+			curTok = next_tok();
+			if (curTok.type == tok_eof) {
+				//todo:异常处理
+			}
+			if (curTok.type == tok_fun) {
+				ExternAST::ParseExtern(this);
+			}
+			//todo:对导出非函数符号的处理
+			break;
 		}
-		std::cout << "Read token:" << curTok.dump() << std::endl;
 	} while (curTok.type != tok_eof);
 	build();
 	//createIRWithIRBuilder();
