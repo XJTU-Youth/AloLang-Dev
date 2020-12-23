@@ -9,6 +9,8 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Verifier.h>
+#include <llvm/Bitcode/BitcodeWriter.h>
+
 #include <ast/ExprAST.h>
 #include <ast/FunctionAST.h>
 #include <utils.h>
@@ -20,6 +22,8 @@ void createIRWithIRBuilder();
 CompileUnit::CompileUnit(std::string source) {
 	this->source = source;
 	this->sis = std::istringstream(source);
+	context = new llvm::LLVMContext();
+	module = new llvm::Module("test.ll", *context);
 }
 
 CompileUnit::~CompileUnit() {
@@ -33,8 +37,10 @@ Token CompileUnit::next_tok() {
 	std::string dataStr;
 	if (std::isalpha(lastChar) || lastChar == '-' || lastChar == '>') { // 标志符: [a-zA-Z][a-zA-Z0-9]*
 		dataStr = lastChar;
-		while (std::isalnum((lastChar = sis.get())))
+		while (std::isalnum((lastChar = sis.peek()))) {
+			lastChar = sis.get();
 			dataStr += lastChar;
+		}
 		if (dataStr == "fun") {
 			token.type = tok_fun;
 			return token;
@@ -58,8 +64,14 @@ Token CompileUnit::next_tok() {
 	int numTypeFlag = 10; //进制数
 	int statusFlag = 0; //0未处理进制标识，1正在处理进制标识，2已处理进制标识
 	//TODO 对浮点数的支持，对非long型数的支持
+	bool firstRun = true;
 	if (std::isdigit(lastChar) || lastChar == '.') {   // 数字: [0-9.]+
 		do {
+			if (!firstRun) {
+				sis.get();
+			} else {
+				firstRun = false;
+			}
 			if (statusFlag == 1) {
 				if (lastChar == 'b') {
 					numTypeFlag = 2;
@@ -72,16 +84,16 @@ Token CompileUnit::next_tok() {
 					dataStr = "0";
 				}
 				statusFlag = 2;
-				lastChar = sis.get();
+				lastChar = sis.peek();
 				continue;
 			}
 			if (lastChar == '0' && statusFlag == 0) {
 				statusFlag = 1;
-				lastChar = sis.get();
+				lastChar = sis.peek();
 				continue;
 			}
 			dataStr += lastChar;
-			lastChar = sis.get();
+			lastChar = sis.peek();
 		} while (!isSyntax(lastChar));
 		token.type = tok_number;
 		char tmp[256];
@@ -103,10 +115,19 @@ void CompileUnit::compile() {
 		curTok = next_tok();
 		switch (curTok.type) {
 		case tok_fun:
-			FunctionAST::ParseDefinition(this);
+			FunctionAST::ParseFunction(this)->Codegen();
 			break;
 		}
 		std::cout << "Read token:" << curTok.dump() << std::endl;
 	} while (curTok.type != tok_eof);
-	createIRWithIRBuilder();
+	build();
+	//createIRWithIRBuilder();
+}
+
+void CompileUnit::build() {
+	std::error_code EC;
+	//TODO:OpenFlag对LLVM11兼容性的更改
+	llvm::raw_fd_ostream OS("module", EC);
+	llvm::WriteBitcodeToFile(*module, OS);
+	OS.flush();
 }

@@ -19,19 +19,6 @@ using std::endl;
 std::string input_file_name;
 std::string output_file_name;
 
-// 替换字符串中所有给定序列
-std::string& replace_all(std::string &str, const std::string &old_value,
-		const std::string &new_value) {
-	for (std::string::size_type pos(0); pos != std::string::npos; pos +=
-			new_value.length()) {
-		if ((pos = str.find(old_value, pos)) != std::string::npos)
-			str.replace(pos, old_value.length(), new_value);
-		else
-			break;
-	}
-	return str;
-}
-
 int main(int argc, char *argv[]) {
 	std::string args[argc];
 	for (int i = 1; i < argc; i++)

@@ -11,16 +11,16 @@
 #include <string>
 
 enum TokenType {
-	tok_err = 0,
-	tok_eof = -1,
-	tok_fun = -2,
-	tok_extern = -3,
-	tok_identifier = -4,
-	tok_number = -5,
-	tok_type = -6,
-	tok_return = -7,
-	tok_return_type = -8,
-	tok_syntax = -9
+	tok_err,
+	tok_eof,
+	tok_fun,
+	tok_extern,
+	tok_identifier,
+	tok_number,
+	tok_type,
+	tok_return,
+	tok_return_type,
+	tok_syntax
 };
 
 class Token {

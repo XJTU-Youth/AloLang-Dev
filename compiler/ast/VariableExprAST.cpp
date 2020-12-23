@@ -7,7 +7,7 @@
 
 #include "VariableExprAST.h"
 
-VariableExprAST::VariableExprAST() {
+VariableExprAST::VariableExprAST(CompileUnit* unit):ExprAST(unit) {
 	// TODO Auto-generated constructor stub
 
 }
