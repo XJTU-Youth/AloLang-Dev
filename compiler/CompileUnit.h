@@ -11,6 +11,8 @@
 #include <string>
 #include <sstream>
 #include "Token.h"
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/IRBuilder.h>
 
 class CompileUnit {
 public:
@@ -18,10 +20,14 @@ public:
 	virtual ~CompileUnit();
 	void compile();
 	Token next_tok();
+	void build();
 
 	std::string source;
 	std::istringstream sis;
 	Token curTok;
+	llvm::LLVMContext *context;
+	llvm::Module *module;
+
 };
 
 #endif /* COMPILER_COMPILEUNIT_H_ */

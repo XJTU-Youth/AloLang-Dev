@@ -7,7 +7,7 @@
 
 #include "IntExprAST.h"
 
-NumberExprAST::NumberExprAST() {
+NumberExprAST::NumberExprAST(CompileUnit* unit):ExprAST(unit) {
 	// TODO Auto-generated constructor stub
 
 }

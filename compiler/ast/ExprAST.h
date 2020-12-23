@@ -5,9 +5,10 @@
 
 class ExprAST: public BaseAST {
 public:
-	ExprAST();
+	ExprAST(CompileUnit* unit);
 	virtual ~ExprAST();
-	virtual llvm::Value *Codegen() = 0;
+	virtual llvm::Value *Codegen(llvm::LLVMContext& context) = 0;
+	static ExprAST* ParseExpression(Token lastToken,CompileUnit* unit);
 };
 
 #endif /* COMPILER_AST_ASTEXPR_H_ */
