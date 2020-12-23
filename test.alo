@@ -1,3 +1,4 @@
+extern fun test();
 fun main(){
 //	int b=010;
 }

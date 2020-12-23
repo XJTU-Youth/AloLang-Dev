@@ -15,6 +15,7 @@ public:
 	PrototypeAST(CompileUnit* unit,const std::string &name, const std::vector<std::string> &args);
 	virtual ~PrototypeAST();
 	llvm::Function* Codegen();
+	static PrototypeAST* ParsePrototype(CompileUnit* unit);
 
 	std::string name;
 };
