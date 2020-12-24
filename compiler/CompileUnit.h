@@ -16,12 +16,13 @@
 
 class CompileUnit {
 public:
-	CompileUnit(std::string source);
+	CompileUnit(std::string name,std::string source);
 	virtual ~CompileUnit();
 	void compile();
 	Token next_tok();
 	void build();
 
+	std::string name;
 	std::string source;
 	std::istringstream sis;
 	Token curTok;
