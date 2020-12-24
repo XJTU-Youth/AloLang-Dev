@@ -21,14 +21,14 @@ PrototypeAST::~PrototypeAST() {
 PrototypeAST* PrototypeAST::ParsePrototype(CompileUnit* unit) {
 	Token nexToken = unit->next_tok();  // identifier.
 	if (nexToken.type != tok_identifier) {
-		std::cout << "error1" << std::endl;
+		std::cerr << "error1" << std::endl;
 		//TODO:异常处理
 	}
 	std::string FnName = nexToken.tokenValue;
 	nexToken = unit->next_tok();
 
 	if (nexToken.type != tok_syntax || nexToken.tokenValue != "(") {
-		std::cout << "error2" << std::endl;
+		std::cerr << "error2" << std::endl;
 		//TODO:异常处理
 	}
 	//TODO:实现参数解析,返回值解析,名称修饰

@@ -20,7 +20,8 @@
 #include <fstream>
 #include <iostream>
 
-CompileUnit::CompileUnit(std::string source) {
+CompileUnit::CompileUnit(std::string name, std::string source) {
+	this->name = name;
 	this->source = source;
 	this->sis = std::istringstream(source);
 	context = new llvm::LLVMContext();
@@ -116,6 +117,7 @@ Token CompileUnit::next_tok() {
 }
 
 void CompileUnit::compile() {
+	std::cout << "Start compiling:" << name << std::endl;
 	while ((curTok = next_tok()).type != tok_eof) {
 		std::cout << "Read token:" << curTok.dump() << std::endl;
 
@@ -124,12 +126,12 @@ void CompileUnit::compile() {
 			FunctionAST *func_ast = FunctionAST::ParseFunction(this);
 			llvm::Function *func = func_ast->Codegen();
 			/*llvm::Type* type=llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
-					 false);
-			module->getOrInsertGlobal(func_ast->proto->name, func->getType());
+			 false);
+			 module->getOrInsertGlobal(func_ast->proto->name, func->getType());
 
-			llvm::GlobalVariable *gVar=module->getNamedGlobal(func_ast->proto->name);
-			gVar->setConstant(true);
-			gVar->setInitializer(func);*/
+			 llvm::GlobalVariable *gVar=module->getNamedGlobal(func_ast->proto->name);
+			 gVar->setConstant(true);
+			 gVar->setInitializer(func);*/
 			break;
 		}
 		case tok_extern:
@@ -153,7 +155,7 @@ void CompileUnit::compile() {
 void CompileUnit::build() {
 	std::error_code EC;
 	//TODO:OpenFlag对LLVM11兼容性的更改
-	llvm::raw_fd_ostream OS("module", EC);
+	llvm::raw_fd_ostream OS(name + ".bc", EC);
 	llvm::WriteBitcodeToFile(*module, OS);
 	OS.flush();
 }
