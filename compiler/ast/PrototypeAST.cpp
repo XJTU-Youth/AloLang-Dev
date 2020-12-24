@@ -52,7 +52,7 @@ llvm::Function* PrototypeAST::Codegen() {
 			llvm::Type::getVoidTy(*unit->context), args, false);
 
 	llvm::Function *F = llvm::Function::Create(FT,
-			llvm::Function::ExternalLinkage, name, unit->module);
+			llvm::GlobalValue::ExternalLinkage, name, unit->module);
 
 	// If F conflicted, there was already something named 'Name'.  If it has a
 	// body, don't allow redefinition or reextern.
