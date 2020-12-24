@@ -1,0 +1,12 @@
+func testPuts(){}
+
+func demo()
+{
+    testPuts();
+//    demo();
+}
+
+func main()
+{
+    demo();
+}
