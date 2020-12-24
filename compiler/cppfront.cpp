@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
 			return 0;
 		}
 
-		if (vm.count("input-file") && vm.count("output"))
+		if (vm.count("input-file"))
 
 		{
 			input_file_names = vm["input-file"].as<std::vector<std::string>>();
@@ -87,8 +87,10 @@ int main(int argc, char* argv[]) {
 
 
 			input_file_name = input_file_names[0];
-			output_file_name = vm["output"].as<std::string>();
-
+			if (vm.count("output"))
+				output_file_name = vm["output"].as<std::string>();
+			else
+				output_file_name = "a.out";
 			fin.open(input_file_name);
 			if (!fin.is_open()) {
 				cerr << argv[0]
@@ -125,10 +127,10 @@ int main(int argc, char* argv[]) {
 			return 1;
 		}
 	}
-	    catch(std::exception &e)
-    {
-        cout << "Exception: " << e.what() << endl;
-        return 1;
-    }
+	catch (std::exception& e)
+	{
+		cout << "Exception: " << e.what() << endl;
+		return 1;
+	}
 }
 
