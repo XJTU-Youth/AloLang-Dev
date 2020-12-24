@@ -12,7 +12,6 @@ class BaseAST {
 public:
 	BaseAST(CompileUnit* unit);
 	virtual ~BaseAST();
-	virtual llvm::Value *Codegen() = 0;
 	CompileUnit* unit;
 };
 
