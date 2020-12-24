@@ -11,9 +11,12 @@
 #include <llvm/IR/IRBuilder.h>
 
 FunctionAST::FunctionAST(CompileUnit *unit, PrototypeAST *proto,
-		std::vector<ExprAST*>) :
+		std::vector<ExprAST*> body) :
 		BaseAST(unit) {
 	this->proto = proto;
+	this->body = body;
+	this->builder = new llvm::IRBuilder<>(*unit->context);
+
 }
 
 FunctionAST::~FunctionAST() {
@@ -21,13 +24,14 @@ FunctionAST::~FunctionAST() {
 }
 
 llvm::Function* FunctionAST::Codegen() {
-	llvm::IRBuilder<> builder(*unit->context);
 	llvm::Function *func = proto->Codegen();
-	llvm::BasicBlock *entry = llvm::BasicBlock::Create(*unit->context,
-			proto->name, func);
-	builder.SetInsertPoint(entry);
-
-	builder.CreateRetVoid();
+	llvm::BasicBlock *entry = llvm::BasicBlock::Create(*unit->context, "entry",
+			func);
+	builder->SetInsertPoint(entry);
+	for (ExprAST *expr : body) {
+		expr->Codegen(builder);
+	}
+	builder->CreateRetVoid();
 
 	// Create a new basic block to start insertion into.
 	//llvm::BasicBlock *BB = llvm::BasicBlock::Create(context, "entry",
@@ -46,8 +50,8 @@ llvm::Function* FunctionAST::Codegen() {
 	return func;
 }
 
-FunctionAST* FunctionAST::ParseFunction(CompileUnit* unit) {
-	PrototypeAST* protoType=PrototypeAST::ParsePrototype(unit);
+FunctionAST* FunctionAST::ParseFunction(CompileUnit *unit) {
+	PrototypeAST *protoType = PrototypeAST::ParsePrototype(unit);
 	std::cout << "Function definition found:" << protoType->name << std::endl;
 	Token nexToken = unit->next_tok();
 	if (nexToken.type != tok_syntax || nexToken.tokenValue != "{") {
@@ -69,7 +73,7 @@ FunctionAST* FunctionAST::ParseFunction(CompileUnit* unit) {
 
 	}
 
-	return new FunctionAST(unit,protoType, body);
+	return new FunctionAST(unit, protoType, body);
 
 }
 

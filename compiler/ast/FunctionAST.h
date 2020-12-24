@@ -19,6 +19,7 @@ public:
 	virtual ~FunctionAST();
 	llvm::Function *Codegen();
 	PrototypeAST* proto;
+	llvm::IRBuilder<>* builder;
 
 	std::vector<ExprAST*> body;
 	static FunctionAST* ParseFunction(CompileUnit* unit);

@@ -58,6 +58,7 @@ int main(int argc, char *argv[]) {
 			CompileUnit(preProcessed).compile();
 			//下面代码仅用来方便调试
 			system("llc ./module --relocation-model=pic");
+			system("llvm-dis ./module");
 			system("gcc ./module.s -fPIE -o alo.out");
 		} catch (const CompileError &e) {
 			cerr << "Compile Error: " << e.what() << endl

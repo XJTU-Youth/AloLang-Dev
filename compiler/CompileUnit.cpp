@@ -8,17 +8,17 @@
 #include "CompileUnit.h"
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/GlobalVariable.h>
 #include <llvm/IR/Verifier.h>
+#include <llvm/IR/DerivedTypes.h>
 #include <llvm/Bitcode/BitcodeWriter.h>
 
-#include <ast/ExprAST.h>
-#include <ast/FunctionAST.h>
-#include <ast/ExternAST.h>
-#include <utils.h>
+#include "ast/ExprAST.h"
+#include "ast/FunctionAST.h"
+#include "ast/ExternAST.h"
+#include "utils.h"
 #include <fstream>
 #include <iostream>
-
-void createIRWithIRBuilder();
 
 CompileUnit::CompileUnit(std::string source) {
 	this->source = source;
@@ -116,14 +116,22 @@ Token CompileUnit::next_tok() {
 }
 
 void CompileUnit::compile() {
-	do {
-		curTok = next_tok();
+	while ((curTok = next_tok()).type != tok_eof) {
 		std::cout << "Read token:" << curTok.dump() << std::endl;
 
 		switch (curTok.type) {
-		case tok_fun:
-			FunctionAST::ParseFunction(this)->Codegen();
+		case tok_fun: {
+			FunctionAST *func_ast = FunctionAST::ParseFunction(this);
+			llvm::Function *func = func_ast->Codegen();
+			/*llvm::Type* type=llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
+					 false);
+			module->getOrInsertGlobal(func_ast->proto->name, func->getType());
+
+			llvm::GlobalVariable *gVar=module->getNamedGlobal(func_ast->proto->name);
+			gVar->setConstant(true);
+			gVar->setInitializer(func);*/
 			break;
+		}
 		case tok_extern:
 			curTok = next_tok();
 			if (curTok.type == tok_eof) {
@@ -134,8 +142,10 @@ void CompileUnit::compile() {
 			}
 			//todo:对导出非函数符号的处理
 			break;
+		default:
+			std::cerr << "unexpected token." << std::endl;
 		}
-	} while (curTok.type != tok_eof);
+	}
 	build();
 	//createIRWithIRBuilder();
 }
