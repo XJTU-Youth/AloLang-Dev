@@ -17,6 +17,7 @@ public:
 	virtual ~ExternAST();
 	static ExternAST* ParseExtern(CompileUnit *unit);
 	llvm::Function* Codegen();
+	PrototypeAST* proto;
 };
 
 #endif /* COMPILER_AST_EXTERNAST_H_ */

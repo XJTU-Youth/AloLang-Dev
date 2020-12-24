@@ -8,10 +8,9 @@
 #include "ExternAST.h"
 #include <iostream>
 
-ExternAST::ExternAST(CompileUnit *unit, PrototypeAST *prototype) :
+ExternAST::ExternAST(CompileUnit *unit, PrototypeAST *proto) :
 		BaseAST(unit) {
-	// TODO Auto-generated constructor stub
-
+	this->proto=proto;
 }
 
 ExternAST::~ExternAST() {
@@ -19,16 +18,17 @@ ExternAST::~ExternAST() {
 }
 
 ExternAST* ExternAST::ParseExtern(CompileUnit *unit) {
-	PrototypeAST *protoType = PrototypeAST::ParsePrototype(unit);
-	std::cout << "Function extern found:" << protoType->name << std::endl;
+	PrototypeAST* proto = PrototypeAST::ParsePrototype(unit);
+	std::cout << "Function extern found:" << proto->name << std::endl;
 	Token nexToken = unit->next_tok();
 	if (nexToken.type != tok_syntax || nexToken.tokenValue != ";") {
 		//todo:异常处理
 	}
-	return new ExternAST(unit, protoType);
+	return new ExternAST(unit, proto);
 }
 
 llvm::Function* ExternAST::Codegen() {
+	proto->Codegen();
 	//待实现
 	return 0;
 }

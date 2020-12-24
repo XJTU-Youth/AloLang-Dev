@@ -138,7 +138,7 @@ void CompileUnit::compile() {
 				//todo:异常处理
 			}
 			if (curTok.type == tok_fun) {
-				ExternAST::ParseExtern(this);
+				ExternAST::ParseExtern(this)->Codegen();
 			}
 			//todo:对导出非函数符号的处理
 			break;
