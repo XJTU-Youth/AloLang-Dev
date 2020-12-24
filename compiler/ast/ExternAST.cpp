@@ -29,6 +29,5 @@ ExternAST* ExternAST::ParseExtern(CompileUnit *unit) {
 
 llvm::Function* ExternAST::Codegen() {
 	proto->Codegen();
-	//待实现
 	return 0;
 }

@@ -1,4 +1,12 @@
-extern fun test();
+/*extern fun test();
+
 fun main(){
 //	int b=010;
+test();
+}
+*/
+fun testPuts()
+{}
+fun test(){
+testPuts();
 }
