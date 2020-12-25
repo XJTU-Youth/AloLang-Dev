@@ -38,7 +38,7 @@ Token CompileUnit::next_tok() {
 	skipSpace(sis);
 	char lastChar = sis.get();
 	std::string dataStr;
-	if (std::isalpha(lastChar) || lastChar == '-' || lastChar == '>') { // 标志符: [a-zA-Z][a-zA-Z0-9]*
+	if (std::isalpha(lastChar)) { // 标志符: [a-zA-Z][a-zA-Z0-9]*
 		dataStr = lastChar;
 		while (std::isalnum((lastChar = sis.peek()))) {
 			lastChar = sis.get();
@@ -60,12 +60,14 @@ Token CompileUnit::next_tok() {
 			token.type = tok_return;
 			return token;
 		}
-		if (dataStr == "->") {
-			token.type = tok_return_type;
-			return token;
-		}
+
 		token.tokenValue = dataStr;
 		token.type = tok_identifier;
+		return token;
+	}
+	if (lastChar == '-' && sis.peek() == '>') {
+		sis.get();
+		token.type = tok_return_type;
 		return token;
 	}
 	int numTypeFlag = 10; //进制数
@@ -76,22 +78,18 @@ Token CompileUnit::next_tok() {
 		do {
 			if (!firstRun) {
 				sis.get();
-			}
-			else {
+			} else {
 				firstRun = false;
 			}
 			if (statusFlag == 1) {
 				if (lastChar == 'b') {
 					numTypeFlag = 2;
-				}
-				else if (lastChar == 'x' || lastChar == 'X') {
+				} else if (lastChar == 'x' || lastChar == 'X') {
 					numTypeFlag = 16;
-				}
-				else if (std::isdigit(lastChar)) {
+				} else if (std::isdigit(lastChar)) {
 					numTypeFlag = 8;
 					dataStr += lastChar;
-				}
-				else {
+				} else {
 					dataStr = "0";
 				}
 				statusFlag = 2;
@@ -128,8 +126,8 @@ void CompileUnit::compile() {
 
 		switch (curTok.type) {
 		case tok_fun: {
-			FunctionAST* func_ast = FunctionAST::ParseFunction(this);
-			llvm::Function* func = func_ast->Codegen();
+			FunctionAST *func_ast = FunctionAST::ParseFunction(this);
+			llvm::Function *func = func_ast->Codegen();
 			/*llvm::Type* type=llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
 			 false);
 			 module->getOrInsertGlobal(func_ast->proto->name, func->getType());

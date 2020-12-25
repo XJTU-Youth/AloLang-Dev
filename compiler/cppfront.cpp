@@ -71,9 +71,7 @@ int main(int argc, char *argv[]) {
 			return 0;
 		}
 
-		if (vm.count("input-file"))
-
-		{
+		if (vm.count("input-file")) {
 			input_file_names = vm["input-file"].as<std::vector<std::string>>();
 
 			for (std::string input_file_name : input_file_names) {
@@ -114,7 +112,8 @@ int main(int argc, char *argv[]) {
 			for (std::string input_file_name : input_file_names) {
 				objs += "./" + input_file_name + ".s ";
 			}
-			std::string cmdline = "gcc" + objs + " -fPIE -o " + output_file_name;
+			std::string cmdline = "gcc" + objs + " -fPIE -o "
+					+ output_file_name;
 			std::cout << "debug info:" << cmdline << std::endl;
 			system(cmdline.c_str());
 			return 0;
