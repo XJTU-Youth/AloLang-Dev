@@ -9,9 +9,9 @@
 #include <sstream>
 #include "CompileError.hpp"
 
-char syntax[] = { '!', '%', '^', '&', '*', '(', ')', '-', '+', '=', '{', '}',
-		'|', '~', '[', ']', '\\', ';', '\'', ':', '"', ',', '<', '>', '?', '.',
-		'/', '#', ' ' };
+char syntax[] = { '!', '%', '^', '&', '*', '(', ')', '+', '=', '{', '}', '|',
+		'~', '[', ']', '\\', ';', '\'', ':', '"', ',', '<', '>', '?', '.', '/',
+		'#', ' ' };
 
 bool isSyntax(char c) {
 	for (char tmp : syntax) {
@@ -23,13 +23,13 @@ bool isSyntax(char c) {
 }
 
 //从pos查找到下一个非空格字段
-void skipSpace(const std::vector<std::string> &words, long unsigned int& i) {
+void skipSpace(const std::vector<std::string> &words, long unsigned int &i) {
 	while (true) {
 		i++;
 		if (i >= words.size()) {
 			//TODO:异常处理（未期待的结尾）
 			CompileError e("Unexpected EOF");
-		throw e;
+			throw e;
 		}
 		if (words[i] != " ") {
 			break;
@@ -37,12 +37,10 @@ void skipSpace(const std::vector<std::string> &words, long unsigned int& i) {
 	}
 }
 
-void skipSpace(std::istream& in)
-{
-    while (in.good() && isspace(in.peek()))
-    {
-        // Read and discard the space character
-        in.ignore();
-        //in.get();
-    }
+void skipSpace(std::istream &in) {
+	while (in.good() && isspace(in.peek())) {
+		// Read and discard the space character
+		in.ignore();
+		//in.get();
+	}
 }

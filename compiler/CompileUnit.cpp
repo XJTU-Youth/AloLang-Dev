@@ -40,7 +40,7 @@ Token CompileUnit::next_tok() {
 	std::string dataStr;
 	if (std::isalpha(lastChar)) { // 标志符: [a-zA-Z][a-zA-Z0-9]*
 		dataStr = lastChar;
-		while (std::isalnum((lastChar = sis.peek()))) {
+		while (!isSyntax((lastChar = sis.peek()))) {
 			lastChar = sis.get();
 			dataStr += lastChar;
 		}

@@ -1,5 +1,5 @@
 func testPuts(){}
-func test(){
+func te_st(){
 testPuts();
 testPuts();
 }
