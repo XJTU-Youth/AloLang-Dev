@@ -9,10 +9,11 @@
 #include "PrototypeAST.h"
 #include <iostream>
 #include <llvm/IR/IRBuilder.h>
+#include "../CompileError.hpp"
 
-FunctionAST::FunctionAST(CompileUnit *unit, PrototypeAST *proto,
-		std::vector<ExprAST*> body) :
-		BaseAST(unit) {
+FunctionAST::FunctionAST(CompileUnit* unit, PrototypeAST* proto,
+	std::vector<ExprAST*> body) :
+	BaseAST(unit) {
 	this->proto = proto;
 	this->body = body;
 	this->builder = new llvm::IRBuilder<>(*unit->context);
@@ -24,19 +25,19 @@ FunctionAST::~FunctionAST() {
 }
 
 llvm::Function* FunctionAST::Codegen() {
-	llvm::Function *func = proto->Codegen();
+	llvm::Function* func = proto->Codegen();
 	//todo:调试用代码，请删除
 
-	llvm::BasicBlock *entry = llvm::BasicBlock::Create(*unit->context, "entry",
-			func);
+	llvm::BasicBlock* entry = llvm::BasicBlock::Create(*unit->context, "entry",
+		func);
 	builder->SetInsertPoint(entry);
 	if (proto->name == "testPuts") {
-		llvm::Value *helloWorld = builder->CreateGlobalStringPtr("just for debug!\n");
+		llvm::Value* helloWorld = builder->CreateGlobalStringPtr("just for debug!\n");
 		std::vector<llvm::Type*> putsargs;
 		putsargs.push_back(builder->getInt8Ty()->getPointerTo());
 		llvm::ArrayRef<llvm::Type*> argsRef(putsargs);
-		llvm::FunctionType *putsType = llvm::FunctionType::get(builder->getInt32Ty(), argsRef,
-				false);
+		llvm::FunctionType* putsType = llvm::FunctionType::get(builder->getInt32Ty(), argsRef,
+			false);
 		//FunctionType *mainType = FunctionType::get(builder.getInt32Ty(), false);
 		//3)创建“函数调用”，而不是创建函数
 		//FunctionCallee mainFunc = mod->getOrInsertFunction("_alolang_4main",);
@@ -46,7 +47,7 @@ llvm::Function* FunctionAST::Codegen() {
 		builder->CreateCall(putsFunc, helloWorld); //这是创建方法的指令
 
 	}
-	for (ExprAST *expr : body) {
+	for (ExprAST* expr : body) {
 		expr->Codegen(builder);
 	}
 	builder->CreateRetVoid();
@@ -68,26 +69,30 @@ llvm::Function* FunctionAST::Codegen() {
 	return func;
 }
 
-FunctionAST* FunctionAST::ParseFunction(CompileUnit *unit) {
-	PrototypeAST *protoType = PrototypeAST::ParsePrototype(unit);
+FunctionAST* FunctionAST::ParseFunction(CompileUnit* unit) {
+	PrototypeAST* protoType = PrototypeAST::ParsePrototype(unit);
 	std::cout << "Function definition found:" << protoType->name << std::endl;
 	Token nexToken = unit->next_tok();
 	if (nexToken.type != tok_syntax || nexToken.tokenValue != "{") {
 		std::cout << "error4" << std::endl;
 		//todo:错误处理
+		CompileError e("error4");
+		throw e;
 	}
 	std::vector<ExprAST*> body;
 	while (true) {
 		nexToken = unit->next_tok();
 		if (nexToken.type == tok_eof) {
 			//todo:错误处理
+			CompileError e("Unexpexted EOF in function body");
+			throw e;
 		}
 		if (nexToken.type == tok_syntax && nexToken.tokenValue == "}") {
 			break;
 		}
 		body.push_back(ExprAST::ParseExpression(nexToken, unit));
 		std::cout << "Read token in function:" << protoType->name << ",that is:"
-				<< nexToken.dump() << std::endl;
+			<< nexToken.dump() << std::endl;
 
 	}
 
