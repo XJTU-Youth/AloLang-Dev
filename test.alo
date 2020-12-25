@@ -1,6 +1,6 @@
-extern func test();
+extern func te_st();
 
 func main()->int
 {
-    test();
+    te_st();
 }
