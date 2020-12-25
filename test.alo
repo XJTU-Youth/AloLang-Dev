@@ -1,6 +1,10 @@
-extern func te_st();
+extern func testPuts();
+
+func te_st(int a,int b){
+}
 
 func main()->int
 {
-    te_st();
+	testPuts();
+	//te_st();
 }

@@ -13,11 +13,11 @@
 class PrototypeAST: public BaseAST {
 public:
 	PrototypeAST(CompileUnit *unit, const std::string &name,
-			const std::vector<std::string> &args);
+			const std::vector<std::pair<std::string, std::string>> &args);
 	virtual ~PrototypeAST();
 	llvm::Function* Codegen();
 	static PrototypeAST* ParsePrototype(CompileUnit *unit, bool hasBody);
-
+	std::vector<std::pair<std::string, std::string>> args;
 	std::string name;
 };
 

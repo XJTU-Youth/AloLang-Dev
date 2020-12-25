@@ -13,6 +13,18 @@ char syntax[] = { '!', '%', '^', '&', '*', '(', ')', '+', '=', '{', '}', '|',
 		'~', '[', ']', '\\', ';', '\'', ':', '"', ',', '<', '>', '?', '.', '/',
 		'#', ' ' };
 
+
+std::string demangle(const std::string &fnName,
+		const std::vector<std::string> &argTypes) {
+	std::stringstream ss;
+	ss << "_alolang_";
+	ss << fnName.length() << fnName;
+	for (std::string word : argTypes) {
+		ss << word.length() << word; //得到类型
+	}
+	return ss.str();
+}
+
 bool isSyntax(char c) {
 	for (char tmp : syntax) {
 		if (c == tmp) {

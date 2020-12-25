@@ -21,12 +21,12 @@ FunctionAST::FunctionAST(CompileUnit *unit, PrototypeAST *proto,
 }
 
 FunctionAST::~FunctionAST() {
-	// TODO Auto-generated destructor stub
+// TODO Auto-generated destructor stub
 }
 
 llvm::Function* FunctionAST::Codegen() {
 	llvm::Function *func = proto->Codegen();
-	//todo:调试用代码，请删除
+//todo:调试用代码，请删除
 
 	llvm::BasicBlock *entry = llvm::BasicBlock::Create(*unit->context, "entry",
 			func);
@@ -54,10 +54,10 @@ llvm::Function* FunctionAST::Codegen() {
 	}
 	builder->CreateRetVoid();
 
-	// Create a new basic block to start insertion into.
-	//llvm::BasicBlock *BB = llvm::BasicBlock::Create(context, "entry",
-	//TheFunction);
-	//llvm::Builder.SetInsertPoint(BB);
+// Create a new basic block to start insertion into.
+//llvm::BasicBlock *BB = llvm::BasicBlock::Create(context, "entry",
+//TheFunction);
+//llvm::Builder.SetInsertPoint(BB);
 
 	/*if (llvm::Value *RetVal = ->Codegen()) {
 	 // Finish off the function.
