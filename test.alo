@@ -1,12 +1,6 @@
-/*extern fun test();
+extern func test();
 
-fun main(){
-//	int b=010;
-test();
-}
-*/
-fun testPuts()
-{}
-fun test(){
-testPuts();
+func main()->int
+{
+    test();
 }

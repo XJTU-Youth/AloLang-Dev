@@ -6,6 +6,8 @@
  */
 
 #include "PrototypeAST.h"
+#include "../CompileError.hpp"
+
 #include <iostream>
 
 PrototypeAST::PrototypeAST(CompileUnit *unit, const std::string &name,
@@ -18,7 +20,7 @@ PrototypeAST::~PrototypeAST() {
 	// TODO Auto-generated destructor stub
 }
 
-PrototypeAST* PrototypeAST::ParsePrototype(CompileUnit* unit) {
+PrototypeAST* PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody) {
 	Token nexToken = unit->next_tok();  // identifier.
 	if (nexToken.type != tok_identifier) {
 		std::cerr << "error1" << std::endl;
@@ -32,17 +34,42 @@ PrototypeAST* PrototypeAST::ParsePrototype(CompileUnit* unit) {
 		//TODO:异常处理
 	}
 	//TODO:实现参数解析,返回值解析,名称修饰
-	nexToken = unit->next_tok();  // identifier.
+	nexToken = unit->next_tok();  // ).
 
 	if (nexToken.type != tok_syntax || nexToken.tokenValue != ")") {
 		std::cout << "error3" << std::endl;
 		//TODO:异常处理
 	}
+	nexToken = unit->next_tok();  // identifier.
+
+	if (nexToken.type == tok_return_type) {
+		while (true) {
+			//todo:解析返回类型
+			nexToken = unit->next_tok();  // identifier.
+			if (nexToken.type == tok_syntax) {
+				if (nexToken.tokenValue == "{") {
+					if (!hasBody) {
+						CompileError e("Unexpected function body");
+						throw e;
+					}
+					break;
+				}
+				if (nexToken.tokenValue == ";") {
+					if (hasBody) {
+						CompileError e("Unexpected ;");
+						throw e;
+					}
+					break;
+				}
+			}
+
+		}
+	}
 	return new PrototypeAST(unit, FnName, std::vector<std::string>());
 }
 
 llvm::Function* PrototypeAST::Codegen() {
-	// Make the function type:  double(double,double) etc.
+// Make the function type:  double(double,double) etc.
 	/*std::vector<Type*> Doubles(llvm::Args.size(),
 	 Type::getDoubleTy(TheContext));
 	 llvm::FunctionType *FT = llvm::FunctionType::get(Type::getDoubleTy(TheContext),llvm::Doubles, false);
@@ -54,9 +81,9 @@ llvm::Function* PrototypeAST::Codegen() {
 	llvm::Function *F = llvm::Function::Create(FT,
 			llvm::GlobalValue::ExternalLinkage, name, unit->module);
 
-	// If F conflicted, there was already something named 'Name'.  If it has a
-	// body, don't allow redefinition or reextern.
-	//todo:重定义异常处理
+// If F conflicted, there was already something named 'Name'.  If it has a
+// body, don't allow redefinition or reextern.
+//todo:重定义异常处理
 	/*if (F->getName() != Name) {
 	 // Delete the one we just made and get the existing one.
 	 F->eraseFromParent();
@@ -74,8 +101,8 @@ llvm::Function* PrototypeAST::Codegen() {
 	 return 0;
 	 }
 	 }*/
-	//todo:参数处理
-	// Set names for all arguments.
+//todo:参数处理
+// Set names for all arguments.
 	/*unsigned Idx = 0;
 	 for (llvm::Function::arg_iterator AI = F->arg_begin(); Idx != Args.size();
 	 ++AI, ++Idx) {

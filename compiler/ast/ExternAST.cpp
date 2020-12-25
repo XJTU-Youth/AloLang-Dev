@@ -11,7 +11,7 @@
 
 ExternAST::ExternAST(CompileUnit *unit, PrototypeAST *proto) :
 		BaseAST(unit) {
-	this->proto=proto;
+	this->proto = proto;
 }
 
 ExternAST::~ExternAST() {
@@ -19,14 +19,8 @@ ExternAST::~ExternAST() {
 }
 
 ExternAST* ExternAST::ParseExtern(CompileUnit *unit) {
-	PrototypeAST* proto = PrototypeAST::ParsePrototype(unit);
+	PrototypeAST *proto = PrototypeAST::ParsePrototype(unit, false);
 	std::cout << "Function extern found:" << proto->name << std::endl;
-	Token nexToken = unit->next_tok();
-	if (nexToken.type != tok_syntax || nexToken.tokenValue != ";") {
-		//todo:异常处理
-		CompileError e("preprocessor recursion too deep");
-		throw e;
-	}
 	return new ExternAST(unit, proto);
 }
 
