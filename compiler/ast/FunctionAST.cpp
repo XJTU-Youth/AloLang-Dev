@@ -54,11 +54,6 @@ llvm::Function* FunctionAST::Codegen() {
 	}
 	builder->CreateRetVoid();
 
-// Create a new basic block to start insertion into.
-//llvm::BasicBlock *BB = llvm::BasicBlock::Create(context, "entry",
-//TheFunction);
-//llvm::Builder.SetInsertPoint(BB);
-
 	/*if (llvm::Value *RetVal = ->Codegen()) {
 	 // Finish off the function.
 	 llvm::Builder.CreateRet(RetVal);

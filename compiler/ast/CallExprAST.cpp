@@ -10,11 +10,22 @@
 
 #include <iostream>
 
+#include "../utils.h"
+
 CallExprAST::CallExprAST(CompileUnit *unit, const std::string &callee,
 		std::vector<ExprAST*> &args) :
 		ExprAST(unit) {
-	this->callee = callee;
+	std::vector<std::string> argStr;
+	for (ExprAST *ast : args) {
+		argStr.push_back("int");
+	}
+	if (callee != "main" && callee != "testPuts") {
+		this->callee = demangle(callee, argStr);
+	}
+
 	this->args = args;
+	std::cout << "Function call found:" << this->callee << std::endl;
+
 }
 
 CallExprAST::~CallExprAST() {
@@ -31,15 +42,15 @@ llvm::Value* CallExprAST::Codegen(llvm::IRBuilder<> *builder) {
 	std::vector<llvm::Value*> argsV;
 
 	// If argument mismatch error.
-	/*if (CalleeF->arg_size() != args.size())
-	 return ErrorV("Incorrect # arguments passed");
+	if (CalleeF->arg_size() != args.size()) {
+		CompileError e("Incorrect arguments passed");
+		throw e;
+	}
 
-	 for (unsigned i = 0, e = Args.size(); i != e; ++i) {
-	 ArgsV.push_back(Args[i]->Codegen());
-	 if (ArgsV.back() == 0)
-	 return 0;
-	 }*/
+	for (unsigned i = 0, e = args.size(); i != e; ++i) {
+		argsV.push_back(args[i]->Codegen(builder));
+	}
 
-	return builder->CreateCall(CalleeF);
+	return builder->CreateCall(CalleeF,argsV);
 }
 
