@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include "CompileError.hpp"
 
 char syntax[] = { '!', '%', '^', '&', '*', '(', ')', '-', '+', '=', '{', '}',
 		'|', '~', '[', ']', '\\', ';', '\'', ':', '"', ',', '<', '>', '?', '.',
@@ -27,6 +28,8 @@ void skipSpace(const std::vector<std::string> &words, long unsigned int& i) {
 		i++;
 		if (i >= words.size()) {
 			//TODO:异常处理（未期待的结尾）
+			CompileError e("Unexpected EOF");
+		throw e;
 		}
 		if (words[i] != " ") {
 			break;

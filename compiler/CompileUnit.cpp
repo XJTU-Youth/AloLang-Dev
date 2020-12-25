@@ -17,6 +17,7 @@
 #include "ast/FunctionAST.h"
 #include "ast/ExternAST.h"
 #include "utils.h"
+#include "CompileError.hpp"
 #include <fstream>
 #include <iostream>
 
@@ -75,18 +76,22 @@ Token CompileUnit::next_tok() {
 		do {
 			if (!firstRun) {
 				sis.get();
-			} else {
+			}
+			else {
 				firstRun = false;
 			}
 			if (statusFlag == 1) {
 				if (lastChar == 'b') {
 					numTypeFlag = 2;
-				} else if (lastChar == 'x' || lastChar == 'X') {
+				}
+				else if (lastChar == 'x' || lastChar == 'X') {
 					numTypeFlag = 16;
-				} else if (std::isdigit(lastChar)) {
+				}
+				else if (std::isdigit(lastChar)) {
 					numTypeFlag = 8;
 					dataStr += lastChar;
-				} else {
+				}
+				else {
 					dataStr = "0";
 				}
 				statusFlag = 2;
@@ -123,8 +128,8 @@ void CompileUnit::compile() {
 
 		switch (curTok.type) {
 		case tok_fun: {
-			FunctionAST *func_ast = FunctionAST::ParseFunction(this);
-			llvm::Function *func = func_ast->Codegen();
+			FunctionAST* func_ast = FunctionAST::ParseFunction(this);
+			llvm::Function* func = func_ast->Codegen();
 			/*llvm::Type* type=llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
 			 false);
 			 module->getOrInsertGlobal(func_ast->proto->name, func->getType());
@@ -137,7 +142,8 @@ void CompileUnit::compile() {
 		case tok_extern:
 			curTok = next_tok();
 			if (curTok.type == tok_eof) {
-				//todo:异常处理
+				CompileError e("Unexpected EOF in funtion body");
+				throw e;
 			}
 			if (curTok.type == tok_fun) {
 				ExternAST::ParseExtern(this)->Codegen();

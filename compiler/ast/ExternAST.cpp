@@ -7,6 +7,7 @@
 
 #include "ExternAST.h"
 #include <iostream>
+#include "../CompileError.hpp"
 
 ExternAST::ExternAST(CompileUnit *unit, PrototypeAST *proto) :
 		BaseAST(unit) {
@@ -23,6 +24,8 @@ ExternAST* ExternAST::ParseExtern(CompileUnit *unit) {
 	Token nexToken = unit->next_tok();
 	if (nexToken.type != tok_syntax || nexToken.tokenValue != ";") {
 		//todo:异常处理
+		CompileError e("preprocessor recursion too deep");
+		throw e;
 	}
 	return new ExternAST(unit, proto);
 }
