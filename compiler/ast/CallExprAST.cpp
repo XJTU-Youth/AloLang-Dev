@@ -24,7 +24,7 @@ CallExprAST::~CallExprAST() {
 llvm::Value* CallExprAST::Codegen(llvm::IRBuilder<> *builder) {
 	llvm::Function *CalleeF = unit->module->getFunction(callee);
 	if (CalleeF == 0) {
-		CompileError e("Unknown function referenced");
+		CompileError e("Function " + callee + " not found");
 		throw e;
 
 	}

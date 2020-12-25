@@ -99,6 +99,8 @@ int main(int argc, char *argv[]) {
 					system(
 							("llc ./" + input_file_name
 									+ ".bc --relocation-model=pic").c_str());
+					system(("llvm-dis ./" + input_file_name + ".bc").c_str());
+
 				} catch (const CompileError &e) {
 					cerr << "Compile Error: " << e.what() << endl
 							<< "Compilation Terminated\n";
@@ -107,7 +109,6 @@ int main(int argc, char *argv[]) {
 
 			}
 			//下面代码仅用来方便调试
-			system("llvm-dis ./module");
 			std::string objs = " ";
 			for (std::string input_file_name : input_file_names) {
 				objs += "./" + input_file_name + ".s ";
