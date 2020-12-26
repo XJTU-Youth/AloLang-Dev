@@ -17,6 +17,7 @@
 #include "ast/FunctionAST.h"
 #include "ast/ExternAST.h"
 #include "utils.h"
+#include "CompileError.hpp"
 #include <fstream>
 #include <iostream>
 
@@ -37,9 +38,9 @@ Token CompileUnit::next_tok() {
 	skipSpace(sis);
 	char lastChar = sis.get();
 	std::string dataStr;
-	if (std::isalpha(lastChar) || lastChar == '-' || lastChar == '>') { // 标志符: [a-zA-Z][a-zA-Z0-9]*
+	if (std::isalpha(lastChar)) { // 标志符: [a-zA-Z][a-zA-Z0-9]*
 		dataStr = lastChar;
-		while (std::isalnum((lastChar = sis.peek()))) {
+		while (!isSyntax((lastChar = sis.peek()))) {
 			lastChar = sis.get();
 			dataStr += lastChar;
 		}
@@ -59,12 +60,14 @@ Token CompileUnit::next_tok() {
 			token.type = tok_return;
 			return token;
 		}
-		if (dataStr == "->") {
-			token.type = tok_return_type;
-			return token;
-		}
+
 		token.tokenValue = dataStr;
 		token.type = tok_identifier;
+		return token;
+	}
+	if (lastChar == '-' && sis.peek() == '>') {
+		sis.get();
+		token.type = tok_return_type;
 		return token;
 	}
 	int numTypeFlag = 10; //进制数
@@ -137,7 +140,8 @@ void CompileUnit::compile() {
 		case tok_extern:
 			curTok = next_tok();
 			if (curTok.type == tok_eof) {
-				//todo:异常处理
+				CompileError e("Unexpected EOF in funtion body");
+				throw e;
 			}
 			if (curTok.type == tok_fun) {
 				ExternAST::ParseExtern(this)->Codegen();
