@@ -10,11 +10,13 @@
 
 #include "ExprAST.h"
 
-class NumberExprAST: public ExprAST {
+class IntExprAST: public ExprAST {
 public:
-	NumberExprAST(CompileUnit* unit);
-	virtual ~NumberExprAST();
-	int val;
+	IntExprAST(CompileUnit *unit, long long val);
+	virtual ~IntExprAST();
+	llvm::Value* Codegen(llvm::IRBuilder<> *builder);
+
+	long long val;
 };
 
 #endif /* COMPILER_AST_INTEXPRAST_H_ */

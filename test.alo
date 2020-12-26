@@ -1,12 +1,10 @@
-/*extern fun test();
+extern func testPuts();
 
-fun main(){
-//	int b=010;
-test();
+func te_st(int a,int b){
 }
-*/
-fun testPuts()
-{}
-fun test(){
-testPuts();
+
+func main()->int
+{
+	testPuts();
+	//te_st();
 }

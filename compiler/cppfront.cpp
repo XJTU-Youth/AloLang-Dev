@@ -71,9 +71,7 @@ int main(int argc, char *argv[]) {
 			return 0;
 		}
 
-		if (vm.count("input-file"))
-
-		{
+		if (vm.count("input-file")) {
 			input_file_names = vm["input-file"].as<std::vector<std::string>>();
 
 			for (std::string input_file_name : input_file_names) {
@@ -101,6 +99,8 @@ int main(int argc, char *argv[]) {
 					system(
 							("llc ./" + input_file_name
 									+ ".bc --relocation-model=pic").c_str());
+					system(("llvm-dis ./" + input_file_name + ".bc").c_str());
+
 				} catch (const CompileError &e) {
 					cerr << "Compile Error: " << e.what() << endl
 							<< "Compilation Terminated\n";
@@ -109,12 +109,12 @@ int main(int argc, char *argv[]) {
 
 			}
 			//下面代码仅用来方便调试
-			system("llvm-dis ./module");
 			std::string objs = " ";
 			for (std::string input_file_name : input_file_names) {
 				objs += "./" + input_file_name + ".s ";
 			}
-			std::string cmdline = "gcc" + objs + " -fPIE -o " + output_file_name;
+			std::string cmdline = "gcc" + objs + " -fPIE -o "
+					+ output_file_name;
 			std::cout << "debug info:" << cmdline << std::endl;
 			system(cmdline.c_str());
 			return 0;
