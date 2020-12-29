@@ -7,7 +7,6 @@
 ExprAST::ExprAST(CompileUnit *unit) :
 		BaseAST(unit) {
 	// TODO Auto-generated constructor stub
-
 }
 
 ExprAST::~ExprAST() {
@@ -23,10 +22,9 @@ ExprAST* ExprAST::ParseExpression(Token lastToken, CompileUnit *unit) {
 	}
 	case tok_identifier: {
 		std::string idName = lastToken.tokenValue;
-		Token nexToken = unit->next_tok();
-		if (nexToken.type != tok_syntax || nexToken.tokenValue != "(") {
+		unit->curTok = unit->next_tok();
+		if (unit->curTok.type != tok_syntax || unit->curTok.tokenValue != "(") {
 			std::cerr << "err2:非函数调用未实现" << std::endl;
-
 		}
 		/*if (nexToken.type != tok_syntax || nexToken.tokenValue != ")") {
 		 std::cerr << "err3:带参数调用未实现" << std::endl;
@@ -34,22 +32,24 @@ ExprAST* ExprAST::ParseExpression(Token lastToken, CompileUnit *unit) {
 		 }*/
 		std::vector<ExprAST*> args;
 		while (true) {
-			nexToken = unit->next_tok();
+			unit->curTok = unit->next_tok();
 
-			if (nexToken.type == tok_syntax && nexToken.tokenValue == ")") {
+			if (unit->curTok.type == tok_syntax
+					&& unit->curTok.tokenValue == ")") {
 				break;
 			}
-			if (nexToken.type == tok_syntax && nexToken.tokenValue == ",") {
+			if (unit->curTok.type == tok_syntax
+					&& unit->curTok.tokenValue == ",") {
 				continue;
 			}
 
-			ExprAST *arg = ExprAST::ParseExpression(nexToken, unit);
+			ExprAST *arg = ExprAST::ParseExpression(unit->curTok, unit);
 			args.push_back(arg);
 			//todo:异常处理
 		}
 
-		nexToken = unit->next_tok();
-		if (nexToken.type != tok_syntax || nexToken.tokenValue != ";") {
+		unit->curTok = unit->next_tok();
+		if (unit->curTok.type != tok_syntax || unit->curTok.tokenValue != ";") {
 			std::cerr << "结尾的分号丢失？" << std::endl;
 
 		}
