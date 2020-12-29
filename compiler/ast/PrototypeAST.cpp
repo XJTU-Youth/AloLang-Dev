@@ -26,15 +26,15 @@ PrototypeAST* PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody) {
 	std::vector<std::pair<std::string, std::string>> args;
 	std::vector<std::string> argStr;
 
-	Token nexToken = unit->next_tok();  // identifier.
-	if (nexToken.type != tok_identifier) {
+	unit->curTok = unit->next_tok();  // identifier.
+	if (unit->curTok.type != tok_identifier) {
 		std::cerr << "error1" << std::endl;
 		//TODO:异常处理
 	}
-	std::string FnName = nexToken.tokenValue;
-	nexToken = unit->next_tok();
+	std::string FnName = unit->curTok.tokenValue;
+	unit->curTok = unit->next_tok();
 
-	if (nexToken.type != tok_syntax || nexToken.tokenValue != "(") {
+	if (unit->curTok.type != tok_syntax || unit->curTok.tokenValue != "(") {
 		std::cerr << "error2" << std::endl;
 		//TODO:异常处理
 	}
@@ -42,26 +42,26 @@ PrototypeAST* PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody) {
 	while (true) {
 		//todo：调试用代码，请删除
 		if (FnName == "main" || FnName=="testPuts") {
-			nexToken = unit->next_tok();  // ).
+			unit->curTok = unit->next_tok();  // ).
 			break;
 		}
-		nexToken = unit->next_tok();
-		if (nexToken.type == tok_syntax && nexToken.tokenValue == ",") {
+		unit->curTok = unit->next_tok();
+		if (unit->curTok.type == tok_syntax && unit->curTok.tokenValue == ",") {
 			continue;
 		}
-		if (nexToken.type == tok_syntax && nexToken.tokenValue == ")") {
+		if (unit->curTok.type == tok_syntax && unit->curTok.tokenValue == ")") {
 			break;
 		}
-		std::string type = nexToken.tokenValue;
+		std::string type = unit->curTok.tokenValue;
 		//todo:错误处理
-		nexToken = unit->next_tok();
-		std::string name = nexToken.tokenValue;
+		unit->curTok = unit->next_tok();
+		std::string name = unit->curTok.tokenValue;
 		std::pair<std::string, std::string> pair;
 		pair.first = type;
 		pair.second = name;
 		args.push_back(pair);
 	}
-	if (nexToken.type != tok_syntax || nexToken.tokenValue != ")") {
+	if (unit->curTok.type != tok_syntax || unit->curTok.tokenValue != ")") {
 		std::cout << "error3" << std::endl;
 		//TODO:异常处理
 	}
@@ -71,21 +71,21 @@ PrototypeAST* PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody) {
 	if (FnName != "main" && FnName != "testPuts") {
 		FnName = demangle(FnName, argStr);
 	}
-	nexToken = unit->next_tok();  // -> or ; or {
+	unit->curTok = unit->next_tok();  // -> or ; or {
 
-	if (nexToken.type == tok_return_type) {
+	if (unit->curTok.type == tok_return_type) {
 		while (true) {
 			//todo:解析返回类型
-			nexToken = unit->next_tok();  // identifier.
-			if (nexToken.type == tok_syntax) {
-				if (nexToken.tokenValue == "{") {
+			unit->curTok = unit->next_tok();  // identifier.
+			if (unit->curTok.type == tok_syntax) {
+				if (unit->curTok.tokenValue == "{") {
 					if (!hasBody) {
 						CompileError e("Unexpected function body");
 						throw e;
 					}
 					break;
 				}
-				if (nexToken.tokenValue == ";") {
+				if (unit->curTok.tokenValue == ";") {
 					if (hasBody) {
 						CompileError e("Unexpected ;");
 						throw e;
@@ -96,13 +96,13 @@ PrototypeAST* PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody) {
 
 		}
 	} else {
-		if (nexToken.tokenValue == "{") {
+		if (unit->curTok.tokenValue == "{") {
 			if (!hasBody) {
 				CompileError e("Unexpected function body");
 				throw e;
 			}
 		}
-		if (nexToken.tokenValue == ";") {
+		if (unit->curTok.tokenValue == ";") {
 			if (hasBody) {
 				CompileError e("Unexpected ;");
 				throw e;

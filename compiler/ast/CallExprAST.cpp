@@ -37,7 +37,6 @@ llvm::Value* CallExprAST::Codegen(llvm::IRBuilder<> *builder) {
 	if (CalleeF == 0) {
 		CompileError e("Function " + callee + " not found");
 		throw e;
-
 	}
 	std::vector<llvm::Value*> argsV;
 

@@ -12,17 +12,17 @@
 #include "PrototypeAST.h"
 #include <vector>
 #include "ExprAST.h"
+#include "CodeBlockAST.h"
 
 class FunctionAST: public BaseAST {
 public:
-	FunctionAST(CompileUnit* unit,PrototypeAST* proto,std::vector<ExprAST*>);
+	FunctionAST(CompileUnit *unit, PrototypeAST *proto, CodeBlockAST *body);
 	virtual ~FunctionAST();
-	llvm::Function *Codegen();
-	PrototypeAST* proto;
-	llvm::IRBuilder<>* builder;
+	llvm::Function* Codegen();
+	PrototypeAST *proto;
 
-	std::vector<ExprAST*> body;
-	static FunctionAST* ParseFunction(CompileUnit* unit);
+	CodeBlockAST *body;
+	static FunctionAST* ParseFunction(CompileUnit *unit);
 
 };
 
