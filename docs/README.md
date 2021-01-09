@@ -1,3 +1,3 @@
-# Headline
+# AloLang
 
-> An awesome project.
+> 为算法而生的语言
