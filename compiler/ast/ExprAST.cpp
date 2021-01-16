@@ -13,8 +13,9 @@ ExprAST::~ExprAST() {
 	// TODO Auto-generated destructor stub
 }
 
-ExprAST* ExprAST::ParseExpression(Token lastToken, CompileUnit *unit) {
+ExprAST* ExprAST::ParseExpression(CompileUnit *unit) {
 	//todo:除了函数调用之外的语句解析
+	Token lastToken=unit->curTok;
 	switch (lastToken.type) {
 	case tok_number: {
 		return new IntExprAST(unit,
@@ -26,10 +27,6 @@ ExprAST* ExprAST::ParseExpression(Token lastToken, CompileUnit *unit) {
 		if (unit->curTok.type != tok_syntax || unit->curTok.tokenValue != "(") {
 			std::cerr << "err2:非函数调用未实现" << std::endl;
 		}
-		/*if (nexToken.type != tok_syntax || nexToken.tokenValue != ")") {
-		 std::cerr << "err3:带参数调用未实现" << std::endl;
-
-		 }*/
 		std::vector<ExprAST*> args;
 		while (true) {
 			unit->curTok = unit->next_tok();
@@ -43,7 +40,7 @@ ExprAST* ExprAST::ParseExpression(Token lastToken, CompileUnit *unit) {
 				continue;
 			}
 
-			ExprAST *arg = ExprAST::ParseExpression(unit->curTok, unit);
+			ExprAST *arg = ExprAST::ParseExpression(unit);
 			args.push_back(arg);
 			//todo:异常处理
 		}
