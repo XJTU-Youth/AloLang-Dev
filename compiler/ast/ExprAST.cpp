@@ -15,7 +15,7 @@ ExprAST::~ExprAST() {
 
 ExprAST* ExprAST::ParseExpression(CompileUnit *unit) {
 	//todo:除了函数调用之外的语句解析
-	Token lastToken=unit->curTok;
+	Token lastToken = unit->curTok;
 	switch (lastToken.type) {
 	case tok_number: {
 		return new IntExprAST(unit,

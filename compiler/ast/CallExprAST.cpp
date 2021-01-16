@@ -19,7 +19,7 @@ CallExprAST::CallExprAST(CompileUnit *unit, const std::string &callee,
 	for (ExprAST *ast : args) {
 		argStr.push_back("int");
 	}
-	if (callee != "main" && callee != "testPuts") {
+	if (callee != "main") {
 		this->callee = demangle(callee, argStr);
 	}
 

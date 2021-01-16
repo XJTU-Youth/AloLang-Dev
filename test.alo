@@ -3,7 +3,7 @@ extern func testPuts();
 func te_st(int a,int b){
 }
 
-func main()->int
+func main()
 {
 	testPuts();
 	//te_st();

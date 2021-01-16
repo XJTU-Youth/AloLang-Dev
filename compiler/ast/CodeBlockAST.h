@@ -10,6 +10,8 @@
 
 #include "BaseAST.h"
 #include "ExprAST.h"
+#include "llvm/IR/Instructions.h"
+#include <map>
 
 class CodeBlockAST: public BaseAST {
 public:
@@ -21,6 +23,7 @@ public:
 
 	llvm::IRBuilder<> *builder;
 	std::vector<ExprAST*> body;
+	std::map<std::string, llvm::AllocaInst*> namedValues;//对类型的处理
 	std::string name;
 };
 
