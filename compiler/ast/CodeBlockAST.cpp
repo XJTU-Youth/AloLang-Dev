@@ -34,7 +34,7 @@ CodeBlockAST* CodeBlockAST::ParseCodeBlock(CompileUnit *unit,
 		if (unit->curTok.type == tok_syntax && unit->curTok.tokenValue == "}") {
 			break;
 		}
-		body.push_back(ExprAST::ParseExpression(unit->curTok, unit));
+		body.push_back(ExprAST::ParseExpression(unit));
 		std::cout << "Read token in block:" << unit->curTok.dump() << std::endl;
 	}
 	return new CodeBlockAST(unit, body, name);

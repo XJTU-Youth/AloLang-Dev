@@ -8,7 +8,7 @@ public:
 	ExprAST(CompileUnit *unit);
 	virtual ~ExprAST();
 	virtual llvm::Value* Codegen(llvm::IRBuilder<> *builder) =0;
-	static ExprAST* ParseExpression(Token lastToken, CompileUnit *unit);
+	static ExprAST* ParseExpression(CompileUnit *unit);
 };
 
 #endif /* COMPILER_AST_ASTEXPR_H_ */
