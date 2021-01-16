@@ -40,8 +40,7 @@ PrototypeAST* PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody) {
 	}
 
 	while (true) {
-		//todo：调试用代码，请删除
-		if (FnName == "main" || FnName=="testPuts") {
+		if (FnName == "main") {
 			unit->curTok = unit->next_tok();  // ).
 			break;
 		}
@@ -68,7 +67,7 @@ PrototypeAST* PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody) {
 	for (std::pair<std::string, std::string> pair : args) {
 		argStr.push_back(pair.first);
 	}
-	if (FnName != "main" && FnName != "testPuts") {
+	if (FnName != "main") {
 		FnName = demangle(FnName, argStr);
 	}
 	unit->curTok = unit->next_tok();  // -> or ; or {
