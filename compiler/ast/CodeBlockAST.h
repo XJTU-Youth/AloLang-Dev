@@ -19,7 +19,7 @@ public:
 			std::string name);
 	virtual ~CodeBlockAST();
 	static CodeBlockAST* ParseCodeBlock(CompileUnit *unit, std::string name);
-	llvm::BasicBlock* Codegen();
+	llvm::BasicBlock* Codegen(llvm::Function *function);
 
 	llvm::IRBuilder<> *builder;
 	std::vector<ExprAST*> body;

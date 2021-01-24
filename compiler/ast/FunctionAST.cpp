@@ -26,8 +26,8 @@ FunctionAST::~FunctionAST() {
 
 llvm::Function* FunctionAST::Codegen() {
 	llvm::Function *func = proto->Codegen();
-	llvm::BasicBlock *bb = body->Codegen();
-	func->getBasicBlockList().push_back(bb);
+	llvm::BasicBlock *bb = body->Codegen(func);
+	//func->getBasicBlockList().push_back(bb);
 	return func;
 }
 

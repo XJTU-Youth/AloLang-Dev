@@ -92,7 +92,6 @@ PrototypeAST* PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody) {
 					break;
 				}
 			}
-
 		}
 	} else {
 		if (unit->curTok.tokenValue == "{") {
