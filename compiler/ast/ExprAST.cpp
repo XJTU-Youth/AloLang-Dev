@@ -3,6 +3,7 @@
 #include "IntExprAST.h"
 #include "../CompileError.hpp"
 #include <iostream>
+#include "VariableExprAST.h"
 
 ExprAST::ExprAST(CompileUnit *unit) :
 		BaseAST(unit) {
@@ -25,8 +26,9 @@ ExprAST* ExprAST::ParseExpression(CompileUnit *unit) {
 		//函数调用或定义
 		std::string idName = lastToken.tokenValue;
 		unit->curTok = unit->next_tok();
-		if (unit->curTok.type != tok_syntax) {
+		if (unit->curTok.type == tok_identifier) {
 			std::string valName = unit->curTok.tokenValue;
+			return VariableExprAST::ParseVar(unit, valName, idName);
 			//定义
 		} else if (unit->curTok.tokenValue == "(") {
 			std::vector<ExprAST*> args;

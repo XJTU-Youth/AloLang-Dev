@@ -14,7 +14,7 @@ CodeBlockAST::CodeBlockAST(CompileUnit *unit, std::vector<ExprAST*> body,
 		BaseAST(unit) {
 	this->builder = new llvm::IRBuilder<>(*unit->context);
 	this->body = body;
-	this->name=name;
+	this->name = name;
 }
 
 CodeBlockAST::~CodeBlockAST() {
@@ -40,8 +40,9 @@ CodeBlockAST* CodeBlockAST::ParseCodeBlock(CompileUnit *unit,
 	return new CodeBlockAST(unit, body, name);
 }
 
-llvm::BasicBlock* CodeBlockAST::Codegen() {
-	llvm::BasicBlock *bb = llvm::BasicBlock::Create(*unit->context, name);
+llvm::BasicBlock* CodeBlockAST::Codegen(llvm::Function *function) {
+	llvm::BasicBlock *bb = llvm::BasicBlock::Create(*unit->context, name,
+			function);
 	builder->SetInsertPoint(bb);
 
 	for (ExprAST *expr : body) {
