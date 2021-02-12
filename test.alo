@@ -5,6 +5,7 @@ func te_st(int a,int b){
 
 func main()
 {
-	testPuts();
-	//te_st();
+	//int a;
+	//testPuts();
+	te_st(3+2);
 }

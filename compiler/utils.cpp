@@ -8,11 +8,16 @@
 #include <string>
 #include <sstream>
 #include "CompileError.hpp"
+#include "llvm/IR/Instructions.h"
 
 char syntax[] = { '!', '%', '^', '&', '*', '(', ')', '+', '=', '{', '}', '|',
 		'~', '[', ']', '\\', ';', '\'', ':', '"', ',', '<', '>', '?', '.', '/',
 		'#', ' ' };
 
+struct Variable {
+	std::string type;
+	llvm::AllocaInst value;
+};
 
 std::string demangle(const std::string &fnName,
 		const std::vector<std::string> &argTypes) {

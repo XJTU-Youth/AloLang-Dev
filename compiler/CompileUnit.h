@@ -16,11 +16,13 @@
 
 class CompileUnit {
 public:
-	CompileUnit(std::string name,std::string source);
+	CompileUnit(std::string name, std::string source);
 	virtual ~CompileUnit();
 	void compile();
 	Token next_tok();
 	void build();
+
+	std::vector<Token> tokenList;
 
 	std::string name;
 	std::string source;

@@ -27,7 +27,6 @@ CodeBlockAST* CodeBlockAST::ParseCodeBlock(CompileUnit *unit,
 	while (true) {
 		unit->curTok = unit->next_tok();
 		if (unit->curTok.type == tok_eof) {
-			//todo:错误处理
 			CompileError e("Unexpexted EOF in function body");
 			throw e;
 		}
