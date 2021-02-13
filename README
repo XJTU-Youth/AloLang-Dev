@@ -1,3 +1,20 @@
 AloLang Compiler Readme
 
 Distributed under the Lesser General Public License V3
+
+To compile, we suggest that you have the project made in a dedicated directory.
+Use the following commands.
+
+mkdir -p build
+cd build
+../configure
+make
+
+Now that you should see a file called aloc within the build directory.
+
+To install that to your system, run the following command
+
+make install
+
+It will copy the associated file to your system's program directory(possibly be
+/usr/local/bin).
