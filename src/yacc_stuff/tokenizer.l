@@ -7,8 +7,8 @@ int token;
 %}
 %option yylineno
 %%
-[ \t]+                      {/*Skip spaces and tabs*/}
-\/\*[.\n]*?\*\/|\/\/.*      {/*Skip comments*/}
+[ \t]+                      {/*Skip spaces and tabs*/};
+\/\*[.\n]*?\*\/|\/\/.*      {/*Skip comments*/};
 
 ->                          token = tok_return_type; return token;
 fun                         token = tok_fun; return token;
