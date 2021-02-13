@@ -55,38 +55,3 @@ return token = tok_extern; return token;
 %%
 
 int yyFlexLexer::yywrap(){return 1;}
-
-int main(int argc, char **argv)
-{
-    std::ifstream infile(argv[1]);
-    FlexLexer* lexer = new yyFlexLexer(infile,std::cerr);
-    int tokenid;
-    Token token;
-    while ((tokenid = lexer->yylex()) != tok_eof)
-    {
-        token.type = TokenType(tokenid);
-        switch (token.type){
-        tok_fun:
-        tok_extern:
-        tok_return:
-        tok_return_type:
-        tok_eof:    break;
-        default:
-            token.tokenValue = lexer->YYText();
-        }
-        if (token.type == tok_number)
-        {
-            int numTypeFlag = 10; //进制数
-            if (token.tokenValue.substr(0,2)=="0x"||token.tokenValue.substr(0,2)=="0X")
-                numTypeFlag = 16;
-            else if (token.tokenValue.substr(0,2)=="0b"||token.tokenValue.substr(0,2)=="0B")
-                numTypeFlag = 2;
-            else if (token.tokenValue.substr(0,1)=="0")
-                numTypeFlag = 8;
-            char tmp[256];
-		    sprintf(tmp, "%ld", strtol(token.tokenValue.c_str(), NULL, numTypeFlag));
-	    	token.tokenValue = tmp;
-        }
-        std::cout << token.dump() << std::endl;
-    } 
-}
