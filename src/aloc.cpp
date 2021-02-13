@@ -1,4 +1,4 @@
-#include <CompileError.hpp>
+#include "CompileError.hpp"
 #include <iostream>
 #include <sstream>
 #include <fstream>
