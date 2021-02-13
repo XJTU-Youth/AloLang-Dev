@@ -5264,7 +5264,7 @@ then :
 fi
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile"
+ac_config_files="$ac_config_files Makefile.am src/Makefile.am"
 
 
 am__api_version='1.16'
@@ -6912,8 +6912,8 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
-    "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+    "Makefile.am") CONFIG_FILES="$CONFIG_FILES Makefile.am" ;;
+    "src/Makefile.am") CONFIG_FILES="$CONFIG_FILES src/Makefile.am" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
