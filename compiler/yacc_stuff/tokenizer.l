@@ -1,14 +1,43 @@
 %{
 #include "Token.h"
 #include "Token.h"
-#include <FlexLexer.h>
+// #include <FlexLexer.h>
 #include <fstream>
 #include <iostream>
 int token;
+
 %}
 %%
 [ \t]+ /*Skip spaces and tabs*/
 \/\*[\s\S]*?\*\/|\/\/.* /*Skip comments*/
+
+!  token = tok_syntax; return token;
+%  token = tok_syntax; return token;
+\^  token = tok_syntax; return token;
+&  token = tok_syntax; return token;
+\*  token = tok_syntax; return token;
+\(  token = tok_syntax; return token;
+\)  token = tok_syntax; return token;
+\+  token = tok_syntax; return token;
+=  token = tok_syntax; return token;
+\{  token = tok_syntax; return token;
+\}  token = tok_syntax; return token;
+\|  token = tok_syntax; return token;
+~  token = tok_syntax; return token;
+\[  token = tok_syntax; return token;
+\]  token = tok_syntax; return token;
+\\  token = tok_syntax; return token;
+;  token = tok_syntax; return token;
+'  token = tok_syntax; return token;
+:  token = tok_syntax; return token;
+\"  token = tok_syntax; return token;
+,  token = tok_syntax; return token;
+\<  token = tok_syntax; return token;
+\>  token = tok_syntax; return token;
+\?  token = tok_syntax; return token;
+\.  token = tok_syntax; return token;
+\/  token = tok_syntax; return token;
+#  token = tok_syntax; return token;
 
 fun token = tok_fun; return token;
 func token = tok_fun; return token;
@@ -22,12 +51,14 @@ return token = tok_extern; return token;
 
 %%
 
+int yyFlexLexer::yywrap(){return 1;}
+
 int main(int argc, char **argv)
 {
     std::ifstream infile(argv[1]);
     FlexLexer* lexer = new yyFlexLexer(infile,std::cerr);
     int token;
-    while ((token = lexer->yylex()) != tok_eof)
+    while ((token = lexer->yylex()) != 0)
     {
         std::cout << lexer->YYText() << ": " << token << std::endl;
     }
