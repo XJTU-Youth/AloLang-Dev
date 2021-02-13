@@ -25,6 +25,7 @@ CompileUnit::CompileUnit(std::string name, std::string source) {
 	this->name = name;
 	this->source = source;
 	this->sis = std::istringstream(source);
+	this->lexer = new yyFlexLexer(sis, std::cerr);
 	context = new llvm::LLVMContext();
 	module = new llvm::Module("test.ll", *context);
 }
@@ -35,88 +36,32 @@ CompileUnit::~CompileUnit() {
 //获取下一个Token
 Token CompileUnit::next_tok() {
 	Token token;
-	skipSpace(sis);
-	char lastChar = sis.get();
-	std::string dataStr;
-	if (std::isalpha(lastChar)) { // 标志符: [a-zA-Z][a-zA-Z0-9]*
-		dataStr = lastChar;
-		while (!isSyntax((lastChar = sis.peek()))) {
-			lastChar = sis.get();
-			dataStr += lastChar;
-		}
-		if (dataStr == "fun") {
-			token.type = tok_fun;
-			return token;
-		}
-		if (dataStr == "func") {
-			token.type = tok_fun;
-			return token;
-		}
-		if (dataStr == "extern") {
-			token.type = tok_extern;
-			return token;
-		}
-		if (dataStr == "return") {
-			token.type = tok_return;
-			return token;
-		}
-
-		token.tokenValue = dataStr;
-		token.type = tok_identifier;
-		return token;
+	int tokenid = lexer->yylex();
+	token.type = TokenType(tokenid);
+	switch (token.type) {
+	tok_fun:
+	tok_extern:
+	tok_return:
+	tok_return_type:
+	tok_eof:    break;
+	default:	token.tokenValue = lexer->YYText();
 	}
-	if (lastChar == '-' && sis.peek() == '>') {
-		sis.get();
-		token.type = tok_return_type;
-		return token;
-	}
-	int numTypeFlag = 10; //进制数
-	int statusFlag = 0; //0未处理进制标识，1正在处理进制标识，2已处理进制标识
-	//TODO 对浮点数的支持，对非long型数的支持
-	bool firstRun = true;
-	if (std::isdigit(lastChar) || lastChar == '.') {   // 数字: [0-9.]+
-		do {
-			if (!firstRun) {
-				sis.get();
-			} else {
-				firstRun = false;
-			}
-			if (statusFlag == 1) {
-				if (lastChar == 'b') {
-					numTypeFlag = 2;
-				} else if (lastChar == 'x' || lastChar == 'X') {
-					numTypeFlag = 16;
-				} else if (std::isdigit(lastChar)) {
-					numTypeFlag = 8;
-					dataStr += lastChar;
-				} else {
-					dataStr = "0";
-				}
-				statusFlag = 2;
-				lastChar = sis.peek();
-				continue;
-			}
-			if (lastChar == '0' && statusFlag == 0) {
-				statusFlag = 1;
-				lastChar = sis.peek();
-				continue;
-			}
-			dataStr += lastChar;
-			lastChar = sis.peek();
-		} while (!isSyntax(lastChar));
-		token.type = tok_number;
+	//Deal with numbers
+	if (token.type == tok_number)
+	{
+		int numTypeFlag = 10; //进制数
+		if (token.tokenValue.substr(0, 2) == "0x" || token.tokenValue.substr(0, 2) == "0X")
+			numTypeFlag = 16;
+		else if (token.tokenValue.substr(0, 2) == "0b" || token.tokenValue.substr(0, 2) == "0B")
+			numTypeFlag = 2;
+		else if (token.tokenValue.substr(0, 1) == "0")
+			numTypeFlag = 8;
 		char tmp[256];
-		sprintf(tmp, "%ld", strtol(dataStr.c_str(), NULL, numTypeFlag));
+		sprintf(tmp, "%ld", strtol(token.tokenValue.c_str(), NULL, numTypeFlag));
 		token.tokenValue = tmp;
-		return token;
 	}
-	if (lastChar == EOF) {
-		token.type = tok_eof;
-		return token;
-	}
-	token.type = tok_syntax;
-	token.tokenValue = lastChar;
-	return token;   //todo:可能不严谨，仔细test
+	// std::cout << token.dump() << std::endl;
+	return token;
 }
 
 void CompileUnit::compile() {
@@ -126,8 +71,8 @@ void CompileUnit::compile() {
 
 		switch (curTok.type) {
 		case tok_fun: {
-			FunctionAST *func_ast = FunctionAST::ParseFunction(this);
-			llvm::Function *func = func_ast->Codegen();
+			FunctionAST* func_ast = FunctionAST::ParseFunction(this);
+			llvm::Function* func = func_ast->Codegen();
 			/*llvm::Type* type=llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
 			 false);
 			 module->getOrInsertGlobal(func_ast->proto->name, func->getType());

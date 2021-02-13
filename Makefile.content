@@ -3,8 +3,8 @@ AST_SRCS := $(wildcard compiler/ast/*.cpp)
 AST_OBJS_BUILD := $(addprefix build/,$(AST_SRCS:.cpp=.o))
 OBJ_DIR = build/
 
-aloc: build/compiler/cppfront.o build/compiler/preprocessor.o build/compiler/utils.o build/compiler/CompileUnit.o build/compiler/Token.o $(AST_OBJS_BUILD)
-	$(CC) $(CFLAG) build/compiler/cppfront.o build/compiler/preprocessor.o build/compiler/utils.o build/compiler/CompileUnit.o build/compiler/Token.o $(AST_OBJS_BUILD) -lLLVM-11 -lboost_program_options -lstdc++ -o aloc 
+aloc: build/compiler/cppfront.o build/compiler/preprocessor.o build/compiler/utils.o build/compiler/CompileUnit.o build/compiler/Token.o build/compiler/lex.yy.o $(AST_OBJS_BUILD)
+	$(CC) $(CFLAG) build/compiler/cppfront.o build/compiler/preprocessor.o build/compiler/utils.o build/compiler/CompileUnit.o build/compiler/Token.o build/compiler/lex.yy.o $(AST_OBJS_BUILD) -lLLVM-11 -lboost_program_options  -o aloc 
 
 build/compiler/preprocessor.o: compiler/preprocessor.cpp compiler/CompileError.hpp
 	$(CC) $(CFLAG) -c -I ./compiler/ compiler/preprocessor.cpp -o build/compiler/preprocessor.o
@@ -20,6 +20,10 @@ build/compiler/CompileUnit.o: compiler/CompileUnit.cpp
 
 build/compiler/Token.o: compiler/Token.cpp
 	$(CC) $(CFLAG) -c -I ./compiler/ compiler/Token.cpp -o build/compiler/Token.o
+
+build/compiler/lex.yy.o: compiler/yacc_stuff/tokenizer.l
+	flex -+ --outfile=build/compiler/lex.yy.cc compiler/yacc_stuff/tokenizer.l
+	$(CC) $(CFLAG) -c -I ./compiler/ build/compiler/lex.yy.cc -o build/compiler/lex.yy.o
 
 $(AST_OBJS_BUILD):$(OBJ_DIR)%.o : %.cpp
 	$(CC) $(CFLAG) -c $< -o $@ 
