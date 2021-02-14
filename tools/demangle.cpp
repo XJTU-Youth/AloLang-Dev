@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#include "../CompileError.hpp"
+#include "../src/CompileError.hpp"
 
 using namespace std;
 
@@ -94,6 +94,15 @@ std::string demangle(const std::string& line) {
 
 int main(int argc, char* argv[])
 {
+	try
+	{	
 	cout << demangle(argv[1]) << endl;
 	return 0;
+}
+	
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+
 }
