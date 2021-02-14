@@ -10,6 +10,7 @@
 
 Token::Token() {
 	tokenValue = "";
+	type = tok_err;
 }
 
 Token::~Token() {

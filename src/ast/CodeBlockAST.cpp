@@ -31,6 +31,7 @@ CodeBlockAST* CodeBlockAST::ParseCodeBlock(CompileUnit *unit,
 			throw e;
 		}
 		if (inBlockToken.type == tok_syntax && inBlockToken.tokenValue == "}") {
+			unit->next_tok();
 			break;
 		}
 		body.push_back(ExprAST::ParseExpression(unit, true));

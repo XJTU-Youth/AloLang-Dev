@@ -40,6 +40,20 @@ ExprAST* ExprAST::ParsePrimary(CompileUnit *unit) {
 	case tok_number: {
 		return new IntExprAST(unit, strtol(token.tokenValue.c_str(), NULL, 10));
 	}
+	case tok_syntax: {
+		if (token.tokenValue == "(") {
+			ExprAST *result = ParseExpression(unit, false);
+			token = unit->next_tok();
+			if (token.type != tok_syntax || token.tokenValue != ")") {
+				CompileError e("missing ')'");
+				throw e;
+			}
+			return result;
+		} else {
+			std::cerr << "error3" << std::endl;
+		}
+		break;
+	}
 	case tok_identifier: {
 		//函数调用或定义
 		std::string idName = token.tokenValue;
@@ -53,10 +67,14 @@ ExprAST* ExprAST::ParsePrimary(CompileUnit *unit) {
 			while (true) {
 				Token nextToken = *(unit->icurTok + 1);
 
-				if (nextToken.type == tok_syntax && nextToken.tokenValue == ")") {
+				if (nextToken.type == tok_syntax
+						&& nextToken.tokenValue == ")") {
+					unit->next_tok();
 					break;
 				}
-				if (nextToken.type == tok_syntax && nextToken.tokenValue == ",") {
+				if (nextToken.type == tok_syntax
+						&& nextToken.tokenValue == ",") {
+					unit->next_tok();
 					continue;
 				}
 
@@ -81,12 +99,13 @@ ExprAST* ExprAST::ParsePrimary(CompileUnit *unit) {
 
 static ExprAST* ParseBinOpRHS(CompileUnit *unit, int ExprPrec, ExprAST *LHS) {
 	while (1) {
+		Token token = *(unit->icurTok + 1);
 
-		int TokPrec = GetTokPrecedence(*(unit->icurTok + 1));
+		int TokPrec = GetTokPrecedence(token);
 		if (TokPrec < ExprPrec) {
 			return LHS;
 		}
-		Token token = unit->next_tok();
+		unit->next_tok();
 		char BinOp = token.tokenValue[0];
 
 		ExprAST *RHS = ExprAST::ParsePrimary(unit);
@@ -95,7 +114,6 @@ static ExprAST* ParseBinOpRHS(CompileUnit *unit, int ExprPrec, ExprAST *LHS) {
 
 		int NextPrec = GetTokPrecedence(*(unit->icurTok + 1));
 		if (TokPrec < NextPrec) {
-			token = unit->next_tok();
 			RHS = ParseBinOpRHS(unit, TokPrec + 1, RHS);
 			if (RHS == nullptr) {
 				return nullptr;

@@ -101,7 +101,8 @@ void CompileUnit::compile() {
 			break;
 		}
 		default:
-			std::cerr << "unexpected token." << std::endl;
+
+			std::cerr << "unexpected token:" << icurTok->dump() << std::endl;
 		}
 	} while (next_tok().type != tok_eof);
 	build();
