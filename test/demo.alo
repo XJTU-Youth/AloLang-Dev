@@ -1,8 +1,12 @@
 func testPuts(){}
+func testPrintInt(int i){}
 
 func demo()
 {
     testPuts();
+    testPrintInt(1);
+    testPrintInt(0xB);
+    testPrintInt(0777);
 //    demo();
 }
 
