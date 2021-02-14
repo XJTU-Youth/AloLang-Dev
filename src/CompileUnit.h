@@ -23,15 +23,15 @@ public:
 	Token next_tok();
 	void build();
 
-	FlexLexer* lexer;
-
+	FlexLexer *lexer;
+	Token curTok;
 	std::string name;
 	std::string source;
 	std::istringstream sis;
-	Token curTok;
 	llvm::LLVMContext *context;
 	llvm::Module *module;
-
+	std::vector<Token> tokenList;
+	std::vector<Token>::iterator icurTok;
 };
 
 #endif /* COMPILER_COMPILEUNIT_H_ */

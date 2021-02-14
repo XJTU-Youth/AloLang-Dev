@@ -21,6 +21,37 @@
 #include <fstream>
 #include <iostream>
 
+void scanToken(CompileUnit *unit) {
+	Token token;
+	do {
+		int tokenid = unit->lexer->yylex();
+		token.type = TokenType(tokenid);
+		switch (token.type) {
+		tok_fun: tok_extern: tok_return: tok_return_type: tok_eof: break;
+	default:
+		token.tokenValue = unit->lexer->YYText();
+		}
+		//Deal with numbers
+		if (token.type == tok_number) {
+			int numTypeFlag = 10; //进制数
+			if (token.tokenValue.substr(0, 2) == "0x"
+					|| token.tokenValue.substr(0, 2) == "0X")
+				numTypeFlag = 16;
+			else if (token.tokenValue.substr(0, 2) == "0b"
+					|| token.tokenValue.substr(0, 2) == "0B")
+				numTypeFlag = 2;
+			else if (token.tokenValue.substr(0, 1) == "0")
+				numTypeFlag = 8;
+			char tmp[256];
+			sprintf(tmp, "%ld",
+					strtol(token.tokenValue.c_str(), NULL, numTypeFlag));
+			token.tokenValue = tmp;
+		}
+		unit->tokenList.push_back(token);
+	} while (token.type != tok_eof);
+	unit->icurTok = unit->tokenList.begin();
+}
+
 CompileUnit::CompileUnit(std::string name, std::string source) {
 	this->name = name;
 	this->source = source;
@@ -28,6 +59,7 @@ CompileUnit::CompileUnit(std::string name, std::string source) {
 	this->lexer = new yyFlexLexer(sis, std::cerr);
 	context = new llvm::LLVMContext();
 	module = new llvm::Module("test.ll", *context);
+	scanToken(this);
 }
 
 CompileUnit::~CompileUnit() {
@@ -35,32 +67,8 @@ CompileUnit::~CompileUnit() {
 
 //获取下一个Token
 Token CompileUnit::next_tok() {
-	Token token;
-	int tokenid = lexer->yylex();
-	token.type = TokenType(tokenid);
-	switch (token.type) {
-	tok_fun:
-	tok_extern:
-	tok_return:
-	tok_return_type:
-	tok_eof:    break;
-	default:	token.tokenValue = lexer->YYText();
-	}
-	//Deal with numbers
-	if (token.type == tok_number)
-	{
-		int numTypeFlag = 10; //进制数
-		if (token.tokenValue.substr(0, 2) == "0x" || token.tokenValue.substr(0, 2) == "0X")
-			numTypeFlag = 16;
-		else if (token.tokenValue.substr(0, 2) == "0b" || token.tokenValue.substr(0, 2) == "0B")
-			numTypeFlag = 2;
-		else if (token.tokenValue.substr(0, 1) == "0")
-			numTypeFlag = 8;
-		char tmp[256];
-		sprintf(tmp, "%ld", strtol(token.tokenValue.c_str(), NULL, numTypeFlag));
-		token.tokenValue = tmp;
-	}
-	// std::cout << token.dump() << std::endl;
+	Token token = *icurTok;
+	icurTok++;
 	return token;
 }
 
@@ -71,8 +79,8 @@ void CompileUnit::compile() {
 
 		switch (curTok.type) {
 		case tok_fun: {
-			FunctionAST* func_ast = FunctionAST::ParseFunction(this);
-			llvm::Function* func = func_ast->Codegen();
+			FunctionAST *func_ast = FunctionAST::ParseFunction(this);
+			llvm::Function *func = func_ast->Codegen();
 			/*llvm::Type* type=llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
 			 false);
 			 module->getOrInsertGlobal(func_ast->proto->name, func->getType());
