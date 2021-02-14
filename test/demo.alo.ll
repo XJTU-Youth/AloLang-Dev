@@ -1,15 +1,9 @@
 ; ModuleID = './../test/demo.alo.bc'
 source_filename = "test.ll"
 
-define void @_alolang_8testPuts() {
-entry:
-  ret void
-}
+declare void @_alolang_8testPuts()
 
-define void @_alolang_12testPrintInt3int(i64 %i) {
-entry:
-  ret void
-}
+declare void @_alolang_12testPrintInt3int(i64)
 
 define void @_alolang_4demo() {
 entry:

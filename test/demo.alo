@@ -1,5 +1,5 @@
-func testPuts(){}
-func testPrintInt(int i){}
+extern func testPuts();
+extern func testPrintInt(int i);
 
 func demo()
 {
