@@ -9,21 +9,21 @@
 #define COMPILER_AST_FUNCTIONAST_H_
 
 #include "BaseAST.h"
-#include "CodeBlockAST.h"
-#include "ExprAST.h"
 #include "PrototypeAST.h"
 #include <vector>
+#include "ExprAST.h"
+#include "CodeBlockAST.h"
 
-class FunctionAST : public BaseAST
-{
-  public:
-    FunctionAST(CompileUnit *unit, PrototypeAST *proto, CodeBlockAST *body);
-    virtual ~FunctionAST();
-    llvm::Function *Codegen();
-    PrototypeAST *  proto;
+class FunctionAST: public BaseAST {
+public:
+	FunctionAST(CompileUnit *unit, PrototypeAST *proto, CodeBlockAST *body);
+	virtual ~FunctionAST();
+	llvm::Function* Codegen();
+	PrototypeAST *proto;
 
-    CodeBlockAST *      body;
-    static FunctionAST *ParseFunction(CompileUnit *unit);
+	CodeBlockAST *body;
+	static FunctionAST* ParseFunction(CompileUnit *unit);
+
 };
 
 #endif /* COMPILER_AST_FUNCTIONAST_H_ */

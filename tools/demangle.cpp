@@ -1,35 +1,33 @@
-#include "../src/CompileError.hpp"
 #include <bits/stdc++.h>
+#include "../src/CompileError.hpp"
 
 using namespace std;
 
-char syntax[] = {'!', '%', '^', '&', '*', '(', ')',  '-', '+',  '=',
-                 '{', '}', '|', '~', '[', ']', '\\', ';', '\'', ':',
-                 '"', ',', '<', '>', '?', '.', '/',  '#', ' '};
+char syntax[] = { '!', '%', '^', '&', '*', '(', ')', '-', '+', '=', '{', '}',
+		'|', '~', '[', ']', '\\', ';', '\'', ':', '"', ',', '<', '>', '?', '.',
+		'/', '#', ' ' };
 
-bool isSyntax(char c)
-{
-    for (char tmp : syntax) {
-        if (c == tmp) {
-            return true;
-        }
-    }
-    return false;
+bool isSyntax(char c) {
+	for (char tmp : syntax) {
+		if (c == tmp) {
+			return true;
+		}
+	}
+	return false;
 }
 //从pos查找到下一个非空格字段
-void skipSpace(const std::vector<std::string> &words, long unsigned int &i)
-{
-    while (true) {
-        i++;
-        if (i >= words.size()) {
-            // TODO:异常处理（未期待的结尾）
-            CompileError e("Unexpected EOF");
-            throw e;
-        }
-        if (words[i] != " ") {
-            break;
-        }
-    }
+void skipSpace(const std::vector<std::string>& words, long unsigned int& i) {
+	while (true) {
+		i++;
+		if (i >= words.size()) {
+			//TODO:异常处理（未期待的结尾）
+			CompileError e("Unexpected EOF");
+			throw e;
+		}
+		if (words[i] != " ") {
+			break;
+		}
+	}
 }
 
 /*
@@ -38,69 +36,73 @@ void skipSpace(const std::vector<std::string> &words, long unsigned int &i)
  * 每个段前面加上长度
  * 比如fun foobar(long a, int b)修饰为_alolang_6foobar4long3int
  */
-std::string demangle(const std::string &line)
-{
-    std::vector<std::string> words;
-    bool                     flag = false; //判断栈顶元素状态，如果为false则代表栈顶元素为符号
-    for (long unsigned int i = 0; i < line.length(); i++) {
-        if (isSyntax(line[i])) {
-            words.push_back(std::string(1, line[i]));
-            flag = false;
-        } else {
-            if (!flag) {
-                words.push_back(std::string(1, line[i]));
-                flag = true;
-            } else {
-                words[words.size() - 1] += std::string(1, line[i]);
-            }
-        }
-    }
-    std::stringstream ss;
-    ss << "_alolang_";
-    long unsigned int i = -1; //处理指针
-    skipSpace(words, i);
-    if (words[i] != "fun") {
-        // TODO:异常处理
-        CompileError e("some error happened"); // todo:错误信息
-        throw e;
-    }
-    skipSpace(words, i);
-    ss << words[i].length() << words[i];
-    skipSpace(words, i);
-    if (words[i] != "(") {
-        // TODO:异常处理
-        CompileError e("some error happened"); // todo:错误信息
-        throw e;
-    }
-    skipSpace(words, i);
-    if (words[i] != ")") {
-        //有参数
-        while (true) {
-            skipSpace(words, i);
-            ss << words[i].length() << words[i]; //得到类型
-            skipSpace(words, i); //得到变量名，但在这个阶段没用
-            skipSpace(words, i);
-            if (words[i] == ")") {
-                break;
-            }
-            if (words[i] != ",") {
-                // TODO:异常处理（逗号）
-                CompileError e("some error happened (comma)"); // todo:错误信息
-                throw e;
-            }
-        }
-    }
-    return ss.str();
+std::string demangle(const std::string& line) {
+	std::vector<std::string> words;
+	bool flag = false; //判断栈顶元素状态，如果为false则代表栈顶元素为符号
+	for (long unsigned int i = 0; i < line.length(); i++) {
+		if (isSyntax(line[i])) {
+			words.push_back(std::string(1, line[i]));
+			flag = false;
+		}
+		else {
+			if (!flag) {
+				words.push_back(std::string(1, line[i]));
+				flag = true;
+			}
+			else {
+				words[words.size() - 1] += std::string(1, line[i]);
+			}
+		}
+	}
+	std::stringstream ss;
+	ss << "_alolang_";
+	long unsigned int i = -1; //处理指针
+	skipSpace(words, i);
+	if (words[i] != "fun") {
+		//TODO:异常处理
+		CompileError e("some error happened");//todo:错误信息
+		throw e;
+	}
+	skipSpace(words, i);
+	ss << words[i].length() << words[i];
+	skipSpace(words, i);
+	if (words[i] != "(") {
+		//TODO:异常处理
+		CompileError e("some error happened");//todo:错误信息
+		throw e;
+	}
+	skipSpace(words, i);
+	if (words[i] != ")") {
+		//有参数
+		while (true) {
+			skipSpace(words, i);
+			ss << words[i].length() << words[i]; //得到类型
+			skipSpace(words, i); //得到变量名，但在这个阶段没用
+			skipSpace(words, i);
+			if (words[i] == ")") {
+				break;
+			}
+			if (words[i] != ",") {
+				//TODO:异常处理（逗号）
+				CompileError e("some error happened (comma)");//todo:错误信息
+				throw e;
+			}
+		}
+	}
+	return ss.str();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    try {
-        cout << demangle(argv[1]) << endl;
-        return 0;
-    }
+	try
+	{	
+	cout << demangle(argv[1]) << endl;
+	return 0;
+}
+	
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
 
-    catch (const std::exception &e) {
-        std::cerr << e.what() << '\n';
-    }
 }

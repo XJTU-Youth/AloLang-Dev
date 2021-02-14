@@ -1,12 +1,15 @@
 #ifndef _PREPROCESSOR_
 #define _PREPROCESSOR_
 
-#include <fstream>
-#include <iostream>
 #include <map>
-#include <sstream>
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
-std::string preProcess(const std::string &code, int cnt);
+
+std::string preProcess(const std::string& code, int cnt);
+
+
 
 #endif

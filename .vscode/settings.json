@@ -1,6 +1,4 @@
 {
     "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true,
-    "clang-format.assumeFilename": ".clang-format",
-    "editor.formatOnSave": true
+    "python.linting.enabled": true
 }

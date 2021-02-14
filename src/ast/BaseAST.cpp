@@ -7,9 +7,11 @@
 
 #include "BaseAST.h"
 
-BaseAST::BaseAST(CompileUnit *unit) { this->unit = unit; }
-
-BaseAST::~BaseAST()
-{
-    // TODO Auto-generated destructor stub
+BaseAST::BaseAST(CompileUnit* unit) {
+	this->unit=unit;
 }
+
+BaseAST::~BaseAST() {
+	// TODO Auto-generated destructor stub
+}
+
