@@ -46,8 +46,8 @@ VariableExprAST* VariableExprAST::ParseVar(CompileUnit *unit, std::string idName
 		std::string type) {
 	std::cout << "Variable definition found:" << idName << " with type:" << type
 			<< std::endl;
-	unit->curTok = unit->next_tok();
-	if (unit->curTok.type != tok_syntax || unit->curTok.tokenValue != ";") {
+	Token token = unit->next_tok();
+	if (token.type != tok_syntax || token.tokenValue != ";") {
 		std::cerr << "TODO:#1" << std::endl;
 	}
 	return new VariableExprAST(unit, idName, type);

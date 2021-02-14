@@ -25,16 +25,15 @@ CodeBlockAST* CodeBlockAST::ParseCodeBlock(CompileUnit *unit,
 		std::string name) {
 	std::vector<ExprAST*> body;
 	while (true) {
-		unit->curTok = unit->next_tok();
-		if (unit->curTok.type == tok_eof) {
+		Token inBlockToken = *(unit->icurTok + 1);
+		if (inBlockToken.type == tok_eof) {
 			CompileError e("Unexpexted EOF in function body");
 			throw e;
 		}
-		if (unit->curTok.type == tok_syntax && unit->curTok.tokenValue == "}") {
+		if (inBlockToken.type == tok_syntax && inBlockToken.tokenValue == "}") {
 			break;
 		}
-		body.push_back(ExprAST::ParseExpression(unit));
-		std::cout << "Read token in block:" << unit->curTok.dump() << std::endl;
+		body.push_back(ExprAST::ParseExpression(unit, true));
 	}
 	return new CodeBlockAST(unit, body, name);
 }

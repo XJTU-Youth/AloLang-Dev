@@ -35,35 +35,32 @@ ExprAST::~ExprAST() {
 
 ExprAST* ExprAST::ParsePrimary(CompileUnit *unit) {
 	//todo:除了函数调用之外的语句解析
-	Token lastToken = unit->curTok;
-	switch (lastToken.type) {
+	Token token = unit->next_tok();
+	switch (token.type) {
 	case tok_number: {
-		return new IntExprAST(unit,
-				strtol(lastToken.tokenValue.c_str(), NULL, 10));
+		return new IntExprAST(unit, strtol(token.tokenValue.c_str(), NULL, 10));
 	}
 	case tok_identifier: {
 		//函数调用或定义
-		std::string idName = lastToken.tokenValue;
-		unit->curTok = unit->next_tok();
-		if (unit->curTok.type == tok_identifier) {
+		std::string idName = token.tokenValue;
+		token = unit->next_tok();
+		if (token.type == tok_identifier) {
 			//定义
-			std::string valName = unit->curTok.tokenValue;
+			std::string valName = token.tokenValue;
 			return VariableExprAST::ParseVar(unit, valName, idName);
-		} else if (unit->curTok.tokenValue == "(") {
+		} else if (token.tokenValue == "(") {
 			std::vector<ExprAST*> args;
 			while (true) {
-				unit->curTok = unit->next_tok();
+				Token nextToken = *(unit->icurTok + 1);
 
-				if (unit->curTok.type == tok_syntax
-						&& unit->curTok.tokenValue == ")") {
+				if (nextToken.type == tok_syntax && nextToken.tokenValue == ")") {
 					break;
 				}
-				if (unit->curTok.type == tok_syntax
-						&& unit->curTok.tokenValue == ",") {
+				if (nextToken.type == tok_syntax && nextToken.tokenValue == ",") {
 					continue;
 				}
 
-				ExprAST *arg = ExprAST::ParseExpression(unit);
+				ExprAST *arg = ExprAST::ParseExpression(unit, false);
 				args.push_back(arg);
 				//todo:异常处理
 			}
@@ -75,7 +72,7 @@ ExprAST* ExprAST::ParsePrimary(CompileUnit *unit) {
 		break;
 	}
 	default: {
-		CompileError e("非函数调用未实现");
+		CompileError e("不期待的token");
 		throw e;
 	}
 	}
@@ -84,20 +81,21 @@ ExprAST* ExprAST::ParsePrimary(CompileUnit *unit) {
 
 static ExprAST* ParseBinOpRHS(CompileUnit *unit, int ExprPrec, ExprAST *LHS) {
 	while (1) {
-		unit->curTok = unit->next_tok();
-		int TokPrec = GetTokPrecedence(unit->curTok);
+
+		int TokPrec = GetTokPrecedence(*(unit->icurTok + 1));
 		if (TokPrec < ExprPrec) {
 			return LHS;
 		}
-		char BinOp = unit->curTok.tokenValue[0];
-		unit->curTok = unit->next_tok();
+		Token token = unit->next_tok();
+		char BinOp = token.tokenValue[0];
 
 		ExprAST *RHS = ExprAST::ParsePrimary(unit);
 		if (!RHS)
 			return nullptr;
 
-		int NextPrec = GetTokPrecedence(unit->curTok);
+		int NextPrec = GetTokPrecedence(*(unit->icurTok + 1));
 		if (TokPrec < NextPrec) {
+			token = unit->next_tok();
 			RHS = ParseBinOpRHS(unit, TokPrec + 1, RHS);
 			if (RHS == nullptr) {
 				return nullptr;
@@ -107,10 +105,18 @@ static ExprAST* ParseBinOpRHS(CompileUnit *unit, int ExprPrec, ExprAST *LHS) {
 	}
 }
 
-ExprAST* ExprAST::ParseExpression(CompileUnit *unit) {
+ExprAST* ExprAST::ParseExpression(CompileUnit *unit, bool root) {
 	ExprAST *LHS = ParsePrimary(unit);
 	if (LHS == nullptr) {
 		return nullptr;
 	}
-	return ParseBinOpRHS(unit, 0, LHS);
+	ExprAST *result = ParseBinOpRHS(unit, 0, LHS);
+	if (root) {
+		Token token = unit->next_tok();
+		if (token.type != tok_syntax || token.tokenValue != ";") {
+			CompileError e("丟失分号");
+			throw e;
+		}
+	}
+	return result;
 }

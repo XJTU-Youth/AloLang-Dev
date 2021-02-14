@@ -1,11 +1,8 @@
-extern func testPuts();
-
-func te_st(int a,int b){
-}
-
-func main()
-{
-	//int a;
-	//testPuts();
-	te_st(3+2);
+extern fun testPuts();
+extern fun testPrintInt(int a);
+/*fun te_st(){
+	testPuts();
+}*/
+fun main(){
+	testPrintInt(3);
 }

@@ -10,6 +10,7 @@
 #ifndef _ALLAST_H_
 #define _ALLAST_H_
 
+#include "BinaryExprAST.h"
 #include "BaseAST.h"
 #include "CallExprAST.h"
 #include "CodeBlockAST.h"

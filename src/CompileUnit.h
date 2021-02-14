@@ -24,7 +24,6 @@ public:
 	void build();
 
 	FlexLexer *lexer;
-	Token curTok;
 	std::string name;
 	std::string source;
 	std::istringstream sis;
