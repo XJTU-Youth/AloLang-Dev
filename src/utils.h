@@ -10,8 +10,8 @@
 
 #include <sstream>
 
-std::string demangle(const std::string &fnName,
-		const std::vector<std::string> &argTypes);
+std::string demangle(const std::string &             fnName,
+                     const std::vector<std::string> &argTypes);
 
 bool isSyntax(char c);
 void skipSpace(const std::vector<std::string> &words, long unsigned int &i);

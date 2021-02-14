@@ -6,70 +6,76 @@
  */
 
 #include "CompileUnit.h"
-#include <llvm/IR/LLVMContext.h>
-#include <llvm/IR/IRBuilder.h>
-#include <llvm/IR/GlobalVariable.h>
-#include <llvm/IR/Verifier.h>
-#include <llvm/IR/DerivedTypes.h>
 #include <llvm/Bitcode/BitcodeWriter.h>
+#include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/GlobalVariable.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Verifier.h>
 
 #include "ast/ExprAST.h"
 #include "ast/FunctionAST.h"
 #include "ast/ExternAST.h"
 #include "utils.h"
-#include "CompileError.hpp"
 #include <fstream>
 #include <iostream>
 
-void scanToken(CompileUnit *unit) {
-	Token token;
-	do {
-		int tokenid = unit->lexer->yylex();
-		token.type = TokenType(tokenid);
-		switch (token.type) {
-		tok_fun: tok_extern: tok_return: tok_return_type: tok_eof: break;
-	default:
-		token.tokenValue = unit->lexer->YYText();
-		}
-		//Deal with numbers
-		if (token.type == tok_number) {
-			int numTypeFlag = 10; //进制数
-			if (token.tokenValue.substr(0, 2) == "0x"
-					|| token.tokenValue.substr(0, 2) == "0X")
-				numTypeFlag = 16;
-			else if (token.tokenValue.substr(0, 2) == "0b"
-					|| token.tokenValue.substr(0, 2) == "0B")
-				numTypeFlag = 2;
-			else if (token.tokenValue.substr(0, 1) == "0")
-				numTypeFlag = 8;
-			char tmp[256];
-			sprintf(tmp, "%ld",
-					strtol(token.tokenValue.c_str(), NULL, numTypeFlag));
-			token.tokenValue = tmp;
-		}
-		unit->tokenList.push_back(token);
-	} while (token.type != tok_eof);
-	unit->icurTok = unit->tokenList.begin();
+void scanToken(CompileUnit *unit)
+{
+    Token token;
+    do {
+        int tokenid = unit->lexer->yylex();
+        token.type  = TokenType(tokenid);
+        switch (token.type) {
+        tok_fun:
+        tok_extern:
+        tok_return:
+        tok_return_type:
+        tok_eof:
+            break;
+        default:
+            token.tokenValue = unit->lexer->YYText();
+        }
+        // Deal with numbers
+        if (token.type == tok_number) {
+            int numTypeFlag = 10; //进制数
+            if (token.tokenValue.substr(0, 2) == "0x" ||
+                token.tokenValue.substr(0, 2) == "0X")
+                numTypeFlag = 16;
+            else if (token.tokenValue.substr(0, 2) == "0b" ||
+                     token.tokenValue.substr(0, 2) == "0B")
+                numTypeFlag = 2;
+            else if (token.tokenValue.substr(0, 1) == "0")
+                numTypeFlag = 8;
+            char tmp[256];
+            sprintf(tmp, "%ld",
+                    strtol(token.tokenValue.c_str(), NULL, numTypeFlag));
+            token.tokenValue = tmp;
+        }
+        unit->tokenList.push_back(token);
+    } while (token.type != tok_eof);
+    unit->icurTok = unit->tokenList.begin();
 }
 
-CompileUnit::CompileUnit(std::string name, std::string source) {
-	this->name = name;
-	this->source = source;
-	this->sis = std::istringstream(source);
-	this->lexer = new yyFlexLexer(sis, std::cerr);
-	context = new llvm::LLVMContext();
-	module = new llvm::Module("test.ll", *context);
-	scanToken(this);
+CompileUnit::CompileUnit(std::string name, std::string source)
+{
+    this->name   = name;
+    this->source = source;
+    this->sis    = std::istringstream(source);
+    this->lexer  = new yyFlexLexer(sis, std::cerr);
+    context      = new llvm::LLVMContext();
+    module       = new llvm::Module("test.ll", *context);
+    scanToken(this);
 }
 
-CompileUnit::~CompileUnit() {
-}
+CompileUnit::~CompileUnit() {}
 
 //获取下一个Token
-Token CompileUnit::next_tok() {
-	icurTok++;
-	Token token = *icurTok;
-	return token;
+Token CompileUnit::next_tok()
+{
+    icurTok++;
+    Token token = *icurTok;
+    return token;
 }
 
 void CompileUnit::compile() {
@@ -107,12 +113,37 @@ void CompileUnit::compile() {
 	} while (next_tok().type != tok_eof);
 	build();
 	//createIRWithIRBuilder();
+             llvm::GlobalVariable
+             *gVar=module->getNamedGlobal(func_ast->proto->name);
+             gVar->setConstant(true);
+             gVar->setInitializer(func);*/
+            break;
+        }
+        case tok_extern: {
+            Token token = next_tok();
+            if (token.type == tok_eof) {
+                CompileError e("Unexpected EOF in funtion body");
+                throw e;
+            }
+            if (token.type == tok_fun) {
+                ExternAST::ParseExtern(this)->Codegen();
+            }
+            // todo:对导出非函数符号的处理
+            break;
+        }
+        default:
+            std::cerr << "unexpected token." << std::endl;
+        }
+    } while (next_tok().type != tok_eof);
+    build();
+    // createIRWithIRBuilder();
 }
 
-void CompileUnit::build() {
-	std::error_code EC;
-	//TODO:OpenFlag对LLVM11兼容性的更改
-	llvm::raw_fd_ostream OS(name + ".bc", EC);
-	llvm::WriteBitcodeToFile(*module, OS);
-	OS.flush();
+void CompileUnit::build()
+{
+    std::error_code EC;
+    // TODO:OpenFlag对LLVM11兼容性的更改
+    llvm::raw_fd_ostream OS(name + ".bc", EC);
+    llvm::WriteBitcodeToFile(*module, OS);
+    OS.flush();
 }

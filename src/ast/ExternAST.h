@@ -11,13 +11,14 @@
 #include "BaseAST.h"
 #include "PrototypeAST.h"
 
-class ExternAST: public BaseAST {
-public:
-	ExternAST(CompileUnit *unit, PrototypeAST *prototype);
-	virtual ~ExternAST();
-	static ExternAST* ParseExtern(CompileUnit *unit);
-	llvm::Function* Codegen();
-	PrototypeAST* proto;
+class ExternAST : public BaseAST
+{
+  public:
+    ExternAST(CompileUnit *unit, PrototypeAST *prototype);
+    virtual ~ExternAST();
+    static ExternAST *ParseExtern(CompileUnit *unit);
+    llvm::Function *  Codegen();
+    PrototypeAST *    proto;
 };
 
 #endif /* COMPILER_AST_EXTERNAST_H_ */
