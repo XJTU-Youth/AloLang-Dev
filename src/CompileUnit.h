@@ -13,6 +13,7 @@
 #include "Token.h"
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/IRBuilder.h>
+#include <FlexLexer.h>
 
 class CompileUnit {
 public:
@@ -22,7 +23,7 @@ public:
 	Token next_tok();
 	void build();
 
-	std::vector<Token> tokenList;
+	FlexLexer* lexer;
 
 	std::string name;
 	std::string source;
