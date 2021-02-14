@@ -3,13 +3,14 @@
 
 #include "BaseAST.h"
 
-class ExprAST: public BaseAST {
-public:
-	ExprAST(CompileUnit *unit);
-	virtual ~ExprAST();
-	virtual llvm::Value* Codegen(llvm::IRBuilder<> *builder) =0;
-	static ExprAST* ParseExpression(CompileUnit *unit, bool root);
-	static ExprAST* ParsePrimary(CompileUnit *unit);
+class ExprAST : public BaseAST
+{
+  public:
+    ExprAST(CompileUnit *unit);
+    virtual ~ExprAST();
+    virtual llvm::Value *Codegen(llvm::IRBuilder<> *builder) = 0;
+    static ExprAST *     ParseExpression(CompileUnit *unit, bool root);
+    static ExprAST *     ParsePrimary(CompileUnit *unit);
 };
 
 #endif /* COMPILER_AST_ASTEXPR_H_ */
