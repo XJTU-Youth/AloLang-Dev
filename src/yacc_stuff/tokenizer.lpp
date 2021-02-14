@@ -1,5 +1,5 @@
 %{
-#include "../Token.h"
+#include <Token.h>
 #include <fstream>
 #include <iostream>
 int token;
