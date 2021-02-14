@@ -7,6 +7,12 @@ func demo()
     testPrintInt(1);
     testPrintInt(0xB);
     testPrintInt(0777);
+    testPrintInt(1+1);
+    testPrintInt(65535+1);
+    testPrintInt(0-1);
+    testPrintInt(32768/4);
+    testPrintInt((1+2)*3-10);
+
 //    demo();
 }
 
