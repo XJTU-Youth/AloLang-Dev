@@ -33,6 +33,7 @@ return                      token = tok_extern;         return token;
 \(                          token = tok_syntax;         return token;
 \)                          token = tok_syntax;         return token;
 \+                          token = tok_syntax;         return token;
+-                           token = tok_syntax;         return token;
 =                           token = tok_syntax;         return token;
 \{                          token = tok_syntax;         return token;
 \}                          token = tok_syntax;         return token;

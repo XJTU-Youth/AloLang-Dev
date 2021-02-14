@@ -11,6 +11,11 @@ entry:
   call void @_alolang_12testPrintInt3int(i64 1)
   call void @_alolang_12testPrintInt3int(i64 11)
   call void @_alolang_12testPrintInt3int(i64 511)
+  call void @_alolang_12testPrintInt3int(i64 2)
+  call void @_alolang_12testPrintInt3int(i64 65536)
+  call void @_alolang_12testPrintInt3int(i64 -1)
+  call void @_alolang_12testPrintInt3int(i64 8192)
+  call void @_alolang_12testPrintInt3int(i64 -1)
   ret void
 }
 

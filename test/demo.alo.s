@@ -15,6 +15,16 @@ _alolang_4demo:                         # @_alolang_4demo
 	callq	_alolang_12testPrintInt3int@PLT
 	movl	$511, %edi                      # imm = 0x1FF
 	callq	_alolang_12testPrintInt3int@PLT
+	movl	$2, %edi
+	callq	_alolang_12testPrintInt3int@PLT
+	movl	$65536, %edi                    # imm = 0x10000
+	callq	_alolang_12testPrintInt3int@PLT
+	movq	$-1, %rdi
+	callq	_alolang_12testPrintInt3int@PLT
+	movl	$8192, %edi                     # imm = 0x2000
+	callq	_alolang_12testPrintInt3int@PLT
+	movq	$-1, %rdi
+	callq	_alolang_12testPrintInt3int@PLT
 	popq	%rax
 	.cfi_def_cfa_offset 8
 	retq
