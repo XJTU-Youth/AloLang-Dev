@@ -1,7 +1,7 @@
-#include "ExprAST.h"
 #include "../CompileError.hpp"
 #include "BinaryExprAST.h"
 #include "CallExprAST.h"
+#include "ExprAST.h"
 #include "IntExprAST.h"
 #include "VariableExprAST.h"
 #include <iostream>
@@ -69,7 +69,6 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit)
                 args.push_back(arg);
                 // todo:异常处理
             }
-
             unit->curTok = unit->next_tok();
             if (unit->curTok.type != tok_syntax ||
                 unit->curTok.tokenValue != ";") {
