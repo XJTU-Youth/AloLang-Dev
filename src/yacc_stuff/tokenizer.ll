@@ -6,6 +6,7 @@ int token;
 
 %}
 %option yylineno
+%option c++
 %%
 [ \t]+                      {/*Skip spaces and tabs*/};
 \/\*[.\n]*?\*\/|\/\/.*      {/*Skip comments*/};
@@ -52,7 +53,7 @@ return                      token = tok_extern; return token;
 \/                          token = tok_syntax; return token;
 #                           token = tok_syntax; return token;
 <<EOF>>                     {token = tok_eof; return token;}
-.                           token = tok_error; return token;
+.                           token = tok_err; return token;
 %%
 
 int yyFlexLexer::yywrap(){return 1;}

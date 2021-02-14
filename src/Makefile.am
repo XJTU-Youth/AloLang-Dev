@@ -3,7 +3,9 @@ bin_PROGRAMS = aloc
 aloc_SOURCES = aloc.cpp CompileUnit.cpp preprocessor.cpp Token.cpp utils.cpp\
     ast/BaseAST.cpp ast/CallExprAST.cpp ast/CodeBlockAST.cpp ast/ExprAST.cpp\
     ast/ExternAST.cpp ast/FunctionAST.cpp ast/IntExprAST.cpp ast/PrototypeAST.cpp\
-    ast/VariableExprAST.cpp yacc_stuff/lex.yy.cc
+    ast/VariableExprAST.cpp yacc_stuff/tokenizer.ll
+
+AM_LFLAGS = -otokenizer.cc
 
 ldflagsLLVM := $(shell llvm-config --ldflags)
 cxxflagsLLVM := $(shell llvm-config --cxxflags)
