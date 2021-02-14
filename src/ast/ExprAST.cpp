@@ -68,11 +68,6 @@ ExprAST* ExprAST::ParsePrimary(CompileUnit *unit) {
 				//todo:异常处理
 			}
 
-			unit->curTok = unit->next_tok();
-			if (unit->curTok.type != tok_syntax
-					|| unit->curTok.tokenValue != ";") {
-				std::cerr << "结尾的分号丢失？" << std::endl;
-			}
 			return new CallExprAST(unit, idName, args);
 		} else {
 			std::cerr << "err2:非函数调用或定义未实现" << std::endl;
