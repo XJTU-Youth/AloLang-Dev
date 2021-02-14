@@ -9,6 +9,7 @@
 #define COMPILER_UTILS_H_
 
 #include <sstream>
+#include <vector>
 
 std::string demangle(const std::string &             fnName,
                      const std::vector<std::string> &argTypes);

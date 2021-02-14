@@ -6,6 +6,7 @@
  */
 
 #include "CompileUnit.h"
+#include "CompileError.hpp"
 #include <llvm/Bitcode/BitcodeWriter.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/GlobalVariable.h>
@@ -112,31 +113,6 @@ void CompileUnit::compile() {
 		}
 	} while (next_tok().type != tok_eof);
 	build();
-	//createIRWithIRBuilder();
-             llvm::GlobalVariable
-             *gVar=module->getNamedGlobal(func_ast->proto->name);
-             gVar->setConstant(true);
-             gVar->setInitializer(func);*/
-            break;
-        }
-        case tok_extern: {
-            Token token = next_tok();
-            if (token.type == tok_eof) {
-                CompileError e("Unexpected EOF in funtion body");
-                throw e;
-            }
-            if (token.type == tok_fun) {
-                ExternAST::ParseExtern(this)->Codegen();
-            }
-            // todo:对导出非函数符号的处理
-            break;
-        }
-        default:
-            std::cerr << "unexpected token." << std::endl;
-        }
-    } while (next_tok().type != tok_eof);
-    build();
-    // createIRWithIRBuilder();
 }
 
 void CompileUnit::build()
