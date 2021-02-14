@@ -9,7 +9,8 @@ AC_CONFIG_HEADERS([config.h])
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
-AC_PROG_LEX(yywrap)
+AC_PROG_LEX(noyywrap)
+AC_PROG_RANLIB
 
 # Checks for libraries.
 # FIXME: Replace 'main' with a function in '-lboost_program_options':
@@ -37,6 +38,7 @@ AC_CHECK_FUNCS([memset strtol])
 AC_CONFIG_FILES([
     Makefile
     src/Makefile
+    src/lib/Makefile
 ])
 
 AM_INIT_AUTOMAKE

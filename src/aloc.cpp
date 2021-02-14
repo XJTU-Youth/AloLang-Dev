@@ -25,6 +25,7 @@ namespace po = boost::program_options;
 
 std::vector<string> input_file_names;
 std::string output_file_name;
+std::string alolanglibdir;
 
 int main(int argc, char *argv[]) {
 	try {
@@ -39,6 +40,7 @@ int main(int argc, char *argv[]) {
 		// config file
 		po::options_description config("Configuration");
 		config.add_options()("output,o", po::value<string>(), "output file");
+		config.add_options()("alolanglib,L", po::value<string>(), "Alolang Core Library Position, default to src/lib");
 
 		// Hidden options, will be allowed both on command line and
 		// in config file, but will not be shown to the user.
@@ -73,6 +75,11 @@ int main(int argc, char *argv[]) {
 
 		if (vm.count("input-file")) {
 			input_file_names = vm["input-file"].as<std::vector<std::string>>();
+
+			if (vm.count("alolanglib"))
+				alolanglibdir = vm["alolanglib"].as<std::string>();
+			else
+				output_file_name = "src/lib";
 
 			for (std::string input_file_name : input_file_names) {
 				if (vm.count("output"))
@@ -113,7 +120,7 @@ int main(int argc, char *argv[]) {
 			for (std::string input_file_name : input_file_names) {
 				objs += "./" + input_file_name + ".s ";
 			}
-			std::string cmdline = "gcc" + objs + " -fPIE -o "
+			std::string cmdline = "gcc" + objs + " -fPIE -L " + alolanglibdir + " -l alolangcore" + " -o "
 					+ output_file_name;
 			std::cout << "debug info:" << cmdline << std::endl;
 			system(cmdline.c_str());
