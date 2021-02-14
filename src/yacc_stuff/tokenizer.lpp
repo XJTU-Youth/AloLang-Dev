@@ -6,6 +6,7 @@ int token;
 
 %}
 %option yylineno
+%option c++
 %%
 [ \t]+                      {/*Skip spaces and tabs*/};
 \/\*[.\n]*?\*\/|\/\/.*      {/*Skip comments*/};
