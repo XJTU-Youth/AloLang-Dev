@@ -25,7 +25,7 @@ CallExprAST::CallExprAST(CompileUnit *unit, const std::string &callee,
     }
 
     this->args = args;
-    std::cout << "Function call found:" << this->callee << std::endl;
+    std::cout << std::left << std::setw(35) << "Function call found:" << this->callee << std::endl;
 }
 
 CallExprAST::~CallExprAST()

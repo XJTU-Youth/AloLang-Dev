@@ -10,6 +10,7 @@
 #include "CodeBlockAST.h"
 #include "PrototypeAST.h"
 #include <iostream>
+#include <iomanip>
 #include <llvm/IR/IRBuilder.h>
 
 FunctionAST::FunctionAST(CompileUnit *unit, PrototypeAST *proto,
@@ -36,7 +37,7 @@ llvm::Function *FunctionAST::Codegen()
 FunctionAST *FunctionAST::ParseFunction(CompileUnit *unit)
 {
     PrototypeAST *protoType = PrototypeAST::ParsePrototype(unit, true);
-    std::cout << "Function definition found:" << protoType->name << std::endl;
+    std::cout << std::left << std::setw(35) << "Function definition found:" << protoType->name << std::endl;
     CodeBlockAST *body = CodeBlockAST::ParseCodeBlock(unit, "entry");
     return new FunctionAST(unit, protoType, body);
 }

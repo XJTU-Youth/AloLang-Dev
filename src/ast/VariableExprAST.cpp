@@ -50,7 +50,7 @@ llvm::Value *VariableExprAST::Codegen(llvm::IRBuilder<> *builder)
 VariableExprAST *VariableExprAST::ParseVar(CompileUnit *unit,
                                            std::string idName, std::string type)
 {
-    std::cout << "Variable definition found:" << idName << " with type:" << type
+    std::cout << std::left << std::setw(35) << "Variable definition found:" << idName << " with type:" << type
               << std::endl;
     Token token = unit->next_tok();
     if (token.type != tok_syntax || token.tokenValue != ";") {

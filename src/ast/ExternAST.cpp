@@ -22,7 +22,7 @@ ExternAST::~ExternAST()
 ExternAST *ExternAST::ParseExtern(CompileUnit *unit)
 {
     PrototypeAST *proto = PrototypeAST::ParsePrototype(unit, false);
-    std::cout << "Function extern found:" << proto->name << std::endl;
+    std::cout << std::left << std::setw(35) << "Function extern found:" << proto->name << std::endl;
     return new ExternAST(unit, proto);
 }
 
