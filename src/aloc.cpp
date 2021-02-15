@@ -34,7 +34,8 @@ int main(int argc, char *argv[])
         // allowed only on command line
         po::options_description generic("Generic options");
         generic.add_options()("version,v", "print version string")(
-            "help", "produce help message");
+            "help", "produce help message")("static",
+                                            "Build static linked executable");
 
         // Declare a group of options that will be
         // allowed both on command line and in
@@ -125,7 +126,9 @@ int main(int argc, char *argv[])
             for (std::string input_file_name : input_file_names) {
                 objs += "./" + input_file_name + ".s ";
             }
-            std::string cmdline = "gcc" + objs + " -fPIE -L " + alolanglibdir +
+            std::string cmdline = "gcc" + objs +
+                                  (vm.count("static") ? "-static " : "") +
+                                  " -fPIE -L " + alolanglibdir +
                                   " -l alolangcore" + " -o " + output_file_name;
             std::cout << "debug info:" << cmdline << std::endl;
             system(cmdline.c_str());
