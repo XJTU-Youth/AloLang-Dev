@@ -6,12 +6,13 @@
  */
 
 #include "Token.h"
-#include <sstream>
 #include <iomanip>
+#include <sstream>
 
 Token::Token()
 {
     tokenValue = "";
+    type       = tok_err;
     lineno     = 0;
 }
 
@@ -59,6 +60,7 @@ std::string Token::dump()
     default:
         typeStr = "未定义";
     }
-    ss << std::left << "Line " << std::setw(6) << lineno << " type:" << std::setw(16) << typeStr << " data:" << tokenValue;
+    ss << std::left << "Line " << std::setw(6) << lineno
+       << " type:" << std::setw(16) << typeStr << " data:" << tokenValue;
     return ss.str();
 }
