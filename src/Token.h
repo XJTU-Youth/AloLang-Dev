@@ -31,6 +31,7 @@ class Token
     std::string dump();
     TokenType   type;
     std::string tokenValue;
+    uint64_t    lineno;
 };
 
 #endif /* COMPILER_TOKEN_H_ */

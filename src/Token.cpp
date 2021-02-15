@@ -7,8 +7,13 @@
 
 #include "Token.h"
 #include <sstream>
+#include <iomanip>
 
-Token::Token() { tokenValue = ""; }
+Token::Token()
+{
+    tokenValue = "";
+    lineno     = 0;
+}
 
 Token::~Token()
 {
@@ -54,6 +59,6 @@ std::string Token::dump()
     default:
         typeStr = "未定义";
     }
-    ss << "type:" << typeStr << ",data:" << tokenValue;
+    ss << std::left << "Line " << std::setw(6) << lineno << " type:" << std::setw(16) << typeStr << " data:" << tokenValue;
     return ss.str();
 }
