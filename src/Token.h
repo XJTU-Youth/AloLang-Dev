@@ -23,7 +23,15 @@ enum TokenType {
     tok_syntax,
     tok_key_op,
     tok_key_literal,
-    tok_key_control,
+    tok_key_break,
+    tok_key_continue,
+    tok_key_do,
+    tok_key_else,
+    tok_key_for,
+    tok_key_foreach,
+    tok_key_goto,
+    tok_key_if,
+    tok_key_while,
     tok_key_switch
 };
 

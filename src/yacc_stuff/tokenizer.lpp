@@ -16,15 +16,16 @@ and|or|xor|not              token = tok_key_op;         return token;
 
 true|false                  token = tok_key_literal;    return token;
 
-break                       token = tok_key_control;    return token;
-continue                    token = tok_key_control;    return token;
-do                          token = tok_key_control;    return token;
-else                        token = tok_key_control;    return token;
-for                         token = tok_key_control;    return token;
-foreach                     token = tok_key_control;    return token;
-goto                        token = tok_key_control;    return token;
-if                          token = tok_key_control;    return token;
-while                       token = tok_key_control;    return token;
+break                       token = tok_key_break;      return token;
+continue                    token = tok_key_continue;   return token;
+do                          token = tok_key_do;         return token;
+else                        token = tok_key_else;       return token;
+for                         token = tok_key_for;        return token;
+foreach                     token = tok_key_foreach;    return token;
+goto                        token = tok_key_goto;       return token;
+if                          token = tok_key_if;         return token;
+while                       token = tok_key_while;      return token;
+
 case|switch                 token = tok_key_switch;     return token;
 
 ->                          token = tok_return_type;    return token;
