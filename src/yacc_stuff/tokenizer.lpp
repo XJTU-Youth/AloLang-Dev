@@ -14,6 +14,14 @@ control     break|continue|do|else|for|foreach|goto|if|while
 [ \t\n]+                    {/*Skip spaces tabs, and line feeds*/};
 \/\*[.\n]*?\*\/|\/\/.*      {/*Skip comments*/};
 
+and|or|xor|not              token = tok_key_op;         return token;
+
+true|false                  token = tok_key_literal;    return token;
+
+<control>                   token = tok_key_control;    return token;
+
+case|switch                 token = tok_key_switch;     return token;
+
 ->                          token = tok_return_type;    return token;
 fun                         token = tok_fun;            return token;
 func                        token = tok_fun;            return token;
@@ -27,16 +35,6 @@ return                      token = tok_extern;         return token;
 0[1-7][0-7]*                token = tok_number;         return token;
 [1-9][0-9.]*                token = tok_number;         return token;
 0                           token = tok_number;         return token;
-
-and|or|xor|not              token = tok_key_op;         return token;
-
-fun|func                    token = tok_key_fun;        return token;
-
-true|false                  token = tok_key_literal;    return token;
-
-<control>                   token = tok_key_control;    return token;
-
-case|switch                 token = tok_key_switch;     return token;
 
 !                           token = tok_syntax;         return token;
 %                           token = tok_syntax;         return token;
