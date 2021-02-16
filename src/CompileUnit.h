@@ -25,15 +25,15 @@ class CompileUnit
     Token next_tok();
     void  build();
 
-    FlexLexer *                    lexer;
-    std::string                    name;
-    std::string                    source;
-    std::istringstream             sis;
-    llvm::LLVMContext *            context;
-    llvm::Module *                 module;
-    std::vector<Token>             tokenList;
-    std::vector<Token>::iterator   icurTok;
-    std::map<std::string, TypeAST> types;
+    FlexLexer *                      lexer;
+    std::string                      name;
+    std::string                      source;
+    std::istringstream               sis;
+    llvm::LLVMContext *              context;
+    llvm::Module *                   module;
+    std::vector<Token>               tokenList;
+    std::vector<Token>::iterator     icurTok;
+    std::map<std::string, TypeAST *> types;
 };
 
 #endif /* COMPILER_COMPILEUNIT_H_ */
