@@ -2,6 +2,7 @@
 #include "../CompileError.hpp"
 #include "BinaryExprAST.h"
 #include "CallExprAST.h"
+#include "CodeBlockAST.h"
 #include "IntExprAST.h"
 #include "VariableExprAST.h"
 #include <iostream>
@@ -34,7 +35,7 @@ ExprAST::~ExprAST()
     // TODO Auto-generated destructor stub
 }
 
-ExprAST *ExprAST::ParsePrimary(CompileUnit *unit)
+ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
 {
     // todo:除了函数调用之外的语句解析
     Token token = unit->next_tok();
@@ -44,7 +45,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit)
     }
     case tok_syntax: {
         if (token.tokenValue == "(") {
-            ExprAST *result = ParseExpression(unit, false);
+            ExprAST *result = ParseExpression(unit, codeblock, false);
             token           = unit->next_tok();
             if (token.type != tok_syntax || token.tokenValue != ")") {
                 CompileError e("missing ')'");
@@ -59,12 +60,15 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit)
     case tok_identifier: {
         //函数调用或定义
         std::string idName = token.tokenValue;
-        token              = unit->next_tok();
+        token              = *(unit->icurTok + 1);
         if (token.type == tok_identifier) {
             //定义
+            unit->next_tok();
             std::string valName = token.tokenValue;
-            return VariableExprAST::ParseVar(unit, valName, idName);
+            return VariableExprAST::ParseVar(unit, codeblock, valName, idName);
         } else if (token.tokenValue == "(") {
+            //函数调用
+            unit->next_tok();
             std::vector<ExprAST *> args;
             while (true) {
                 Token nextToken = *(unit->icurTok + 1);
@@ -80,14 +84,20 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit)
                     continue;
                 }
 
-                ExprAST *arg = ExprAST::ParseExpression(unit, false);
+                ExprAST *arg = ExprAST::ParseExpression(unit, codeblock, false);
                 args.push_back(arg);
                 // todo:异常处理
             }
 
             return new CallExprAST(unit, idName, args);
         } else {
-            std::cerr << "err2:非函数调用或定义未实现" << std::endl;
+            //变量
+            auto varAST = codeblock->namedValues.find(idName);
+            if (varAST == codeblock->namedValues.end()) {
+                CompileError e("can't find variable:" + idName);
+                throw e;
+            }
+            return varAST->second.second;
         }
         break;
     }
@@ -99,7 +109,8 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit)
     return nullptr;
 }
 
-static ExprAST *ParseBinOpRHS(CompileUnit *unit, int ExprPrec, ExprAST *LHS)
+static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
+                              int ExprPrec, ExprAST *LHS)
 {
     while (1) {
         Token token   = *(unit->icurTok + 1);
@@ -110,13 +121,13 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, int ExprPrec, ExprAST *LHS)
         unit->next_tok();
         char BinOp = token.tokenValue[0];
 
-        ExprAST *RHS = ExprAST::ParsePrimary(unit);
+        ExprAST *RHS = ExprAST::ParsePrimary(unit, codeblock);
         if (!RHS)
             return nullptr;
 
         int NextPrec = GetTokPrecedence(*(unit->icurTok + 1));
         if (TokPrec < NextPrec) {
-            RHS = ParseBinOpRHS(unit, TokPrec + 1, RHS);
+            RHS = ParseBinOpRHS(unit, codeblock, TokPrec + 1, RHS);
             if (RHS == nullptr) {
                 return nullptr;
             }
@@ -125,13 +136,14 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, int ExprPrec, ExprAST *LHS)
     }
 }
 
-ExprAST *ExprAST::ParseExpression(CompileUnit *unit, bool root)
+ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
+                                  bool root)
 {
-    ExprAST *LHS = ParsePrimary(unit);
+    ExprAST *LHS = ParsePrimary(unit, codeblock);
     if (LHS == nullptr) {
         return nullptr;
     }
-    ExprAST *result = ParseBinOpRHS(unit, 0, LHS);
+    ExprAST *result = ParseBinOpRHS(unit, codeblock, 0, LHS);
     if (root) {
         Token token = unit->next_tok();
         if (token.type != tok_syntax || token.tokenValue != ";") {

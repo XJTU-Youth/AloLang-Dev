@@ -12,14 +12,16 @@
 class VariableExprAST : public ExprAST
 {
   public:
-    VariableExprAST(CompileUnit *unit, const std::string &idName,
-                    const std::string &type);
+    VariableExprAST(CompileUnit *unit, CodeBlockAST *codeblock,
+                    const std::string &idName, const std::string &type);
     virtual ~VariableExprAST();
-    static VariableExprAST *ParseVar(CompileUnit *unit, std::string idName,
-                                     std::string type);
+    static VariableExprAST *ParseVar(CompileUnit *unit, CodeBlockAST *codeblock,
+                                     std::string idName, std::string type);
     llvm::Value *           Codegen(llvm::IRBuilder<> *builder);
     std::string             idName;
     std::string             type;
+    CodeBlockAST *          codeblock;
+    llvm::AllocaInst *      alloca;
 };
 
 #endif /* COMPILER_AST_VARIABLEEXPRAST_H_ */

@@ -17,9 +17,18 @@
 #include "ast/ExprAST.h"
 #include "ast/ExternAST.h"
 #include "ast/FunctionAST.h"
+#include "ast/TypeAST.h"
 #include "utils.h"
 #include <fstream>
 #include <iostream>
+
+void initInnerType(CompileUnit *unit)
+{
+    unit->types.insert(
+        std::pair<std::string, TypeAST *>("int", new TypeAST(unit, "int")));
+    unit->types.insert(
+        std::pair<std::string, TypeAST *>("bool", new TypeAST(unit, "bool")));
+}
 
 void scanToken(CompileUnit *unit)
 {
@@ -72,7 +81,6 @@ CompileUnit::CompileUnit(std::string name, std::string source)
     this->lexer  = new yyFlexLexer(sis, std::cerr);
     context      = new llvm::LLVMContext();
     module       = new llvm::Module("test.ll", *context);
-    scanToken(this);
 }
 
 CompileUnit::~CompileUnit() {}
@@ -88,6 +96,8 @@ Token CompileUnit::next_tok()
 void CompileUnit::compile()
 {
     std::cout << "Start compiling:" << name << std::endl;
+    initInnerType(this);
+    scanToken(this);
     do {
         switch (icurTok->type) {
         case tok_fun: {

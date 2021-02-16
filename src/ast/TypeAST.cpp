@@ -19,10 +19,19 @@ TypeAST::~TypeAST()
 }
 llvm::Type *TypeAST::Codegen()
 {
-    llvm::StructType *llvm_S = llvm::StructType::create(*unit->context, name);
-    std::vector<llvm::Type *> members;
-    for (TypeAST *member : innerType) {
-        members.push_back(member->Codegen());
+    //内置类型处理
+    if (name == "int") {
+        return llvm::Type::getInt64Ty(*unit->context);
+    } else if (name == "bool") {
+        return llvm::Type::getInt1Ty(*unit->context);
+    } else {
+        //用户定义的类型
+        llvm::StructType *llvm_S =
+            llvm::StructType::create(*unit->context, name);
+        std::vector<llvm::Type *> members;
+        for (TypeAST *member : innerType) {
+            members.push_back(member->Codegen());
+        }
+        return llvm_S;
     }
-    return llvm_S;
 }
