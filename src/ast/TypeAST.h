@@ -13,8 +13,11 @@
 class TypeAST : public BaseAST
 {
   public:
-    TypeAST(CompileUnit *unit);
+    TypeAST(CompileUnit *unit, std::string name);
     virtual ~TypeAST();
+    llvm::Type *           Codegen();
+    std::string            name;
+    std::vector<TypeAST *> innerType;
 };
 
 #endif /* SRC_AST_TYPEAST_H_ */

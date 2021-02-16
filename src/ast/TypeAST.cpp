@@ -8,12 +8,21 @@
 #include "TypeAST.h"
 #include "CompileUnit.h"
 
-TypeAST::TypeAST(CompileUnit *unit) : BaseAST(unit)
+TypeAST::TypeAST(CompileUnit *unit, std::string name) : BaseAST(unit)
 {
-    // TODO Auto-generated constructor stub
+    this->name = name;
 }
 
 TypeAST::~TypeAST()
 {
     // TODO Auto-generated destructor stub
+}
+llvm::Type *TypeAST::Codegen()
+{
+    llvm::StructType *llvm_S = llvm::StructType::create(*unit->context, name);
+    std::vector<llvm::Type *> members;
+    for (TypeAST *member : innerType) {
+        members.push_back(member->Codegen());
+    }
+    return llvm_S;
 }
