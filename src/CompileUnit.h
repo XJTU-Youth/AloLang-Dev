@@ -10,7 +10,6 @@
 
 #include "Token.h"
 #include <FlexLexer.h>
-//#include <ast/TypeAST.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <sstream>
@@ -33,7 +32,6 @@ class CompileUnit
     llvm::Module *               module;
     std::vector<Token>           tokenList;
     std::vector<Token>::iterator icurTok;
-    // std::map<std::string, TypeAST *> types;
 };
 
 #endif /* COMPILER_COMPILEUNIT_H_ */

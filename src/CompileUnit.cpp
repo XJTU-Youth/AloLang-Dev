@@ -21,13 +21,6 @@
 #include <fstream>
 #include <iostream>
 
-void initInnerType(CompileUnit *unit)
-{
-    // int
-    /*unit->types.insert(
-        std::pair<std::string, TypeAST>("int", new TypeAST(unit, "int")));*/
-}
-
 void scanToken(CompileUnit *unit)
 {
     Token token;
@@ -79,6 +72,7 @@ CompileUnit::CompileUnit(std::string name, std::string source)
     this->lexer  = new yyFlexLexer(sis, std::cerr);
     context      = new llvm::LLVMContext();
     module       = new llvm::Module("test.ll", *context);
+    scanToken(this);
 }
 
 CompileUnit::~CompileUnit() {}
@@ -94,8 +88,6 @@ Token CompileUnit::next_tok()
 void CompileUnit::compile()
 {
     std::cout << "Start compiling:" << name << std::endl;
-    scanToken(this);
-    initInnerType(this);
     do {
         switch (icurTok->type) {
         case tok_fun: {
