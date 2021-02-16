@@ -107,7 +107,8 @@ void CompileUnit::compile()
         case tok_extern: {
             Token token = next_tok();
             if (token.type == tok_eof) {
-                CompileError e("Unexpected EOF in funtion body");
+                CompileError e("Unexpected EOF in funtion body, line " +
+                               std::to_string(token.lineno));
                 throw e;
             }
             if (token.type == tok_fun) {
