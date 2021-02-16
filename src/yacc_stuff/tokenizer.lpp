@@ -8,8 +8,6 @@ int token;
 %option yylineno
 %option c++
 
-control     break|continue|do|else|for|foreach|goto|if|while
-
 %%
 [ \t\n]+                    {/*Skip spaces tabs, and line feeds*/};
 \/\*[.\n]*?\*\/|\/\/.*      {/*Skip comments*/};
@@ -18,8 +16,15 @@ and|or|xor|not              token = tok_key_op;         return token;
 
 true|false                  token = tok_key_literal;    return token;
 
-<control>                   token = tok_key_control;    return token;
-
+break                       token = tok_key_control;    return token;
+continue                    token = tok_key_control;    return token;
+do                          token = tok_key_control;    return token;
+else                        token = tok_key_control;    return token;
+for                         token = tok_key_control;    return token;
+foreach                     token = tok_key_control;    return token;
+goto                        token = tok_key_control;    return token;
+if                          token = tok_key_control;    return token;
+while                       token = tok_key_control;    return token;
 case|switch                 token = tok_key_switch;     return token;
 
 ->                          token = tok_return_type;    return token;
