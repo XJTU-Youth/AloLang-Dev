@@ -1,5 +1,5 @@
 extern func testPrintInt(int i);
-extern func testGetInt() -> int;
+extern func testGetInt();
 
 func main()
 {
