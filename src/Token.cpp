@@ -57,8 +57,47 @@ std::string Token::dump()
     case tok_syntax:
         typeStr = "tok_syntax";
         break;
+    case tok_str:
+        typeStr = "tok_str";
+        break;
+    case tok_key_op:
+        typeStr = "tok_key_op";
+        break;
+    case tok_key_literal:
+        typeStr = "tok_key_literal";
+        break;
+    case tok_key_break:
+        typeStr = "tok_key_break";
+        break;
+    case tok_key_continue:
+        typeStr = "tok_key_continue";
+        break;
+    case tok_key_do:
+        typeStr = "tok_key_do";
+        break;
+    case tok_key_else:
+        typeStr = "tok_key_else";
+        break;
+    case tok_key_for:
+        typeStr = "tok_key_for";
+        break;
+    case tok_key_foreach:
+        typeStr = "tok_key_foreach";
+        break;
+    case tok_key_goto:
+        typeStr = "tok_key_goto";
+        break;
+    case tok_key_if:
+        typeStr = "tok_key_if";
+        break;
+    case tok_key_while:
+        typeStr = "tok_key_while";
+        break;
+    case tok_key_switch:
+        typeStr = "tok_key_switch";
+        break;
     default:
-        typeStr = "未定义";
+        typeStr = "not defined";
     }
     ss << std::left << "Line " << std::setw(6) << lineno
        << " type:" << std::setw(16) << typeStr << " data:" << tokenValue;
