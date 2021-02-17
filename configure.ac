@@ -3,6 +3,12 @@
 
 AC_PREREQ([2.70])
 AC_INIT([AloLang Compiler], [Dev Beta], [https://github.com/XJTU-Youth/AloLang-Dev/issues])
+
+AC_ARG_ENABLE([debug],
+    [AS_HELP_STRING([--enable-debug],[debug program(default is no)])],
+    [CFLAGS="${CFLAGS} -g -O0"],
+    [CFLAGS="-g -O2"])
+
 AC_CONFIG_SRCDIR([src/aloc.cpp])
 AC_CONFIG_HEADERS([config.h])
 
