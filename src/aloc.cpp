@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
             for (std::string input_file_name : input_file_names) {
                 objs += "./" + input_file_name + ".s ";
             }
-            std::string cmdline = "gcc" + objs +
+            std::string cmdline = "gcc -O0" + objs +
                                   (vm.count("static") ? "-static " : "") +
                                   " -fPIE -L " + alolanglibdir +
                                   " -l alolangcore" + " -o " + output_file_name;

@@ -15,16 +15,16 @@
 
 VariableExprAST::VariableExprAST(CompileUnit *unit, CodeBlockAST *codeblock,
                                  const std::string &idName,
-                                 const std::string &type)
+                                 const std::string &type, ExprAST *initValue)
     : ExprAST(unit)
 {
     this->idName    = idName;
     this->type      = type;
     this->codeblock = codeblock;
     this->alloca    = nullptr;
+    this->initValue = initValue;
     codeblock->namedValues.insert(
-        std::pair<std::string, std::pair<std::string, VariableExprAST *>>(
-            idName, std::pair<std::string, VariableExprAST *>(type, this)));
+        std::pair<std::string, VariableExprAST *>(idName, this));
 }
 
 VariableExprAST::~VariableExprAST()
@@ -50,16 +50,15 @@ static llvm::AllocaInst *CreateEntryBlockAlloca(CompileUnit *      unit,
 
 llvm::Value *VariableExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
-    // todo:待实现
     if (alloca == nullptr) {
-        std::cout << "TODO:#2" << std::endl;
         llvm::BasicBlock *insertBlock = builder->GetInsertBlock();
         llvm::Function *  function    = insertBlock->getParent();
         alloca = CreateEntryBlockAlloca(unit, function, idName, type);
-        builder->CreateStore(IntExprAST(unit, 4).Codegen(builder),
-                             alloca); // todo:对类型的处理
+        if (initValue != nullptr) {
+            builder->CreateStore(initValue->Codegen(builder), alloca);
+        }
     }
-    return alloca;
+    return builder->CreateLoad(alloca);
 }
 
 VariableExprAST *VariableExprAST::ParseVar(CompileUnit * unit,
@@ -69,9 +68,17 @@ VariableExprAST *VariableExprAST::ParseVar(CompileUnit * unit,
     std::cout << std::left << std::setw(35)
               << "Variable definition found:" << idName << " with type:" << type
               << std::endl;
-    Token nexToken = *(unit->icurTok + 1);
+    Token    nexToken  = *(unit->icurTok + 1);
+    ExprAST *initValue = nullptr;
+
     if (nexToken.type != tok_syntax || nexToken.tokenValue != ";") {
-        std::cerr << "TODO:变量初始化赋值" << std::endl;
+        if (nexToken.type == tok_syntax && nexToken.tokenValue == "=") {
+            unit->next_tok();
+            initValue = ExprAST::ParseExpression(unit, codeblock, false);
+        } else {
+            CompileError e("Unknown token:" + nexToken.dump());
+            throw e;
+        }
     }
-    return new VariableExprAST(unit, codeblock, idName, type);
+    return new VariableExprAST(unit, codeblock, idName, type, initValue);
 }

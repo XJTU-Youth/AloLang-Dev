@@ -13,7 +13,8 @@ class VariableExprAST : public ExprAST
 {
   public:
     VariableExprAST(CompileUnit *unit, CodeBlockAST *codeblock,
-                    const std::string &idName, const std::string &type);
+                    const std::string &idName, const std::string &type,
+                    ExprAST *initValue);
     virtual ~VariableExprAST();
     static VariableExprAST *ParseVar(CompileUnit *unit, CodeBlockAST *codeblock,
                                      std::string idName, std::string type);
@@ -22,6 +23,7 @@ class VariableExprAST : public ExprAST
     std::string             type;
     CodeBlockAST *          codeblock;
     llvm::AllocaInst *      alloca;
+    ExprAST *               initValue;
 };
 
 #endif /* COMPILER_AST_VARIABLEEXPRAST_H_ */

@@ -12,6 +12,7 @@
 #include "ExprAST.h"
 #include "llvm/IR/Instructions.h"
 #include <map>
+
 class VariableExprAST;
 class CodeBlockAST : public BaseAST
 {
@@ -22,11 +23,10 @@ class CodeBlockAST : public BaseAST
     static CodeBlockAST *ParseCodeBlock(CompileUnit *unit, std::string name);
     llvm::BasicBlock *   Codegen(llvm::Function *function);
 
-    llvm::IRBuilder<> *    builder;
-    std::vector<ExprAST *> body;
-    std::map<std::string, std::pair<std::string, VariableExprAST *>>
-                namedValues;
-    std::string name;
+    llvm::IRBuilder<> *                      builder;
+    std::vector<ExprAST *>                   body;
+    std::map<std::string, VariableExprAST *> namedValues;
+    std::string                              name;
 };
 
 #endif /* COMPILER_AST_CODEBLOCKAST_H_ */

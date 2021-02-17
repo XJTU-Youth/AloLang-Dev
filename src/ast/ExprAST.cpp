@@ -1,5 +1,6 @@
 #include "ExprAST.h"
 #include "../CompileError.hpp"
+#include "AssignmentAST.h"
 #include "BinaryExprAST.h"
 #include "CallExprAST.h"
 #include "CodeBlockAST.h"
@@ -63,9 +64,12 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
         token              = *(unit->icurTok + 1);
         if (token.type == tok_identifier) {
             //定义
-            unit->next_tok();
             std::string valName = token.tokenValue;
+            unit->next_tok();
             return VariableExprAST::ParseVar(unit, codeblock, valName, idName);
+        } else if (token.tokenValue == "=") {
+            //赋值
+            return AssignmentAST::ParseAssignment(unit, codeblock, idName);
         } else if (token.tokenValue == "(") {
             //函数调用
             unit->next_tok();
@@ -97,7 +101,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
                 CompileError e("can't find variable:" + idName);
                 throw e;
             }
-            return varAST->second.second;
+            return varAST->second;
         }
         break;
     }
