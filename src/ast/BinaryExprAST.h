@@ -13,13 +13,14 @@
 class BinaryExprAST : public ExprAST
 {
   public:
-    BinaryExprAST(CompileUnit *unit, char binOP, ExprAST *LHS, ExprAST *RHS);
+    BinaryExprAST(CompileUnit *unit, std::string binOP, ExprAST *LHS,
+                  ExprAST *RHS);
     virtual ~BinaryExprAST();
     llvm::Value *Codegen(llvm::IRBuilder<> *builder);
 
-    char     binOP;
-    ExprAST *LHS;
-    ExprAST *RHS;
+    std::string binOP;
+    ExprAST *   LHS;
+    ExprAST *   RHS;
 };
 
 #endif /* COMPILER_AST_BINARYEXPRAST_H_ */

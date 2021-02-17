@@ -10,12 +10,13 @@
 #include <iostream>
 
 CodeBlockAST::CodeBlockAST(CompileUnit *unit, std::vector<ExprAST *> body,
-                           std::string name)
+                           std::string name, CodeBlockAST *parent)
     : BaseAST(unit)
 {
     this->builder = new llvm::IRBuilder<>(*unit->context);
     this->body    = body;
     this->name    = name;
+    this->parent  = parent;
 }
 
 CodeBlockAST::~CodeBlockAST()
@@ -23,10 +24,11 @@ CodeBlockAST::~CodeBlockAST()
     // TODO Auto-generated destructor stub
 }
 
-CodeBlockAST *CodeBlockAST::ParseCodeBlock(CompileUnit *unit, std::string name)
+CodeBlockAST *CodeBlockAST::ParseCodeBlock(CompileUnit *unit, std::string name,
+                                           CodeBlockAST *parent)
 {
     CodeBlockAST *codeblock =
-        new CodeBlockAST(unit, std::vector<ExprAST *>(), name);
+        new CodeBlockAST(unit, std::vector<ExprAST *>(), name, parent);
 
     std::vector<ExprAST *> &body = codeblock->body;
 

@@ -5,6 +5,7 @@
 #include "BoolExprAST.h"
 #include "CallExprAST.h"
 #include "CodeBlockAST.h"
+#include "IfExprAST.h"
 #include "IntExprAST.h"
 #include "VariableExprAST.h"
 #include <iostream>
@@ -14,13 +15,18 @@ int GetTokPrecedence(Token tok)
     if (tok.type != tok_syntax) {
         return -1;
     }
-    std::map<char, int> BinopPrecedence;
-    BinopPrecedence['+'] = 100;
-    BinopPrecedence['-'] = 200;
-    BinopPrecedence['*'] = 300;
-    BinopPrecedence['/'] = 400;
+    std::map<std::string, int> BinopPrecedence;
+    BinopPrecedence["=="] = 100;
+    BinopPrecedence[">"]  = 100;
+    BinopPrecedence["<"]  = 100;
+    BinopPrecedence[">="] = 100;
+    BinopPrecedence["<="] = 100;
+    BinopPrecedence["+"]  = 200;
+    BinopPrecedence["-"]  = 200;
+    BinopPrecedence["*"]  = 300;
+    BinopPrecedence["/"]  = 300;
 
-    int TokPrec = BinopPrecedence[tok.tokenValue[0]];
+    int TokPrec = BinopPrecedence[tok.tokenValue];
     if (TokPrec <= 0) {
         return -1;
     }
@@ -52,6 +58,9 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             return new BoolExprAST(unit, false);
         }
         break;
+    }
+    case tok_key_if: {
+        return IfExprAST::ParseIfExpr(unit, codeblock);
     }
     case tok_syntax: {
         if (token.tokenValue == "(") {
@@ -132,7 +141,6 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
             return LHS;
         }
         unit->next_tok();
-        char BinOp = token.tokenValue[0];
 
         ExprAST *RHS = ExprAST::ParsePrimary(unit, codeblock);
         if (!RHS)
@@ -145,7 +153,7 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
                 return nullptr;
             }
         }
-        LHS = new BinaryExprAST(unit, BinOp, LHS, RHS);
+        LHS = new BinaryExprAST(unit, token.tokenValue, LHS, RHS);
     }
 }
 
