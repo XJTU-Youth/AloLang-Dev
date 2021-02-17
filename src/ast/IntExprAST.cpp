@@ -11,7 +11,8 @@
 
 IntExprAST::IntExprAST(CompileUnit *unit, long long val) : ExprAST(unit)
 {
-    this->val = val;
+    this->val  = val;
+    this->type = "int";
 }
 
 IntExprAST::~IntExprAST()

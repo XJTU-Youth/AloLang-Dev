@@ -2,6 +2,7 @@
 #include "../CompileError.hpp"
 #include "AssignmentAST.h"
 #include "BinaryExprAST.h"
+#include "BoolExprAST.h"
 #include "CallExprAST.h"
 #include "CodeBlockAST.h"
 #include "IntExprAST.h"
@@ -43,6 +44,14 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
     switch (token.type) {
     case tok_number: {
         return new IntExprAST(unit, strtol(token.tokenValue.c_str(), NULL, 10));
+    }
+    case tok_key_literal: {
+        if (token.tokenValue == "true") {
+            return new BoolExprAST(unit, true);
+        } else {
+            return new BoolExprAST(unit, false);
+        }
+        break;
     }
     case tok_syntax: {
         if (token.tokenValue == "(") {

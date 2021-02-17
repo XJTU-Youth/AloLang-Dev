@@ -2,7 +2,15 @@
 
 extern void _alolang_8testPuts(void) { puts("AloLang Test Function"); }
 
-extern void _alolang_12testPrintInt3int(int a) { printf("%d\n", a); }
+extern void _alolang_12testPrintInt3int(long long a) { printf("%lld\n", a); }
+extern void _alolang_12testPrintInt4bool(int a)
+{
+    if (a) {
+        printf("true\n");
+    } else {
+        printf("false\n");
+    }
+}
 
 extern int _alolang_10testGetInt()
 {
