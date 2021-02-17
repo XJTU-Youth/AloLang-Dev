@@ -8,6 +8,7 @@
 #include "PrototypeAST.h"
 #include "../CompileError.hpp"
 #include "../utils.h"
+#include "TypeAST.h"
 
 #include <iostream>
 
@@ -124,7 +125,12 @@ llvm::Function *PrototypeAST::Codegen()
      */
     std::vector<llvm::Type *> llvmArgs;
     for (int i = 0; i < args.size(); i++) {
-        llvmArgs.push_back(llvm::Type::getInt64Ty(*unit->context));
+        auto typeAST = unit->types.find(args[i].first);
+        if (typeAST == unit->types.end()) {
+            CompileError e("can't find type:" + args[i].first);
+            throw e;
+        }
+        llvmArgs.push_back(typeAST->second->Codegen());
     }
     llvm::FunctionType *FT = llvm::FunctionType::get(
         llvm::Type::getVoidTy(*unit->context), llvmArgs, false);

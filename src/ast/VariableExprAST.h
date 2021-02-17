@@ -20,7 +20,6 @@ class VariableExprAST : public ExprAST
                                      std::string idName, std::string type);
     llvm::Value *           Codegen(llvm::IRBuilder<> *builder);
     std::string             idName;
-    std::string             type;
     CodeBlockAST *          codeblock;
     llvm::AllocaInst *      alloca;
     ExprAST *               initValue;

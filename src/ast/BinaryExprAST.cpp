@@ -14,6 +14,7 @@ BinaryExprAST::BinaryExprAST(CompileUnit *unit, char binOP, ExprAST *LHS,
     this->binOP = binOP;
     this->LHS   = LHS;
     this->RHS   = RHS;
+    this->type  = LHS->type;
 }
 
 BinaryExprAST::~BinaryExprAST()
