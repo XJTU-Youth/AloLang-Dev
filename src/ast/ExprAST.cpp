@@ -151,7 +151,7 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
     if (root) {
         Token token = unit->next_tok();
         if (token.type != tok_syntax || token.tokenValue != ";") {
-            CompileError e("丟失分号");
+            CompileError e("丟失分号: \"" + token.dump() + "\" 前");
             throw e;
         }
     }
