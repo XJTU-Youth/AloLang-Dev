@@ -1,8 +1,0 @@
-extern fun testPuts();
-extern fun testPrintInt(int a);
-/*fun te_st(){
-	testPuts();
-}*/
-fun main(){
-	testPrintInt(3);
-}

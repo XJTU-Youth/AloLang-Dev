@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = foreign subdir-objects
 bin_PROGRAMS = aloc
 aloc_SOURCES = aloc.cpp CompileUnit.cpp preprocessor.cpp Token.cpp utils.cpp\
-    ast/AssignmentAST.cpp ast/BaseAST.cpp cpp ast/BinaryExprAST.cpp ast/CallExprAST.cpp ast/CodeBlockAST.cpp\
+    ast/AssignmentAST.cpp ast/BaseAST.cpp ast/BinaryExprAST.cpp ast/BoolExprAST.cpp ast/CallExprAST.cpp ast/CodeBlockAST.cpp\
     ast/ExprAST.cpp ast/ExternAST.cpp ast/FunctionAST.cpp ast/IntExprAST.cpp ast/PrototypeAST.cpp\
     ast/TypeAST.cpp ast/VariableExprAST.cpp yacc_stuff/tokenizer.lpp
 

@@ -18,14 +18,15 @@ CallExprAST::CallExprAST(CompileUnit *unit, const std::string &callee,
 {
     std::vector<std::string> argStr;
     for (ExprAST *ast : args) {
-        argStr.push_back("int");
+        argStr.push_back(ast->type);
     }
     if (callee != "main") {
         this->callee = demangle(callee, argStr);
     }
 
     this->args = args;
-    std::cout << std::left << std::setw(35) << "Function call found:" << this->callee << std::endl;
+    std::cout << std::left << std::setw(35)
+              << "Function call found:" << this->callee << std::endl;
 }
 
 CallExprAST::~CallExprAST()
