@@ -12,6 +12,8 @@ int token;
 [ \t\n]+                    {/*Skip spaces tabs, and line feeds*/};
 \/\*[.\n]*?\*\/|\/\/.*      {/*Skip comments*/};
 
+\".+\"                      token = tok_str;            return token;
+
 and|or|xor|not              token = tok_key_op;         return token;
 
 true|false                  token = tok_key_literal;    return token;
