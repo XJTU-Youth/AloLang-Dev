@@ -42,6 +42,10 @@ return                      token = tok_extern;         return token;
 [1-9][0-9.]*                token = tok_number;         return token;
 0                           token = tok_number;         return token;
 
+==                          token = tok_syntax;         return token;
+\>=                          token = tok_syntax;         return token;
+\<=                          token = tok_syntax;         return token;
+
 !                           token = tok_syntax;         return token;
 %                           token = tok_syntax;         return token;
 \^                          token = tok_syntax;         return token;

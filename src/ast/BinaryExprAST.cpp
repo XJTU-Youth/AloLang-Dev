@@ -6,8 +6,9 @@
  */
 
 #include "BinaryExprAST.h"
+#include "../CompileError.hpp"
 
-BinaryExprAST::BinaryExprAST(CompileUnit *unit, char binOP, ExprAST *LHS,
+BinaryExprAST::BinaryExprAST(CompileUnit *unit, std::string binOP, ExprAST *LHS,
                              ExprAST *RHS)
     : ExprAST(unit)
 {
@@ -28,18 +29,18 @@ llvm::Value *BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
     llvm::Value *R = RHS->Codegen(builder);
     if (L == nullptr || R == 0)
         return 0;
-
-    switch (binOP) {
-    case '+':
+    if (binOP == "+") {
         return builder->CreateAdd(L, R);
-    case '-':
+    } else if (binOP == "-") {
         return builder->CreateSub(L, R);
-    case '*':
+    } else if (binOP == "*") {
         return builder->CreateMul(L, R);
-    case '/':
+    } else if (binOP == "/") {
         return builder->CreateFDiv(L, R);
-    default:
-        return nullptr;
-        // todo:异常处理
+    } else if (binOP == "==") {
+        return builder->CreateICmpEQ(L, R);
+    } else {
+        CompileError e("Unknown operator:" + binOP);
+        throw e;
     }
 }
