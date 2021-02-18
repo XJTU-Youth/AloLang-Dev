@@ -1,0 +1,25 @@
+{
+    "name": "alolang",
+    "displayName": "AloLang",
+    "description": "Syntax Highlight for AloLang",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.53.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "alolang",
+            "aliases": ["AloLang", "alolang"],
+            "extensions": [".alo"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "alolang",
+            "scopeName": "source.alo",
+            "path": "./syntaxes/alolang.tmLanguage.json"
+        }]
+    }
+}
