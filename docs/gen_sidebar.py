@@ -6,7 +6,7 @@ import os.path
 
 import queue
 
-ignore = ["_sidebar.md"]
+ignore = ["_sidebar.md","sidebar.md"]
 
 #translate = {"language": "语言","preprocessor":"预处理器", "conditional": "条件编译"}
 
