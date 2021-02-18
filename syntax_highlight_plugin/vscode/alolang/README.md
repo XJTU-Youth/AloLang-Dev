@@ -33,6 +33,17 @@ Waiting to be reported.
 
 Users appreciate release notes as you update your extension.
 
+### Dev Beta 0.0.2
+
+- Added support for 
+  - Comment toggling
+  - Brackets definition
+  - Autoclosing
+  - Autosurrounding
+  - Folding
+  - Word pattern
+  - Indentation Rules
+
 ### Dev Beta 0.0.1
 
 - Initial release
