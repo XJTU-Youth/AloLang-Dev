@@ -17,6 +17,7 @@ CodeBlockAST::CodeBlockAST(CompileUnit *unit, std::vector<ExprAST *> body,
     this->body    = body;
     this->name    = name;
     this->parent  = parent;
+    this->endBB   = nullptr;
 }
 
 CodeBlockAST::~CodeBlockAST()

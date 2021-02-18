@@ -39,6 +39,16 @@ llvm::Value *BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
         return builder->CreateFDiv(L, R);
     } else if (binOP == "==") {
         return builder->CreateICmpEQ(L, R);
+    } else if (binOP == "!=") {
+        return builder->CreateICmpNE(L, R);
+    } else if (binOP == ">") {
+        return builder->CreateICmpSGT(L, R);
+    } else if (binOP == "<") {
+        return builder->CreateICmpSLT(L, R);
+    } else if (binOP == ">=") {
+        return builder->CreateICmpSGE(L, R);
+    } else if (binOP == "<=") {
+        return builder->CreateICmpSLE(L, R);
     } else {
         CompileError e("Unknown operator:" + binOP);
         throw e;
