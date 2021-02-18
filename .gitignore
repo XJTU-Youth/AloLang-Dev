@@ -6,7 +6,7 @@ libraries/draft/*
 compiler/*.o
 build/*
 /Makefile
-/docs/_sidebar.md
+# /docs/_sidebar.md
 secret/
 
 # Created by https://www.toptal.com/developers/gitignore/api/flex,c++
