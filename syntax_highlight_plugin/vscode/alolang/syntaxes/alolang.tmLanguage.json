@@ -7,14 +7,38 @@
 		},
 		{
 			"include": "#strings"
+		},
+		{
+			"include": "#comment"
+		},
+		{
+			"include": "#storage"
 		}
 	],
 	"repository": {
 		"keywords": {
-			"patterns": [{
-				"name": "keyword.control.alolang",
-				"match": "\\b(if|while|for|return)\\b"
-			}]
+			"patterns": [
+				{
+					"name": "keyword.control.alolang",
+					"match": "\\b(break|continue|do|else|for|foreach|goto|if|while)\\b"
+				},
+				{
+					"name": "keyword.operator.alolang",
+					"match": "\\b(\\+|-|\\*|/|\\+\\+|--|>|<|=|>=|<=|==|->|\\^|&|!)\\b"
+				}
+			]
+		},
+		"storage": {
+			"patterns": [
+				{
+					"name": "storage.type.alolang",
+					"match": "\\b(anytype|array|auto|bool|char|double|enum|float|int|int8_t|int16_t|int32_t|long|signed|string|struct|unsigned|void)\\b"
+				},
+				{
+					"name": "storage.function.alolang",
+					"match": "\\b(fun|func)\\b"
+				}
+			]
 		},
 		"strings": {
 			"name": "string.quoted.double.alolang",
@@ -24,6 +48,14 @@
 				{
 					"name": "constant.character.escape.alolang",
 					"match": "\\\\."
+				}
+			]
+		},
+		"comment": {
+			"patterns": [
+				{
+					"name": "comment.line.double-slash.alolang",
+					"match": "\\b//.+\\b"
 				}
 			]
 		}
