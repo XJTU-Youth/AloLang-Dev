@@ -1,7 +1,144 @@
 {
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "AloLang",
+	"comment": "AloLang language, this file is inspired by the Go language",
+	"fileTypes": [
+		"alo"
+	],
+	"foldingStartMarker": "({|\\()\\s*$",
+	"foldingStopMarker": "(}|\\))\\s*$",
 	"patterns": [
+		{
+			"comment": "Block comments",
+			"begin": "/\\*",
+			"end": "\\*/",
+			"captures": {
+				"0": {
+					"name": "punctuation.definition.comment.alolang"
+				}
+			},
+			"name": "comment.block.alolang"
+		},
+		{
+			"comment": "Line comments",
+			"begin": "//",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.comment.alolang"
+				}
+			},
+			"end": "$",
+			"name": "comment.line.double-slash.alolang"
+		},
+		{
+			"comment": "Interpreted string literals",
+			"begin": "\"",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.begin.alolang"
+				}
+			},
+			"end": "\"",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.end.alolang"
+				}
+			},
+			"name": "string.quoted.double.alolang",
+			"patterns": [
+				{
+					"include": "#string_escaped_char"
+				},
+				{
+					"include": "#string_placeholder"
+				},
+				{
+					"include": "#line_continuation_character"
+				}
+			]
+		},
+		{
+			"comment": "Raw string literals",
+			"begin": "`",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.begin.alolang"
+				}
+			},
+			"end": "`",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.end.alolang"
+				}
+			},
+			"name": "string.quoted.raw.alolang",
+			"patterns": [
+				{
+					"include": "#string_placeholder"
+				}
+			]
+		},
+		{
+			"comment": "Syntax error numeric literals",
+			"match": "\\b0[0-7]*[89]\\d*\\b",
+			"name": "invalid.illegal.numeric.alolang"
+		},
+		{
+			"comment": "Function declarations",
+			"match": "^(\\bextern\\b)?\\s*(\\bfunc|fun\\b)(?:\\s+([a-zA-Z_]\\w*)(?=\\())?",
+			"captures": {
+				"1": {
+					"name": "keyword.extern.alolang"
+				},
+				"2": {
+					"name": "keyword.function.alolang"
+				},
+				"3": {
+					"name": "entity.name.function"
+				}
+			}
+		},
+		{
+			"comment": "Functions",
+			"match": "(\\bfunc\\b)|([a-zA-Z_]\\w*)(?=\\()",
+			"captures": {
+				"1": {
+					"name": "keyword.function.alolang"
+				},
+				"2": {
+					"name": "support.function.alolang"
+				}
+			}
+		},
+		{
+			"comment": "Floating-point literals",
+			"match": "(\\.\\d+([Ee][-+]\\d+)?i?)\\b|\\b\\d+\\.\\d*(([Ee][-+]\\d+)?i?\\b)?",
+			"name": "constant.numeric.floating-point.alolang"
+		},
+		{
+			"comment": "Integers",
+			"match": "\\b((0x[0-9a-fA-F]+)|(0[0-7]+i?)|(\\d+([Ee]\\d+)?i?)|(\\d+[Ee][-+]\\d+i?))\\b",
+			"name": "constant.numeric.integer.alolang"
+		},
+		{
+			"comment": "Language constants",
+			"match": "\\b(true|false|nil|iota)\\b",
+			"name": "constant.language.alolang"
+		},
+		{
+			"comment": "Type declarations",
+			"match": "(?<=class|struct)\\s+([a-zA-Z_]\\w*)",
+			"captures": {
+				"1": {
+					"name": "entity.name.type.alolang"
+				}
+			}
+		},
+		{
+			"comment": "Terminators",
+			"match": ";",
+			"name": "punctuation.terminator.alolang"
+		},
 		{
 			"include": "#keywords"
 		},
@@ -9,13 +146,51 @@
 			"include": "#strings"
 		},
 		{
-			"include": "#comment"
+			"include": "#storage"
 		},
 		{
-			"include": "#storage"
+			"include": "#operators"
+		},
+		{
+			"include": "#brackets"
+		},
+		{
+			"include": "#delimiters"
 		}
 	],
 	"repository": {
+		"brackets": {
+			"patterns": [
+				{
+					"match": "\\{|\\}",
+					"name": "punctuation.other.bracket.curly.alolang"
+				},
+				{
+					"match": "\\(|\\)",
+					"name": "punctuation.other.bracket.round.alolang"
+				},
+				{
+					"match": "\\[|\\]",
+					"name": "punctuation.other.bracket.square.alolang"
+				}
+			]
+		},
+		"delimiters": {
+			"patterns": [
+				{
+					"match": ",",
+					"name": "punctuation.other.comma.alolang"
+				},
+				{
+					"match": "\\.(?!\\.\\.)",
+					"name": "punctuation.other.period.alolang"
+				},
+				{
+					"match": ":(?!=)",
+					"name": "punctuation.other.colon.alolang"
+				}
+			]
+		},
 		"keywords": {
 			"patterns": [
 				{
@@ -23,8 +198,53 @@
 					"match": "\\b(break|continue|do|else|for|foreach|goto|if|while)\\b"
 				},
 				{
-					"name": "keyword.operator.alolang",
-					"match": "\\b(\\+|-|\\*|/|\\+\\+|--|>|<|=|>=|<=|==|->|\\^|&|!)\\b"
+					"name": "keyword.const.alolang",
+					"match": "\\bconst\\b"
+				},
+				{
+					"name": "keyword.function.alolang",
+					"match": "\\bfun|func\\b"
+				}
+			]
+		},
+		"operators": {
+			"comment": "Note that the order here is very important!",
+			"patterns": [
+				{
+					"match": "(\\*|&)(?=\\w)",
+					"name": "keyword.operator.address.alolang"
+				},
+				{
+					"match": "\\->",
+					"name": "keyword.operator.returntype.alolang"
+				},
+				{
+					"match": "\\-\\-",
+					"name": "keyword.operator.decrement.alolang"
+				},
+				{
+					"match": "\\+\\+",
+					"name": "keyword.operator.increment.alolang"
+				},
+				{
+					"match": "(==|!=|<=|>=|<[^<]|>[^>])",
+					"name": "keyword.operator.comparison.alolang"
+				},
+				{
+					"match": "(&&|\\|\\||!)",
+					"name": "keyword.operator.logical.alolang"
+				},
+				{
+					"match": "(=|\\+=|\\-=|\\|=|\\^=|\\*=|/=|:=|%=|<<=|>>=|&\\^=|&=)",
+					"name": "keyword.operator.assignment.alolang"
+				},
+				{
+					"match": "(\\+|\\-|\\*|/|%)",
+					"name": "keyword.operator.arithmetic.alolang"
+				},
+				{
+					"match": "(&(?!\\^)|\\||\\^|&\\^|<<|>>)",
+					"name": "keyword.operator.arithmetic.bitwise.alolang"
 				}
 			]
 		},
@@ -40,22 +260,35 @@
 				}
 			]
 		},
-		"strings": {
-			"name": "string.quoted.double.alolang",
-			"begin": "\"",
-			"end": "\"",
+		"string_escaped_char": {
 			"patterns": [
 				{
-					"name": "constant.character.escape.alolang",
-					"match": "\\\\."
+					"match": "\\\\([0-7]{3}|[abfnrtv\\\\'\"]|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8})",
+					"name": "constant.character.escape.alolang"
+				},
+				{
+					"match": "\\\\[^0-7xuUabfnrtv\\'\"\\n]",
+					"name": "invalid.illegal.unknown-escape.alolang"
 				}
 			]
 		},
-		"comment": {
+		"string_placeholder": {
 			"patterns": [
 				{
-					"name": "comment.line.double-slash.alolang",
-					"match": "\\b//.+\\b"
+					"match": "%(\\[\\d+\\])?([\\+#\\-0\\x20]{,2}((\\d+|\\*)?(\\.?(\\d+|\\*|(\\[\\d+\\])\\*?)?(\\[\\d+\\])?)?))?[vT%tbcdoqxXUbeEfFgGsp]",
+					"name": "constant.other.placeholder.alolang"
+				}
+			]
+		},
+		"line_continuation_character": {
+			"patterns": [
+				{
+					"match": "(\\\\)\\s*\\n",
+					"captures": {
+						"1": {
+							"name": "constant.character.escape.line-continuation.alolang"
+						}
+					}
 				}
 			]
 		}
