@@ -7,6 +7,7 @@ compiler/*.o
 build/*
 /Makefile
 /docs/_sidebar.md
+secret/
 
 # Created by https://www.toptal.com/developers/gitignore/api/flex,c++
 # Edit at https://www.toptal.com/developers/gitignore?templates=flex,c++
