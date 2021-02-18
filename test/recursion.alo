@@ -1,0 +1,18 @@
+int a = 0;
+
+extern testPrintInt(int);
+
+func rec()
+{
+    int a = 0;
+    a = a + 1;
+    if (a < 50){
+        rec();
+    }
+}
+
+func main()
+{
+    rec();
+    testPrintInt(a);
+}
