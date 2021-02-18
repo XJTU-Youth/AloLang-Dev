@@ -1,5 +1,6 @@
 #include "ExprAST.h"
 #include "../CompileError.hpp"
+#include "../utils.h"
 #include "AssignmentAST.h"
 #include "BinaryExprAST.h"
 #include "BoolExprAST.h"
@@ -72,7 +73,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             }
             return result;
         } else {
-            std::cerr << "error3" << std::endl;
+            std::cerr << "error3:" << token.dump() << std::endl;
         }
         break;
     }
@@ -124,7 +125,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
         break;
     }
     default: {
-        CompileError e("不期待的token");
+        CompileError e("不期待的token：" + token.dump());
         throw e;
     }
     }
@@ -165,6 +166,9 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
         return nullptr;
     }
     ExprAST *result = ParseBinOpRHS(unit, codeblock, 0, LHS);
+    if (IfExprAST *v = dynamic_cast<IfExprAST *>(result)) {
+        return result; //跳过分号
+    }
     if (root) {
         Token token = unit->next_tok();
         if (token.type != tok_syntax || token.tokenValue != ";") {

@@ -56,7 +56,9 @@ llvm::BasicBlock *CodeBlockAST::Codegen(llvm::Function *function)
     for (ExprAST *expr : body) {
         expr->Codegen(builder);
     }
-    builder->CreateRetVoid(); // todo:待处理
-
+    // builder->CreateRetVoid(); // todo:待处理
+    if (parent == nullptr) {
+        builder->CreateRetVoid();
+    }
     return bb;
 }
