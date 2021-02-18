@@ -42,16 +42,19 @@ IfExprAST *IfExprAST::ParseIfExpr(CompileUnit *unit, CodeBlockAST *parent)
 llvm::Value *IfExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
     llvm::Function *  function = builder->GetInsertBlock()->getParent();
-    llvm::BasicBlock *thenBB   = thenBlock->Codegen(function);
-    llvm::BasicBlock *elseBB   = elseBlock->Codegen(function);
-    builder->CreateCondBr(condition->Codegen(builder), thenBB, elseBB);
     llvm::BasicBlock *MergeBB =
         llvm::BasicBlock::Create(*unit->context, "", function);
+    llvm::BasicBlock *thenBB = thenBlock->Codegen(function);
+    if (elseBlock != nullptr) {
+        llvm::BasicBlock *elseBB = elseBlock->Codegen(function);
+        builder->CreateCondBr(condition->Codegen(builder), thenBB, elseBB);
+        builder->SetInsertPoint(elseBlock->endBB);
+        builder->CreateBr(MergeBB);
+    } else {
+        builder->CreateCondBr(condition->Codegen(builder), thenBB, MergeBB);
+    }
     builder->SetInsertPoint(thenBlock->endBB);
     builder->CreateBr(MergeBB);
-    builder->SetInsertPoint(elseBlock->endBB);
-    builder->CreateBr(MergeBB);
-
     builder->SetInsertPoint(MergeBB);
     parent->endBB = MergeBB;
     return nullptr;
