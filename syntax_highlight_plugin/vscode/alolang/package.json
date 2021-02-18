@@ -3,6 +3,12 @@
     "displayName": "AloLang",
     "description": "Syntax Highlight for AloLang",
     "version": "0.0.1",
+    "publisher": "AloLangDevTeam",
+    "license": "GPLv3",
+    "repository": {
+        "type": "git",
+        "url": "https://gitee.com/alolang-dev-team/AloLang-Dev.git"
+    },
     "engines": {
         "vscode": "^1.53.0"
     },
