@@ -45,14 +45,14 @@ llvm::Value *IfExprAST::Codegen(llvm::IRBuilder<> *builder)
     llvm::BasicBlock *thenBB   = thenBlock->Codegen(function);
     llvm::BasicBlock *elseBB   = elseBlock->Codegen(function);
     builder->CreateCondBr(condition->Codegen(builder), thenBB, elseBB);
-    llvm::BasicBlock * MergeBB = llvm::BasicBlock::Create(*unit->context, "");
-    llvm::IRBuilder<> *Builder = new llvm::IRBuilder<>(*unit->context);
-    Builder->SetInsertPoint(thenBB);
-    Builder->CreateBr(MergeBB);
-    Builder->SetInsertPoint(elseBB);
-    Builder->CreateBr(MergeBB);
-    function->getBasicBlockList().push_back(MergeBB);
+    llvm::BasicBlock *MergeBB =
+        llvm::BasicBlock::Create(*unit->context, "", function);
+    builder->SetInsertPoint(thenBlock->endBB);
+    builder->CreateBr(MergeBB);
+    builder->SetInsertPoint(elseBlock->endBB);
+    builder->CreateBr(MergeBB);
 
     builder->SetInsertPoint(MergeBB);
+    parent->endBB = MergeBB;
     return nullptr;
 }

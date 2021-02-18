@@ -29,6 +29,7 @@ class CodeBlockAST : public BaseAST
     std::map<std::string, VariableExprAST *> namedValues;
     std::string                              name;
     CodeBlockAST *                           parent;
+    llvm::BasicBlock *                       endBB;
 };
 
 #endif /* COMPILER_AST_CODEBLOCKAST_H_ */

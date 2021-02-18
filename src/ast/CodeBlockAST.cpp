@@ -51,6 +51,7 @@ llvm::BasicBlock *CodeBlockAST::Codegen(llvm::Function *function)
 {
     llvm::BasicBlock *bb =
         llvm::BasicBlock::Create(*unit->context, name, function);
+    endBB = bb;
     builder->SetInsertPoint(bb);
 
     for (ExprAST *expr : body) {
@@ -60,5 +61,6 @@ llvm::BasicBlock *CodeBlockAST::Codegen(llvm::Function *function)
     if (parent == nullptr) {
         builder->CreateRetVoid();
     }
+
     return bb;
 }
