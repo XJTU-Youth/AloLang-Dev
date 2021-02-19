@@ -25,12 +25,13 @@ CodeBlockAST::~CodeBlockAST()
     // TODO Auto-generated destructor stub
 }
 
-CodeBlockAST *CodeBlockAST::ParseCodeBlock(CompileUnit *unit, std::string name,
-                                           CodeBlockAST *parent)
+CodeBlockAST *CodeBlockAST::ParseCodeBlock(
+    CompileUnit *unit, std::string name, CodeBlockAST *parent,
+    std::map<std::string, VariableExprAST *> namedValues)
 {
     CodeBlockAST *codeblock =
         new CodeBlockAST(unit, std::vector<ExprAST *>(), name, parent);
-
+    codeblock->namedValues       = namedValues;
     std::vector<ExprAST *> &body = codeblock->body;
 
     while (true) {

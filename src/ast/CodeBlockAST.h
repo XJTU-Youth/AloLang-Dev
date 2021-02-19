@@ -20,9 +20,12 @@ class CodeBlockAST : public BaseAST
     CodeBlockAST(CompileUnit *unit, std::vector<ExprAST *> exprs,
                  std::string name, CodeBlockAST *parent = nullptr);
     virtual ~CodeBlockAST();
-    static CodeBlockAST *ParseCodeBlock(CompileUnit *unit, std::string name,
-                                        CodeBlockAST *parent = nullptr);
-    llvm::BasicBlock *   Codegen(llvm::Function *function);
+    static CodeBlockAST *
+                      ParseCodeBlock(CompileUnit *unit, std::string name,
+                                     CodeBlockAST *                           parent = nullptr,
+                                     std::map<std::string, VariableExprAST *> namedValues =
+                                         std::map<std::string, VariableExprAST *>());
+    llvm::BasicBlock *Codegen(llvm::Function *function);
 
     llvm::IRBuilder<> *                      builder;
     std::vector<ExprAST *>                   body;

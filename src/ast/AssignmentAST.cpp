@@ -27,19 +27,26 @@ AssignmentAST *AssignmentAST::ParseAssignment(CompileUnit *      unit,
                                               CodeBlockAST *     codeblock,
                                               const std::string &LHS)
 {
-    auto varAST = codeblock->namedValues.find(LHS);
-    if (varAST == codeblock->namedValues.end()) {
-        CompileError e("can't find variable:" + LHS);
-        throw e;
-    }
+
     unit->next_tok();
-    return new AssignmentAST(unit, varAST->second,
-                             ExprAST::ParseExpression(unit, codeblock, false));
+    CodeBlockAST *curCodeBlock = codeblock;
+    while (curCodeBlock != nullptr) {
+        auto varAST = curCodeBlock->namedValues.find(LHS);
+        if (varAST == curCodeBlock->namedValues.end()) {
+            curCodeBlock = curCodeBlock->parent;
+        } else {
+            return new AssignmentAST(
+                unit, varAST->second,
+                ExprAST::ParseExpression(unit, codeblock, false));
+        }
+    }
+    CompileError e("can't find variable:" + LHS);
+    throw e;
 }
 
 llvm::Value *AssignmentAST::Codegen(llvm::IRBuilder<> *builder)
 {
     llvm::Value *value = RHS->Codegen(builder);
-    builder->CreateStore(value, LHS->alloca);
+    builder->CreateStore(value, LHS->alloca); // todo:对函数参数赋值
     return value;
 }

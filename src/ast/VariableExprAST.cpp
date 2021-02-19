@@ -13,18 +13,16 @@
 #include "TypeAST.h"
 #include <iostream>
 
-VariableExprAST::VariableExprAST(CompileUnit *unit, CodeBlockAST *codeblock,
-                                 const std::string &idName,
-                                 const std::string &type, ExprAST *initValue)
+VariableExprAST::VariableExprAST(CompileUnit *unit, const std::string &idName,
+                                 const std::string &type, ExprAST *initValue,
+                                 int argID)
     : ExprAST(unit)
 {
     this->idName    = idName;
     this->type      = type;
-    this->codeblock = codeblock;
     this->alloca    = nullptr;
     this->initValue = initValue;
-    codeblock->namedValues.insert(
-        std::pair<std::string, VariableExprAST *>(idName, this));
+    this->argID     = argID;
 }
 
 VariableExprAST::~VariableExprAST()
@@ -51,14 +49,25 @@ static llvm::AllocaInst *CreateEntryBlockAlloca(CompileUnit *      unit,
 llvm::Value *VariableExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
     if (alloca == nullptr) {
-        llvm::BasicBlock *insertBlock = builder->GetInsertBlock();
-        llvm::Function *  function    = insertBlock->getParent();
-        alloca = CreateEntryBlockAlloca(unit, function, idName, type);
-        if (initValue != nullptr) {
-            builder->CreateStore(initValue->Codegen(builder), alloca);
+        if (argID == -1) {
+            llvm::BasicBlock *insertBlock = builder->GetInsertBlock();
+            llvm::Function *  function    = insertBlock->getParent();
+            alloca = CreateEntryBlockAlloca(unit, function, idName, type);
+            if (initValue != nullptr) {
+                builder->CreateStore(initValue->Codegen(builder), alloca);
+            }
+        } else {
+            llvm::BasicBlock *insertBlock = builder->GetInsertBlock();
+            llvm::Function *  function    = insertBlock->getParent();
+            alloca                        = function->getArg(argID);
+            return alloca;
         }
     }
-    return builder->CreateLoad(alloca);
+    if (argID == -1) {
+        return builder->CreateLoad(alloca);
+    } else {
+        return alloca;
+    }
 }
 
 VariableExprAST *VariableExprAST::ParseVar(CompileUnit * unit,
@@ -80,5 +89,5 @@ VariableExprAST *VariableExprAST::ParseVar(CompileUnit * unit,
             throw e;
         }
     }
-    return new VariableExprAST(unit, codeblock, idName, type, initValue);
+    return new VariableExprAST(unit, idName, type, initValue);
 }

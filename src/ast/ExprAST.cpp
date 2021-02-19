@@ -85,7 +85,11 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             //定义
             std::string valName = token.tokenValue;
             unit->next_tok();
-            return VariableExprAST::ParseVar(unit, codeblock, valName, idName);
+            VariableExprAST *varAST =
+                VariableExprAST::ParseVar(unit, codeblock, valName, idName);
+            codeblock->namedValues.insert(
+                std::pair<std::string, VariableExprAST *>(idName, varAST));
+            return varAST;
         } else if (token.tokenValue == "=") {
             //赋值
             return AssignmentAST::ParseAssignment(unit, codeblock, idName);
@@ -115,12 +119,17 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             return new CallExprAST(unit, idName, args);
         } else {
             //变量
-            auto varAST = codeblock->namedValues.find(idName);
-            if (varAST == codeblock->namedValues.end()) {
-                CompileError e("can't find variable:" + idName);
-                throw e;
+            CodeBlockAST *curCodeBlock = codeblock;
+            while (curCodeBlock != nullptr) {
+                auto varAST = curCodeBlock->namedValues.find(idName);
+                if (varAST == curCodeBlock->namedValues.end()) {
+                    curCodeBlock = curCodeBlock->parent;
+                } else {
+                    return varAST->second;
+                }
             }
-            return varAST->second;
+            CompileError e("can't find variable:" + idName);
+            throw e;
         }
         break;
     }
