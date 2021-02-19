@@ -1,6 +1,6 @@
 //int a = 0;
 
-extern testPrintInt(int);
+extern func testPrintInt(int i);
 
 func rec(int a)
 {
@@ -8,7 +8,7 @@ func rec(int a)
     {
         testPrintInt(a);
         a = a + 1;
-        rec(a)
+        rec(a);
     }
 }
 
