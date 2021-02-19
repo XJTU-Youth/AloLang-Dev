@@ -31,7 +31,10 @@ Waiting to be reported.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### Dev Beta 0.0.3
+
+- Bugfix
+  - Highlight for function mis behaving
 
 ### Dev Beta 0.0.2
 
