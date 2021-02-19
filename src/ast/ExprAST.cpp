@@ -88,7 +88,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             VariableExprAST *varAST =
                 VariableExprAST::ParseVar(unit, codeblock, valName, idName);
             codeblock->namedValues.insert(
-                std::pair<std::string, VariableExprAST *>(idName, varAST));
+                std::pair<std::string, VariableExprAST *>(valName, varAST));
             return varAST;
         } else if (token.tokenValue == "=") {
             //赋值
