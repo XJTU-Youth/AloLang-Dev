@@ -49,25 +49,17 @@ static llvm::AllocaInst *CreateEntryBlockAlloca(CompileUnit *      unit,
 llvm::Value *VariableExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
     if (alloca == nullptr) {
-        if (argID == -1) {
-            llvm::BasicBlock *insertBlock = builder->GetInsertBlock();
-            llvm::Function *  function    = insertBlock->getParent();
-            alloca = CreateEntryBlockAlloca(unit, function, idName, type);
-            if (initValue != nullptr) {
-                builder->CreateStore(initValue->Codegen(builder), alloca);
-            }
-        } else {
-            llvm::BasicBlock *insertBlock = builder->GetInsertBlock();
-            llvm::Function *  function    = insertBlock->getParent();
-            alloca                        = function->getArg(argID);
-            return alloca;
+        llvm::BasicBlock *insertBlock = builder->GetInsertBlock();
+        llvm::Function *  function    = insertBlock->getParent();
+        alloca = CreateEntryBlockAlloca(unit, function, idName, type);
+        if (argID != -1) {
+            builder->CreateStore(function->getArg(argID), alloca);
+        }
+        if (initValue != nullptr) {
+            builder->CreateStore(initValue->Codegen(builder), alloca);
         }
     }
-    if (argID == -1) {
-        return builder->CreateLoad(alloca);
-    } else {
-        return alloca;
-    }
+    return builder->CreateLoad(alloca);
 }
 
 VariableExprAST *VariableExprAST::ParseVar(CompileUnit * unit,

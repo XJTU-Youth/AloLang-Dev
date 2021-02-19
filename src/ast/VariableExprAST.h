@@ -22,7 +22,7 @@ class VariableExprAST : public ExprAST
     std::string             idName;
     llvm::Value *           alloca;
     ExprAST *               initValue;
-    int                     argID; //函数参数的ID，-1为函数内变量
+    int                     argID; //函数的参数号，函数内变量为-1
 };
 
 #endif /* COMPILER_AST_VARIABLEEXPRAST_H_ */
