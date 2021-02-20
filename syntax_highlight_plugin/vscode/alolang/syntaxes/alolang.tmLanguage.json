@@ -85,15 +85,18 @@
 		},
 		{
 			"comment": "Function declarations",
-			"match": "^(\\bextern\\b)?\\s*(\\bfunc\\b|\\bfun\\b)(?:\\s+([a-zA-Z_]\\w*)(?=\\())?",
+			"match": "^(\\bextern\\b)?\\s*(\\\"\\w+\\\")?\\s*(\\bfunc\\b|\\bfun\\b)(?:\\s+([a-zA-Z_]\\w*)(?=\\())?",
 			"captures": {
 				"1": {
 					"name": "keyword.extern.alolang"
 				},
 				"2": {
-					"name": "keyword.function.alolang"
+					"name": "string.quoted.double.alolang"
 				},
 				"3": {
+					"name": "keyword.function.alolang"
+				},
+				"4": {
 					"name": "entity.name.function"
 				}
 			}
