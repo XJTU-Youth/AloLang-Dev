@@ -121,13 +121,13 @@ void CompileUnit::compile()
         }
     } while (next_tok().type != tok_eof);
     std::cout << "Start codegen:" << name << std::endl;
-    std::map<std::string, ExternAST *>::reverse_iterator extern_iter;
-    for (extern_iter = externs.rbegin(); extern_iter != externs.rend();
+    std::map<std::string, ExternAST *>::iterator extern_iter;
+    for (extern_iter = externs.begin(); extern_iter != externs.end();
          extern_iter++) {
         extern_iter->second->Codegen();
     }
-    std::map<std::string, FunctionAST *>::reverse_iterator function_iter;
-    for (function_iter = functions.rbegin(); function_iter != functions.rend();
+    std::map<std::string, FunctionAST *>::iterator function_iter;
+    for (function_iter = functions.begin(); function_iter != functions.end();
          function_iter++) {
         function_iter->second->Codegen();
     }

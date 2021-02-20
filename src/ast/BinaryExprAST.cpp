@@ -15,7 +15,8 @@ BinaryExprAST::BinaryExprAST(CompileUnit *unit, std::string binOP, ExprAST *LHS,
     this->binOP = binOP;
     this->LHS   = LHS;
     this->RHS   = RHS;
-    this->type  = LHS->type;
+    // todo:类型检查
+    this->type = LHS->type;
 }
 
 BinaryExprAST::~BinaryExprAST()
