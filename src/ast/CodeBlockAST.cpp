@@ -7,6 +7,7 @@
 
 #include "CodeBlockAST.h"
 #include "../CompileError.hpp"
+#include "VariableDefExprAST.h"
 #include <iostream>
 
 CodeBlockAST::CodeBlockAST(CompileUnit *unit, std::vector<ExprAST *> body,
@@ -25,18 +26,21 @@ CodeBlockAST::~CodeBlockAST()
     // TODO Auto-generated destructor stub
 }
 
-CodeBlockAST *CodeBlockAST::ParseCodeBlock(
-    CompileUnit *unit, std::string name, CodeBlockAST *parent,
-    std::map<std::string, VariableExprAST *> namedValues)
+CodeBlockAST *
+CodeBlockAST::ParseCodeBlock(CompileUnit *unit, std::string name,
+                             CodeBlockAST *                          parent,
+                             const std::vector<VariableDefExprAST *> args)
 {
     Token token = *(unit->icurTok + 1);
     if (token.type == tok_syntax && token.tokenValue == "{") {
         unit->next_tok();
         CodeBlockAST *codeblock =
             new CodeBlockAST(unit, std::vector<ExprAST *>(), name, parent);
-        codeblock->namedValues       = namedValues;
         std::vector<ExprAST *> &body = codeblock->body;
-
+        for (VariableDefExprAST *argDef : args) {
+            argDef->codeblock = codeblock;
+            body.push_back(argDef);
+        }
         while (true) {
             Token inBlockToken = *(unit->icurTok + 1);
             if (inBlockToken.type == tok_eof) {

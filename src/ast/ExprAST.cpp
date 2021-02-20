@@ -8,6 +8,7 @@
 #include "CodeBlockAST.h"
 #include "IfExprAST.h"
 #include "IntExprAST.h"
+#include "VariableDefExprAST.h"
 #include "VariableExprAST.h"
 #include "WhileExprAST.h"
 #include <iostream>
@@ -48,12 +49,14 @@ ExprAST::~ExprAST()
 ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
 {
     // todo:除了函数调用之外的语句解析
-    Token token = unit->next_tok();
+    Token token = *(unit->icurTok + 1);
     switch (token.type) {
     case tok_number: {
+        token = unit->next_tok();
         return new IntExprAST(unit, strtol(token.tokenValue.c_str(), NULL, 10));
     }
     case tok_key_literal: {
+        token = unit->next_tok();
         if (token.tokenValue == "true") {
             return new BoolExprAST(unit, true);
         } else {
@@ -62,12 +65,15 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
         break;
     }
     case tok_key_if: {
+        token = unit->next_tok();
         return IfExprAST::ParseIfExpr(unit, codeblock);
     }
     case tok_key_while: {
+        token = unit->next_tok();
         return WhileExprAST::ParseWhileExpr(unit, codeblock);
     }
     case tok_syntax: {
+        token = unit->next_tok();
         if (token.tokenValue == "(") {
             ExprAST *result = ParseExpression(unit, codeblock, false);
             token           = unit->next_tok();
@@ -82,6 +88,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
         break;
     }
     case tok_identifier: {
+        token = unit->next_tok();
         //函数调用或定义
         std::string idName = token.tokenValue;
         token              = *(unit->icurTok + 1);
@@ -89,10 +96,8 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             //定义
             std::string valName = token.tokenValue;
             unit->next_tok();
-            VariableExprAST *varAST =
-                VariableExprAST::ParseVar(unit, codeblock, valName, idName);
-            codeblock->namedValues.insert(
-                std::pair<std::string, VariableExprAST *>(valName, varAST));
+            VariableDefExprAST *varAST =
+                VariableDefExprAST::ParseVar(unit, codeblock, valName, idName);
             return varAST;
         } else if (token.tokenValue == "=") {
             //赋值
@@ -123,17 +128,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             return new CallExprAST(unit, idName, args);
         } else {
             //变量
-            CodeBlockAST *curCodeBlock = codeblock;
-            while (curCodeBlock != nullptr) {
-                auto varAST = curCodeBlock->namedValues.find(idName);
-                if (varAST == curCodeBlock->namedValues.end()) {
-                    curCodeBlock = curCodeBlock->parent;
-                } else {
-                    return varAST->second;
-                }
-            }
-            CompileError e("can't find variable:" + idName);
-            throw e;
+            return new VariableExprAST(unit, codeblock, idName);
         }
         break;
     }

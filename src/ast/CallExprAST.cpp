@@ -29,6 +29,12 @@ CallExprAST::~CallExprAST()
 
 llvm::Value *CallExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
+    std::vector<llvm::Value *> argsV;
+
+    for (unsigned i = 0, e = args.size(); i != e; ++i) {
+        argsV.push_back(args[i]->Codegen(builder));
+    }
+
     std::vector<std::string> argStr;
     for (ExprAST *ast : args) {
         argStr.push_back(ast->type);
@@ -42,17 +48,6 @@ llvm::Value *CallExprAST::Codegen(llvm::IRBuilder<> *builder)
     if (CalleeF == 0) {
         CompileError e("Function " + dname + " not found");
         throw e;
-    }
-    std::vector<llvm::Value *> argsV;
-
-    // If argument mismatch error.
-    if (CalleeF->arg_size() != args.size()) {
-        CompileError e("Incorrect arguments passed");
-        throw e;
-    }
-
-    for (unsigned i = 0, e = args.size(); i != e; ++i) {
-        argsV.push_back(args[i]->Codegen(builder));
     }
 
     return builder->CreateCall(CalleeF, argsV);

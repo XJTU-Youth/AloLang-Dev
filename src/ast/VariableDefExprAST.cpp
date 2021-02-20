@@ -12,13 +12,16 @@
 #include "IntExprAST.h"
 #include "TypeAST.h"
 #include <iostream>
+#include <map>
 
 VariableDefExprAST::VariableDefExprAST(CompileUnit *      unit,
+                                       CodeBlockAST *     codeblock,
                                        const std::string &idName,
                                        const std::string &type,
                                        ExprAST *initValue, int argID)
     : ExprAST(unit)
 {
+    this->codeblock = codeblock;
     this->idName    = idName;
     this->type      = type;
     this->alloca    = nullptr;
@@ -49,18 +52,19 @@ static llvm::AllocaInst *CreateEntryBlockAlloca(CompileUnit *      unit,
 
 llvm::Value *VariableDefExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
-    if (alloca == nullptr) {
-        llvm::BasicBlock *insertBlock = builder->GetInsertBlock();
-        llvm::Function *  function    = insertBlock->getParent();
-        alloca = CreateEntryBlockAlloca(unit, function, idName, type);
-        if (argID != -1) {
-            builder->CreateStore(function->getArg(argID), alloca);
-        }
-        if (initValue != nullptr) {
-            builder->CreateStore(initValue->Codegen(builder), alloca);
-        }
+    llvm::BasicBlock *insertBlock = builder->GetInsertBlock();
+    llvm::Function *  function    = insertBlock->getParent();
+    alloca = CreateEntryBlockAlloca(unit, function, idName, type);
+    if (argID != -1) {
+        builder->CreateStore(function->getArg(argID), alloca);
     }
-    return builder->CreateLoad(alloca);
+    if (initValue != nullptr) {
+        builder->CreateStore(initValue->Codegen(builder), alloca);
+    }
+    codeblock->namedValues.insert(
+        std::pair<std::string, std::pair<std::string, llvm::AllocaInst *>>(
+            idName, std::pair<std::string, llvm::AllocaInst *>(type, alloca)));
+    return nullptr;
 }
 
 VariableDefExprAST *VariableDefExprAST::ParseVar(CompileUnit * unit,
@@ -83,5 +87,5 @@ VariableDefExprAST *VariableDefExprAST::ParseVar(CompileUnit * unit,
             throw e;
         }
     }
-    return new VariableDefExprAST(unit, idName, type, initValue);
+    return new VariableDefExprAST(unit, codeblock, idName, type, initValue);
 }

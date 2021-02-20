@@ -12,16 +12,17 @@
 class VariableDefExprAST : public ExprAST
 {
   public:
-    VariableDefExprAST(CompileUnit *unit, const std::string &idName,
-                       const std::string &type, ExprAST *initValue,
-                       int argID = -1);
+    VariableDefExprAST(CompileUnit *unit, CodeBlockAST *codeblock,
+                       const std::string &idName, const std::string &type,
+                       ExprAST *initValue, int argID = -1);
     virtual ~VariableDefExprAST();
     static VariableDefExprAST *ParseVar(CompileUnit * unit,
                                         CodeBlockAST *codeblock,
                                         std::string idName, std::string type);
     llvm::Value *              Codegen(llvm::IRBuilder<> *builder);
+    CodeBlockAST *             codeblock;
     std::string                idName;
-    llvm::Value *              alloca;
+    llvm::AllocaInst *         alloca;
     ExprAST *                  initValue;
     int argID; //函数的参数号，函数内变量为-1
 };

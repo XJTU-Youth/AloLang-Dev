@@ -29,24 +29,14 @@ AssignmentAST *AssignmentAST::ParseAssignment(CompileUnit *      unit,
 {
 
     unit->next_tok();
-    CodeBlockAST *curCodeBlock = codeblock;
-    while (curCodeBlock != nullptr) {
-        auto varAST = curCodeBlock->namedValues.find(LHS);
-        if (varAST == curCodeBlock->namedValues.end()) {
-            curCodeBlock = curCodeBlock->parent;
-        } else {
-            return new AssignmentAST(
-                unit, varAST->second,
-                ExprAST::ParseExpression(unit, codeblock, false));
-        }
-    }
-    CompileError e("can't find variable:" + LHS);
-    throw e;
+    return new AssignmentAST(unit, new VariableExprAST(unit, codeblock, LHS),
+                             ExprAST::ParseExpression(unit, codeblock, false));
 }
 
 llvm::Value *AssignmentAST::Codegen(llvm::IRBuilder<> *builder)
 {
     llvm::Value *value = RHS->Codegen(builder);
-    builder->CreateStore(value, LHS->alloca); // todo:对函数参数赋值
+
+    builder->CreateStore(value, LHS->getAlloca()); // todo:对函数参数赋值
     return value;
 }
