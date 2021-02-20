@@ -1,5 +1,0 @@
-fun main() -> int{
-    int a = 123;
-    print(2 * a);
-    return 0;
-}

@@ -1,5 +1,0 @@
-%ifndef PI
-%def PI 3.1415926
-%def TAO 6.2831853
-//this is a debug message
-%endif

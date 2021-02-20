@@ -1,0 +1,31 @@
+{
+    "name": "alolang",
+    "displayName": "AloLang",
+    "description": "Syntax Highlight for AloLang",
+    "version": "0.0.3",
+    "publisher": "AloLangDevTeam",
+    "license": "GPLv3",
+    "repository": {
+        "type": "git",
+        "url": "https://gitee.com/alolang-dev-team/AloLang-Dev.git"
+    },
+    "engines": {
+        "vscode": "^1.53.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "alolang",
+            "aliases": ["AloLang", "alolang"],
+            "extensions": [".alo"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "alolang",
+            "scopeName": "source.alo",
+            "path": "./syntaxes/alolang.tmLanguage.json"
+        }]
+    }
+}
