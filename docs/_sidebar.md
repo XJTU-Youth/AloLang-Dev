@@ -29,6 +29,7 @@
         * [alolang关键字:array](language/keyword/type/array/index)
         * [alolang关键字:int32_t](language/keyword/type/int32_t/index)
         * [alolang关键词:auto](language/keyword/type/auto/index)
+      * [空标识符 `_`](language/keyword/blank/index)
       * [代用运算符的关键字](language/keyword/alternative/index)
         * [alolang关键字:and](language/keyword/alternative/and/index)
         * [alolang关键字:not](language/keyword/alternative/not/index)
