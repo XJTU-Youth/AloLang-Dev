@@ -27,13 +27,11 @@ IfExprAST::~IfExprAST()
 
 IfExprAST *IfExprAST::ParseIfExpr(CompileUnit *unit, CodeBlockAST *parent)
 {
-    ExprAST *condition = ExprAST::ParseExpression(unit, parent, false);
-    unit->next_tok();
+    ExprAST *     condition = ExprAST::ParseExpression(unit, parent, false);
     CodeBlockAST *thenBlock = CodeBlockAST::ParseCodeBlock(unit, "", parent);
     CodeBlockAST *elseBlock = nullptr;
 
     if ((unit->icurTok + 1)->type == tok_key_else) {
-        unit->next_tok();
         unit->next_tok();
         elseBlock = CodeBlockAST::ParseCodeBlock(unit, "", parent);
     }

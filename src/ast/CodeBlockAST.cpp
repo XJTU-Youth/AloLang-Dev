@@ -29,24 +29,32 @@ CodeBlockAST *CodeBlockAST::ParseCodeBlock(
     CompileUnit *unit, std::string name, CodeBlockAST *parent,
     std::map<std::string, VariableExprAST *> namedValues)
 {
-    CodeBlockAST *codeblock =
-        new CodeBlockAST(unit, std::vector<ExprAST *>(), name, parent);
-    codeblock->namedValues       = namedValues;
-    std::vector<ExprAST *> &body = codeblock->body;
+    Token token = *(unit->icurTok + 1);
+    if (token.type == tok_syntax && token.tokenValue == "{") {
+        unit->next_tok();
+        CodeBlockAST *codeblock =
+            new CodeBlockAST(unit, std::vector<ExprAST *>(), name, parent);
+        codeblock->namedValues       = namedValues;
+        std::vector<ExprAST *> &body = codeblock->body;
 
-    while (true) {
-        Token inBlockToken = *(unit->icurTok + 1);
-        if (inBlockToken.type == tok_eof) {
-            CompileError e("Unexpexted EOF in function body");
-            throw e;
+        while (true) {
+            Token inBlockToken = *(unit->icurTok + 1);
+            if (inBlockToken.type == tok_eof) {
+                CompileError e("Unexpexted EOF in function body");
+                throw e;
+            }
+            if (inBlockToken.type == tok_syntax &&
+                inBlockToken.tokenValue == "}") {
+                unit->next_tok();
+                break;
+            }
+            body.push_back(ExprAST::ParseExpression(unit, codeblock, true));
         }
-        if (inBlockToken.type == tok_syntax && inBlockToken.tokenValue == "}") {
-            unit->next_tok();
-            break;
-        }
-        body.push_back(ExprAST::ParseExpression(unit, codeblock, true));
+        return codeblock;
+    } else {
+        CompileError e("Expected codeblock");
+        throw e;
     }
-    return codeblock;
 }
 
 llvm::BasicBlock *CodeBlockAST::Codegen(llvm::Function *function)

@@ -16,6 +16,8 @@
 #include <string>
 
 class TypeAST;
+class FunctionAST;
+class ExternAST;
 class CompileUnit
 {
   public:
@@ -34,6 +36,8 @@ class CompileUnit
     std::vector<Token>               tokenList;
     std::vector<Token>::iterator     icurTok;
     std::map<std::string, TypeAST *> types;
+    std::vector<FunctionAST *>       functions;
+    std::vector<ExternAST *>         externs;
 };
 
 #endif /* COMPILER_COMPILEUNIT_H_ */

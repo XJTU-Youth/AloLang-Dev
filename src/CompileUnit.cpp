@@ -65,7 +65,7 @@ void scanToken(CompileUnit *unit)
         }
 
         // Debug token dump
-        std::cout << token.dump() << std::endl;
+        // std::cout << token.dump() << std::endl;
 
         unit->tokenList.push_back(token);
     } while (token.type != tok_eof);
@@ -80,7 +80,7 @@ CompileUnit::CompileUnit(std::string name, std::string source)
     this->sis    = std::istringstream(source);
     this->lexer  = new yyFlexLexer(sis, std::cerr);
     context      = new llvm::LLVMContext();
-    module       = new llvm::Module("test.ll", *context);
+    module       = new llvm::Module(name, *context);
 }
 
 CompileUnit::~CompileUnit() {}
@@ -101,8 +101,9 @@ void CompileUnit::compile()
     do {
         switch (icurTok->type) {
         case tok_fun: {
-            FunctionAST *   func_ast = FunctionAST::ParseFunction(this);
-            llvm::Function *func     = func_ast->Codegen();
+            FunctionAST *func_ast = FunctionAST::ParseFunction(this);
+            functions.push_back(func_ast);
+            // llvm::Function *func = func_ast->Codegen();
             /*llvm::Type*
              type=llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
              false);
@@ -121,17 +122,20 @@ void CompileUnit::compile()
                                std::to_string(token.lineno));
                 throw e;
             }
-            if (token.type == tok_fun) {
-                ExternAST::ParseExtern(this)->Codegen();
-            }
-            // todo:对导出非函数符号的处理
+            externs.push_back(ExternAST::ParseExtern(this));
             break;
         }
         default:
-
             std::cerr << "unexpected token:" << icurTok->dump() << std::endl;
         }
     } while (next_tok().type != tok_eof);
+    std::cout << "Start codegen:" << name << std::endl;
+    for (ExternAST *externast : externs) {
+        externast->Codegen();
+    }
+    for (FunctionAST *functionast : functions) {
+        functionast->Codegen();
+    }
     build();
 }
 

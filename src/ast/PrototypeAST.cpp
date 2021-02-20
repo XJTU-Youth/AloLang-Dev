@@ -14,11 +14,14 @@
 
 PrototypeAST::PrototypeAST(
     CompileUnit *unit, const std::string &name,
-    const std::vector<std::pair<std::string, std::string>> &args)
+    const std::vector<std::pair<std::string, std::string>> &args,
+    const std::vector<std::string> &                        returnTypes)
     : BaseAST(unit)
 {
-    this->name = name;
-    this->args = args;
+    this->name           = name;
+    this->args           = args;
+    this->returnDirectly = false;
+    this->returnTypes    = returnTypes;
 }
 
 PrototypeAST::~PrototypeAST()
@@ -75,27 +78,32 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
     if (FnName != "main") {
         FnName = demangle(FnName, argStr);
     }
-    token = unit->next_tok(); // -> or ; or {
-
+    token = *(unit->icurTok + 1); // -> or ; or {
+    std::vector<std::string> returnTypes;
     if (token.type == tok_return_type) {
+        unit->next_tok();
+        int bc = 0;
         while (true) {
-            // todo:解析返回类型
-            token = unit->next_tok(); // identifier.
+            // todo:大量异常处理
+            token = *(unit->icurTok + 1); // identifier.
             if (token.type == tok_syntax) {
-                if (token.tokenValue == "{") {
-                    if (!hasBody) {
-                        CompileError e("Unexpected function body");
-                        throw e;
-                    }
+                if (token.tokenValue == "(") {
+                    bc++;
+                    unit->next_tok();
+                    continue;
+                } else if (token.tokenValue == ")") {
+                    bc--;
+                    unit->next_tok();
+                    continue;
+                } else if (token.tokenValue == ",") {
+                    unit->next_tok();
+                    continue;
+                } else {
                     break;
                 }
-                if (token.tokenValue == ";") {
-                    if (hasBody) {
-                        CompileError e("Unexpected ;");
-                        throw e;
-                    }
-                    break;
-                }
+            }
+            if (token.type == tok_identifier) {
+                returnTypes.push_back(token.tokenValue);
             }
         }
     } else {
@@ -112,7 +120,7 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
             }
         }
     }
-    return new PrototypeAST(unit, FnName, args);
+    return new PrototypeAST(unit, FnName, args, returnTypes);
 }
 
 llvm::Function *PrototypeAST::Codegen()

@@ -21,8 +21,32 @@ ExternAST::~ExternAST()
 
 ExternAST *ExternAST::ParseExtern(CompileUnit *unit)
 {
+    bool C = false;
+    bool S = false;
+    if ((unit->icurTok + 1)->type == tok_str) {
+        Token flag = unit->next_tok();
+        if (flag.tokenValue == "S") {
+            S = true;
+        } else if (flag.tokenValue == "C") {
+            C = true;
+        } else {
+            CompileError e("Unknown flag:" + flag.tokenValue);
+            throw e;
+        }
+    }
     PrototypeAST *proto = PrototypeAST::ParsePrototype(unit, false);
-    std::cout << std::left << std::setw(35) << "Function extern found:" << proto->name << std::endl;
+    if (S) {
+        proto->returnDirectly = true;
+    }
+    // todo:对externC的处理
+    std::cout << std::left << std::setw(35)
+              << "Function extern found:" << proto->name << std::endl;
+    Token token = unit->next_tok();
+    if (token.type != tok_syntax || token.tokenValue != ";") {
+        CompileError e("丟失分号: \"" + token.dump() + "\" 前");
+        throw e;
+    }
+
     return new ExternAST(unit, proto);
 }
 
