@@ -9,6 +9,7 @@
 #include "IfExprAST.h"
 #include "IntExprAST.h"
 #include "VariableExprAST.h"
+#include "WhileExprAST.h"
 #include <iostream>
 
 int GetTokPrecedence(Token tok)
@@ -62,6 +63,9 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
     }
     case tok_key_if: {
         return IfExprAST::ParseIfExpr(unit, codeblock);
+    }
+    case tok_key_while: {
+        return WhileExprAST::ParseWhileExpr(unit, codeblock);
     }
     case tok_syntax: {
         if (token.tokenValue == "(") {
@@ -176,6 +180,9 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
     }
     ExprAST *result = ParseBinOpRHS(unit, codeblock, 0, LHS);
     if (IfExprAST *v = dynamic_cast<IfExprAST *>(result)) {
+        return result; //跳过分号
+    }
+    if (WhileExprAST *v = dynamic_cast<WhileExprAST *>(result)) {
         return result; //跳过分号
     }
     if (root) {
