@@ -27,17 +27,17 @@ class CompileUnit
     Token next_tok();
     void  build();
 
-    FlexLexer *                      lexer;
-    std::string                      name;
-    std::string                      source;
-    std::istringstream               sis;
-    llvm::LLVMContext *              context;
-    llvm::Module *                   module;
-    std::vector<Token>               tokenList;
-    std::vector<Token>::iterator     icurTok;
-    std::map<std::string, TypeAST *> types;
-    std::vector<FunctionAST *>       functions;
-    std::vector<ExternAST *>         externs;
+    FlexLexer *                          lexer;
+    std::string                          name;
+    std::string                          source;
+    std::istringstream                   sis;
+    llvm::LLVMContext *                  context;
+    llvm::Module *                       module;
+    std::vector<Token>                   tokenList;
+    std::vector<Token>::iterator         icurTok;
+    std::map<std::string, TypeAST *>     types;
+    std::map<std::string, FunctionAST *> functions;
+    std::map<std::string, ExternAST *>   externs;
 };
 
 #endif /* COMPILER_COMPILEUNIT_H_ */

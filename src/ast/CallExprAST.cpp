@@ -16,15 +16,8 @@ CallExprAST::CallExprAST(CompileUnit *unit, const std::string &callee,
                          std::vector<ExprAST *> &args)
     : ExprAST(unit)
 {
-    std::vector<std::string> argStr;
-    for (ExprAST *ast : args) {
-        argStr.push_back(ast->type);
-    }
-    if (callee != "main") {
-        this->callee = demangle(callee, argStr);
-    }
-
-    this->args = args;
+    this->callee = callee;
+    this->args   = args;
     std::cout << std::left << std::setw(35)
               << "Function call found:" << this->callee << std::endl;
 }
@@ -36,9 +29,18 @@ CallExprAST::~CallExprAST()
 
 llvm::Value *CallExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
-    llvm::Function *CalleeF = unit->module->getFunction(callee);
+    std::vector<std::string> argStr;
+    for (ExprAST *ast : args) {
+        argStr.push_back(ast->type);
+    }
+    std::string dname = demangle(callee, argStr);
+    if (callee == "main") {
+        dname = "main";
+    }
+
+    llvm::Function *CalleeF = unit->module->getFunction(dname);
     if (CalleeF == 0) {
-        CompileError e("Function " + callee + " not found");
+        CompileError e("Function " + dname + " not found");
         throw e;
     }
     std::vector<llvm::Value *> argsV;

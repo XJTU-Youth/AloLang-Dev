@@ -20,6 +20,7 @@ class FunctionAST : public BaseAST
     FunctionAST(CompileUnit *unit, PrototypeAST *proto, CodeBlockAST *body);
     virtual ~FunctionAST();
     llvm::Function *Codegen();
+    std::string     getDemangledName();
     PrototypeAST *  proto;
 
     CodeBlockAST *      body;

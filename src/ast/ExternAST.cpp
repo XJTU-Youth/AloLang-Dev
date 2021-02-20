@@ -34,6 +34,7 @@ ExternAST *ExternAST::ParseExtern(CompileUnit *unit)
             throw e;
         }
     }
+    unit->next_tok();
     PrototypeAST *proto = PrototypeAST::ParsePrototype(unit, false);
     if (S) {
         proto->returnDirectly = true;
@@ -49,6 +50,8 @@ ExternAST *ExternAST::ParseExtern(CompileUnit *unit)
 
     return new ExternAST(unit, proto);
 }
+
+std::string ExternAST::getDemangledName() { return proto->demangledName; }
 
 llvm::Function *ExternAST::Codegen()
 {

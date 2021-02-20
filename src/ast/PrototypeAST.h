@@ -20,9 +20,12 @@ class PrototypeAST : public BaseAST
     llvm::Function *     Codegen();
     static PrototypeAST *ParsePrototype(CompileUnit *unit, bool hasBody);
     std::vector<std::pair<std::string, std::string>> args;
-    std::vector<std::string>                         returnTypes;
-    std::string                                      name;
-    bool returnDirectly; //直接返回
+
+    std::string demangledName;
+
+    std::vector<std::string> returnTypes;
+    std::string              name;
+    bool                     returnDirectly; //直接返回
 };
 
 #endif /* COMPILER_AST_PROTOTYPEAST_H_ */

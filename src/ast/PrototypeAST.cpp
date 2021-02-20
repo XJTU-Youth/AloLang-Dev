@@ -22,6 +22,15 @@ PrototypeAST::PrototypeAST(
     this->args           = args;
     this->returnDirectly = false;
     this->returnTypes    = returnTypes;
+    std::vector<std::string> argStr;
+    for (std::pair<std::string, std::string> pair : args) {
+        argStr.push_back(pair.first);
+    }
+    if (name != "main") {
+        this->demangledName = demangle(name, argStr);
+    } else {
+        this->demangledName = "main";
+    }
 }
 
 PrototypeAST::~PrototypeAST()
@@ -32,8 +41,7 @@ PrototypeAST::~PrototypeAST()
 PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
 {
     std::vector<std::pair<std::string, std::string>> args;
-    std::vector<std::string>                         argStr;
-    Token token = unit->next_tok(); // identifier.
+    Token                                            token = unit->next_tok();
     if (token.type != tok_identifier) {
         std::cerr << "error1" << std::endl;
         // TODO:异常处理
@@ -72,12 +80,7 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
         std::cout << "error3" << std::endl;
         // TODO:异常处理
     }
-    for (std::pair<std::string, std::string> pair : args) {
-        argStr.push_back(pair.first);
-    }
-    if (FnName != "main") {
-        FnName = demangle(FnName, argStr);
-    }
+
     token = *(unit->icurTok + 1); // -> or ; or {
     std::vector<std::string> returnTypes;
     if (token.type == tok_return_type) {
@@ -103,6 +106,7 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
                 }
             }
             if (token.type == tok_identifier) {
+                unit->next_tok();
                 returnTypes.push_back(token.tokenValue);
             }
         }
@@ -140,11 +144,30 @@ llvm::Function *PrototypeAST::Codegen()
         }
         llvmArgs.push_back(typeAST->second->Codegen());
     }
-    llvm::FunctionType *FT = llvm::FunctionType::get(
-        llvm::Type::getVoidTy(*unit->context), llvmArgs, false);
+    llvm::Type *returnType;
+    if (returnDirectly) {
+        if (returnTypes.size() > 1) {
+            CompileError e("return more than one type:");
+            throw e;
+        } else if (returnTypes.size() == 0) {
+            returnType = llvm::Type::getVoidTy(*unit->context);
+        } else {
+            auto typeAST = unit->types.find(returnTypes[0]);
+            if (typeAST == unit->types.end()) {
+                CompileError e("can't find type:" + returnTypes[0]);
+                throw e;
+            }
+            returnType = typeAST->second->Codegen();
+        }
 
+    } else {
+        returnType = llvm::Type::getVoidTy(*unit->context);
+    }
+
+    llvm::FunctionType *FT =
+        llvm::FunctionType::get(returnType, llvmArgs, false);
     llvm::Function *F = llvm::Function::Create(
-        FT, llvm::GlobalValue::ExternalLinkage, name, unit->module);
+        FT, llvm::GlobalValue::ExternalLinkage, demangledName, unit->module);
 
     // If F conflicted, there was already something named 'Name'.  If it has a
     // body, don't allow redefinition or reextern.

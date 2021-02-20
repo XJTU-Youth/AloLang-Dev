@@ -34,19 +34,10 @@ void scanToken(CompileUnit *unit)
 {
     Token token;
     do {
-        int tokenid  = unit->lexer->yylex();
-        token.type   = TokenType(tokenid);
-        token.lineno = unit->lexer->lineno();
-        switch (token.type) {
-        tok_fun:
-        tok_extern:
-        tok_return:
-        tok_return_type:
-        tok_eof:
-            break;
-        default:
-            token.tokenValue = unit->lexer->YYText();
-        }
+        int tokenid      = unit->lexer->yylex();
+        token.type       = TokenType(tokenid);
+        token.lineno     = unit->lexer->lineno();
+        token.tokenValue = unit->lexer->YYText();
         // Deal with numbers
         if (token.type == tok_number) {
             int numTypeFlag = 10; //进制数
@@ -62,10 +53,13 @@ void scanToken(CompileUnit *unit)
             sprintf(tmp, "%ld",
                     strtol(token.tokenValue.c_str(), NULL, numTypeFlag));
             token.tokenValue = tmp;
+        } else if (token.type == tok_str) {
+            std::string str  = token.tokenValue;
+            token.tokenValue = str.substr(1, str.length() - 2);
         }
 
         // Debug token dump
-        // std::cout << token.dump() << std::endl;
+        std::cout << token.dump() << std::endl;
 
         unit->tokenList.push_back(token);
     } while (token.type != tok_eof);
@@ -102,7 +96,8 @@ void CompileUnit::compile()
         switch (icurTok->type) {
         case tok_fun: {
             FunctionAST *func_ast = FunctionAST::ParseFunction(this);
-            functions.push_back(func_ast);
+            functions.insert(std::pair<std::string, FunctionAST *>(
+                func_ast->getDemangledName(), func_ast));
             // llvm::Function *func = func_ast->Codegen();
             /*llvm::Type*
              type=llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
@@ -116,13 +111,9 @@ void CompileUnit::compile()
             break;
         }
         case tok_extern: {
-            Token token = next_tok();
-            if (token.type == tok_eof) {
-                CompileError e("Unexpected EOF in funtion body, line " +
-                               std::to_string(token.lineno));
-                throw e;
-            }
-            externs.push_back(ExternAST::ParseExtern(this));
+            ExternAST *externast = ExternAST::ParseExtern(this);
+            externs.insert(std::pair<std::string, ExternAST *>(
+                externast->getDemangledName(), externast));
             break;
         }
         default:
@@ -130,12 +121,17 @@ void CompileUnit::compile()
         }
     } while (next_tok().type != tok_eof);
     std::cout << "Start codegen:" << name << std::endl;
-    for (ExternAST *externast : externs) {
-        externast->Codegen();
+    std::map<std::string, ExternAST *>::reverse_iterator extern_iter;
+    for (extern_iter = externs.rbegin(); extern_iter != externs.rend();
+         extern_iter++) {
+        extern_iter->second->Codegen();
     }
-    for (FunctionAST *functionast : functions) {
-        functionast->Codegen();
+    std::map<std::string, FunctionAST *>::reverse_iterator function_iter;
+    for (function_iter = functions.rbegin(); function_iter != functions.rend();
+         function_iter++) {
+        function_iter->second->Codegen();
     }
+
     build();
 }
 

@@ -52,3 +52,4 @@ FunctionAST *FunctionAST::ParseFunction(CompileUnit *unit)
         CodeBlockAST::ParseCodeBlock(unit, "entry", nullptr, namedValues);
     return new FunctionAST(unit, protoType, body);
 }
+std::string FunctionAST::getDemangledName() { return proto->demangledName; }
