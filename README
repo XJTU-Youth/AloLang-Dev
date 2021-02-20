@@ -1,6 +1,21 @@
 AloLang Compiler Readme
 
+AloLang语言编译器自述文档
+
 Distributed under the Lesser General Public License V3
+
+以LGPLv3许可证发布
+
+Project Description:
+
+Compiler for the novel programming language AloLang. For description of AloLang,
+visit https://doc.alolang.org.cn/
+
+项目简介
+
+新型程序语言AloLang的编译器。获取AloLang介绍，请访问https://doc.alolang.org.cn/
+
+Compile Instructions:
 
 To compile, we suggest that you have the project made in a dedicated directory.
 Use the following commands.
