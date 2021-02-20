@@ -1,5 +1,5 @@
 ; ModuleID = './../test/loop.alo.bc'
-source_filename = "test.ll"
+source_filename = "../test/loop.alo"
 
 declare void @_alolang_12testPrintInt3int(i64)
 

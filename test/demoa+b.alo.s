@@ -1,5 +1,5 @@
 	.text
-	.file	"test.ll"
+	.file	"demoa+b.alo"
 	.globl	main                            # -- Begin function main
 	.p2align	4, 0x90
 	.type	main,@function
