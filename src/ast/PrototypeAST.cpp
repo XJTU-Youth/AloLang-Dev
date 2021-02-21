@@ -137,12 +137,8 @@ llvm::Function *PrototypeAST::Codegen()
      */
     std::vector<llvm::Type *> llvmArgs;
     for (int i = 0; i < args.size(); i++) {
-        auto typeAST = unit->types.find(args[i].first);
-        if (typeAST == unit->types.end()) {
-            CompileError e("can't find type:" + args[i].first);
-            throw e;
-        }
-        llvmArgs.push_back(typeAST->second->Codegen());
+        TypeAST *typeAST = new TypeAST(unit, args[i].first);
+        llvmArgs.push_back(typeAST->Codegen());
     }
     llvm::Type *returnType;
     if (returnDirectly) {
@@ -152,12 +148,8 @@ llvm::Function *PrototypeAST::Codegen()
         } else if (returnTypes.size() == 0) {
             returnType = llvm::Type::getVoidTy(*unit->context);
         } else {
-            auto typeAST = unit->types.find(returnTypes[0]);
-            if (typeAST == unit->types.end()) {
-                CompileError e("can't find type:" + returnTypes[0]);
-                throw e;
-            }
-            returnType = typeAST->second->Codegen();
+            TypeAST *typeAST = new TypeAST(unit, returnTypes[0]);
+            returnType       = typeAST->Codegen();
         }
 
     } else {

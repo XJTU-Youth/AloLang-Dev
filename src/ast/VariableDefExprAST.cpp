@@ -41,13 +41,8 @@ static llvm::AllocaInst *CreateEntryBlockAlloca(CompileUnit *      unit,
 {
     llvm::IRBuilder<> builder(&function->getEntryBlock(),
                               function->getEntryBlock().begin());
-    auto              typeAST = unit->types.find(type);
-    if (typeAST == unit->types.end()) {
-        CompileError e("can't find type:" + type);
-        throw e;
-    }
-
-    return builder.CreateAlloca(typeAST->second->Codegen(), 0, VarName.c_str());
+    TypeAST *         typeAST = new TypeAST(unit, type);
+    return builder.CreateAlloca(typeAST->Codegen(), 0, VarName.c_str());
 }
 
 llvm::Value *VariableDefExprAST::Codegen(llvm::IRBuilder<> *builder)

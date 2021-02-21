@@ -24,10 +24,12 @@
 
 void initInnerType(CompileUnit *unit)
 {
-    unit->types.insert(
-        std::pair<std::string, TypeAST *>("int", new TypeAST(unit, "int")));
-    unit->types.insert(
-        std::pair<std::string, TypeAST *>("bool", new TypeAST(unit, "bool")));
+    unit->types.insert(std::pair<std::string, llvm::Type *>(
+        "int", llvm::Type::getInt64Ty(*unit->context)));
+    unit->types.insert(std::pair<std::string, llvm::Type *>(
+        "double", llvm::Type::getDoubleTy(*unit->context)));
+    unit->types.insert(std::pair<std::string, llvm::Type *>(
+        "bool", llvm::Type::getInt1Ty(*unit->context)));
 }
 
 void scanToken(CompileUnit *unit)

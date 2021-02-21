@@ -35,9 +35,9 @@ class CompileUnit
     llvm::Module *                       module;
     std::vector<Token>                   tokenList;
     std::vector<Token>::iterator         icurTok;
-    std::map<std::string, TypeAST *>     types;
     std::map<std::string, FunctionAST *> functions;
     std::map<std::string, ExternAST *>   externs;
+    std::map<std::string, llvm::Type *>  types; // Codgen用
 };
 
 #endif /* COMPILER_COMPILEUNIT_H_ */
