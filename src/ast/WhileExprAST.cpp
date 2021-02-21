@@ -24,15 +24,23 @@ WhileExprAST::~WhileExprAST()
 
 llvm::Value *WhileExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
-    llvm::Function *function = builder->GetInsertBlock()->getParent();
-
+    llvm::Function *  function = builder->GetInsertBlock()->getParent();
     llvm::BasicBlock *MergeBB =
         llvm::BasicBlock::Create(*unit->context, "", function);
+    llvm::BasicBlock *condBB =
+        llvm::BasicBlock::Create(*unit->context, "", function);
+
     llvm::BasicBlock *bodyBB = body->Codegen(function);
-    builder->CreateBr(bodyBB);
-    builder->SetInsertPoint(body->endBB);
+    builder->CreateBr(condBB);
+
+    // builder->SetInsertPoint(body->endBB);
+    builder->SetInsertPoint(condBB);
     llvm::Value *conditionValue = condition->Codegen(builder);
     builder->CreateCondBr(conditionValue, bodyBB, MergeBB);
+
+    builder->SetInsertPoint(body->endBB);
+    builder->CreateBr(condBB);
+
     builder->SetInsertPoint(MergeBB);
     parent->endBB = MergeBB;
     return nullptr;
