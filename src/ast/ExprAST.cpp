@@ -8,6 +8,7 @@
 #include "CodeBlockAST.h"
 #include "IfExprAST.h"
 #include "IntExprAST.h"
+#include "UnaryExprAST.h"
 #include "VariableDefExprAST.h"
 #include "VariableExprAST.h"
 #include "WhileExprAST.h"
@@ -38,6 +39,7 @@ int GetTokPrecedence(Token tok)
 
 ExprAST::ExprAST(CompileUnit *unit) : BaseAST(unit)
 {
+    this->type = nullptr;
     // TODO Auto-generated constructor stub
 }
 
@@ -73,8 +75,8 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
         return WhileExprAST::ParseWhileExpr(unit, codeblock);
     }
     case tok_syntax: {
-        token = unit->next_tok();
         if (token.tokenValue == "(") {
+            token           = unit->next_tok();
             ExprAST *result = ParseExpression(unit, codeblock, false);
             token           = unit->next_tok();
             if (token.type != tok_syntax || token.tokenValue != ")") {
@@ -83,6 +85,9 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             }
             return result;
         } else {
+            token = unit->next_tok();
+            return new UnaryExprAST(unit, token.tokenValue,
+                                    ParseExpression(unit, codeblock, false));
             std::cerr << "error3:" << token.dump() << std::endl;
         }
         break;
