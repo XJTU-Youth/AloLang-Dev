@@ -1,3 +1,0 @@
-%def int int64_t
-%def complex complex<double>
-//通过%def 来定义类型替换

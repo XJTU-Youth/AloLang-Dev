@@ -17,19 +17,8 @@ visit https://doc.alolang.org.cn/
 
 Compile Instructions:
 
-To compile, we suggest that you have the project made in a dedicated directory.
-Use the following commands.
+See RELEASE NOTE.md
 
-mkdir -p build
-cd build
-../configure
-make
+编译说明：
 
-Now that you should see a file called aloc within the build directory.
-
-To install that to your system, run the following command
-
-make install
-
-It will copy the associated file to your system's program directory(possibly be
-/usr/local/bin).
+参见RELEASE NODE.md

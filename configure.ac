@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.70])
-AC_INIT([AloLang Compiler], [Dev Beta], [https://github.com/XJTU-Youth/AloLang-Dev/issues])
+AC_INIT([AloLang Compiler], [Dev-Beta-0.0.1], [https://github.com/XJTU-Youth/AloLang-Dev/issues])
 
 AC_ARG_ENABLE([debug],
     [AS_HELP_STRING([--enable-debug],[debug program(default is no)])],
