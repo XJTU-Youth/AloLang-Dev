@@ -7,6 +7,7 @@
 
 #include "BinaryExprAST.h"
 #include "../CompileError.hpp"
+#include "TypeAST.h"
 
 BinaryExprAST::BinaryExprAST(CompileUnit *unit, std::string binOP, ExprAST *LHS,
                              ExprAST *RHS)
@@ -17,6 +18,20 @@ BinaryExprAST::BinaryExprAST(CompileUnit *unit, std::string binOP, ExprAST *LHS,
     this->RHS   = RHS;
     // todo:类型检查
     this->type = LHS->type;
+    //整理此段代码，将操作抽象
+    if (binOP == "==") {
+        this->type = new TypeAST(unit, "bool");
+    } else if (binOP == "!=") {
+        this->type = new TypeAST(unit, "bool");
+    } else if (binOP == ">") {
+        this->type = new TypeAST(unit, "bool");
+    } else if (binOP == "<") {
+        this->type = new TypeAST(unit, "bool");
+    } else if (binOP == ">=") {
+        this->type = new TypeAST(unit, "bool");
+    } else if (binOP == "<=") {
+        this->type = new TypeAST(unit, "bool");
+    }
 }
 
 BinaryExprAST::~BinaryExprAST()
