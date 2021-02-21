@@ -14,16 +14,16 @@
 
 PrototypeAST::PrototypeAST(
     CompileUnit *unit, const std::string &name,
-    const std::vector<std::pair<std::string, std::string>> &args,
-    const std::vector<std::string> &                        returnTypes)
+    const std::vector<std::pair<TypeAST *, std::string>> &args,
+    const std::vector<TypeAST *> &                        returnTypes)
     : BaseAST(unit)
 {
     this->name           = name;
     this->args           = args;
     this->returnDirectly = false;
     this->returnTypes    = returnTypes;
-    std::vector<std::string> argStr;
-    for (std::pair<std::string, std::string> pair : args) {
+    std::vector<TypeAST *> argStr;
+    for (std::pair<TypeAST *, std::string> pair : args) {
         argStr.push_back(pair.first);
     }
     if (name != "main") {
@@ -40,8 +40,8 @@ PrototypeAST::~PrototypeAST()
 
 PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
 {
-    std::vector<std::pair<std::string, std::string>> args;
-    Token                                            token = unit->next_tok();
+    std::vector<std::pair<TypeAST *, std::string>> args;
+    Token                                          token = unit->next_tok();
     if (token.type != tok_identifier) {
         std::cerr << "error1" << std::endl;
         // TODO:异常处理
@@ -60,18 +60,20 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
             token = unit->next_tok(); // ).
             break;
         }
-        token = unit->next_tok();
+        token = *(unit->icurTok + 1);
         if (token.type == tok_syntax && token.tokenValue == ",") {
+            token = unit->next_tok();
             continue;
         }
         if (token.type == tok_syntax && token.tokenValue == ")") {
+            unit->next_tok();
             break;
         }
-        std::string type = token.tokenValue;
+        TypeAST *type = TypeAST::ParseType(unit);
         // todo:错误处理
-        token                                    = unit->next_tok();
-        std::string                         name = token.tokenValue;
-        std::pair<std::string, std::string> pair;
+        token                                  = unit->next_tok();
+        std::string                       name = token.tokenValue;
+        std::pair<TypeAST *, std::string> pair;
         pair.first  = type;
         pair.second = name;
         args.push_back(pair);
@@ -82,7 +84,7 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
     }
 
     token = *(unit->icurTok + 1); // -> or ; or {
-    std::vector<std::string> returnTypes;
+    std::vector<TypeAST *> returnTypes;
     if (token.type == tok_return_type) {
         unit->next_tok();
         int bc = 0;
@@ -105,10 +107,7 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
                     break;
                 }
             }
-            if (token.type == tok_identifier) {
-                unit->next_tok();
-                returnTypes.push_back(token.tokenValue);
-            }
+            returnTypes.push_back(TypeAST::ParseType(unit));
         }
     } else {
         if (token.tokenValue == "{") {
@@ -137,8 +136,7 @@ llvm::Function *PrototypeAST::Codegen()
      */
     std::vector<llvm::Type *> llvmArgs;
     for (int i = 0; i < args.size(); i++) {
-        TypeAST *typeAST = new TypeAST(unit, args[i].first);
-        llvmArgs.push_back(typeAST->Codegen());
+        llvmArgs.push_back(args[i].first->Codegen());
     }
     llvm::Type *returnType;
     if (returnDirectly) {
@@ -148,8 +146,7 @@ llvm::Function *PrototypeAST::Codegen()
         } else if (returnTypes.size() == 0) {
             returnType = llvm::Type::getVoidTy(*unit->context);
         } else {
-            TypeAST *typeAST = new TypeAST(unit, returnTypes[0]);
-            returnType       = typeAST->Codegen();
+            returnType = returnTypes[0]->Codegen();
         }
 
     } else {

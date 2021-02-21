@@ -88,21 +88,20 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
         break;
     }
     case tok_identifier: {
-        token = unit->next_tok();
         //函数调用或定义
         std::string idName = token.tokenValue;
-        token              = *(unit->icurTok + 1);
+        token              = *(unit->icurTok + 2);
         if (token.type == tok_identifier) {
             //定义
-            std::string valName = token.tokenValue;
-            unit->next_tok();
             VariableDefExprAST *varAST =
-                VariableDefExprAST::ParseVar(unit, codeblock, valName, idName);
+                VariableDefExprAST::ParseVar(unit, codeblock);
             return varAST;
         } else if (token.tokenValue == "=") {
+            token = unit->next_tok();
             //赋值
             return AssignmentAST::ParseAssignment(unit, codeblock, idName);
         } else if (token.tokenValue == "(") {
+            token = unit->next_tok();
             //函数调用
             unit->next_tok();
             std::vector<ExprAST *> args;
@@ -127,6 +126,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
 
             return new CallExprAST(unit, idName, args);
         } else {
+            token = unit->next_tok();
             //变量
             return new VariableExprAST(unit, codeblock, idName);
         }

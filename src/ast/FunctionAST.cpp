@@ -44,7 +44,7 @@ FunctionAST *FunctionAST::ParseFunction(CompileUnit *unit)
               << "Function definition found:" << protoType->name << std::endl;
     std::vector<VariableDefExprAST *> args;
     for (unsigned int i = 0; i < protoType->args.size(); i++) {
-        std::pair<std::string, std::string> arg = protoType->args[i];
+        std::pair<TypeAST *, std::string> arg = protoType->args[i];
         args.push_back(new VariableDefExprAST(unit, nullptr, arg.second,
                                               arg.first, nullptr, i));
     }

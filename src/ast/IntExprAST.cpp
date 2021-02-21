@@ -6,13 +6,14 @@
  */
 
 #include "IntExprAST.h"
+#include "TypeAST.h"
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/DerivedTypes.h>
 
 IntExprAST::IntExprAST(CompileUnit *unit, long long val) : ExprAST(unit)
 {
     this->val  = val;
-    this->type = "int";
+    this->type = new TypeAST(unit, "int");
 }
 
 IntExprAST::~IntExprAST()

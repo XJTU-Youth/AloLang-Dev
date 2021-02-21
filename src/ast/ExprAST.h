@@ -13,7 +13,7 @@ class ExprAST : public BaseAST
     static ExprAST *ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
                                     bool root);
     static ExprAST *ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock);
-    std::string     type;
+    TypeAST *       type;
 };
 
 #endif /* COMPILER_AST_ASTEXPR_H_ */

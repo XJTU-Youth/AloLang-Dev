@@ -44,5 +44,5 @@ TypeAST *TypeAST::ParseType(CompileUnit *unit)
         CompileError e("Expected type but got " + token.dump());
         throw e;
     }
-    return nullptr;
+    return new TypeAST(unit, token.tokenValue);
 }

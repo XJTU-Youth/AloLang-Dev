@@ -6,11 +6,12 @@
  */
 
 #include "BoolExprAST.h"
+#include "TypeAST.h"
 
 BoolExprAST::BoolExprAST(CompileUnit *unit, bool val) : ExprAST(unit)
 {
     this->val = val;
-    type      = "bool";
+    type      = new TypeAST(unit, "bool");
 }
 
 BoolExprAST::~BoolExprAST()

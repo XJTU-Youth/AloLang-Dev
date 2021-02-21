@@ -5,7 +5,7 @@
  *      Author: zbc
  */
 #include "CompileError.hpp"
-#include "llvm/IR/Instructions.h"
+#include "ast/TypeAST.h"
 #include <sstream>
 #include <string>
 #include <vector>
@@ -14,19 +14,14 @@ char syntax[] = {'!', '%', '^', '&', '*', '(',  ')', '+',  '=', '{',
                  '}', '|', '~', '[', ']', '\\', ';', '\'', ':', '"',
                  ',', '<', '>', '?', '.', '/',  '#', ' '};
 
-struct Variable {
-    std::string      type;
-    llvm::AllocaInst value;
-};
-
-std::string demangle(const std::string &             fnName,
-                     const std::vector<std::string> &argTypes)
+std::string demangle(const std::string &           fnName,
+                     const std::vector<TypeAST *> &argTypes)
 {
     std::stringstream ss;
     ss << "_alolang_";
     ss << fnName.length() << fnName;
-    for (std::string word : argTypes) {
-        ss << word.length() << word; //得到类型
+    for (TypeAST *word : argTypes) {
+        ss << word->name.length() << word->name; //得到类型
     }
     return ss.str();
 }

@@ -13,12 +13,11 @@ class VariableDefExprAST : public ExprAST
 {
   public:
     VariableDefExprAST(CompileUnit *unit, CodeBlockAST *codeblock,
-                       const std::string &idName, const std::string &type,
+                       const std::string &idName, TypeAST *type,
                        ExprAST *initValue, int argID = -1);
     virtual ~VariableDefExprAST();
     static VariableDefExprAST *ParseVar(CompileUnit * unit,
-                                        CodeBlockAST *codeblock,
-                                        std::string idName, std::string type);
+                                        CodeBlockAST *codeblock);
     llvm::Value *              Codegen(llvm::IRBuilder<> *builder);
     CodeBlockAST *             codeblock;
     std::string                idName;

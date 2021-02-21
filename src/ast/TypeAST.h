@@ -15,7 +15,7 @@ class TypeAST : public BaseAST
   public:
     TypeAST(CompileUnit *unit, std::string name);
     virtual ~TypeAST();
-    TypeAST *              ParseType(CompileUnit *unit);
+    static TypeAST *       ParseType(CompileUnit *unit);
     llvm::Type *           Codegen();
     std::string            name;
     std::vector<TypeAST *> innerType;

@@ -16,8 +16,7 @@
 
 VariableDefExprAST::VariableDefExprAST(CompileUnit *      unit,
                                        CodeBlockAST *     codeblock,
-                                       const std::string &idName,
-                                       const std::string &type,
+                                       const std::string &idName, TypeAST *type,
                                        ExprAST *initValue, int argID)
     : ExprAST(unit)
 {
@@ -37,11 +36,10 @@ VariableDefExprAST::~VariableDefExprAST()
 static llvm::AllocaInst *CreateEntryBlockAlloca(CompileUnit *      unit,
                                                 llvm::Function *   function,
                                                 const std::string &VarName,
-                                                const std::string &type)
+                                                TypeAST *          typeAST)
 {
     llvm::IRBuilder<> builder(&function->getEntryBlock(),
                               function->getEntryBlock().begin());
-    TypeAST *         typeAST = new TypeAST(unit, type);
     return builder.CreateAlloca(typeAST->Codegen(), 0, VarName.c_str());
 }
 
@@ -57,21 +55,20 @@ llvm::Value *VariableDefExprAST::Codegen(llvm::IRBuilder<> *builder)
         builder->CreateStore(initValue->Codegen(builder), alloca);
     }
     codeblock->namedValues.insert(
-        std::pair<std::string, std::pair<std::string, llvm::AllocaInst *>>(
-            idName, std::pair<std::string, llvm::AllocaInst *>(type, alloca)));
+        std::pair<std::string, std::pair<TypeAST *, llvm::AllocaInst *>>(
+            idName, std::pair<TypeAST *, llvm::AllocaInst *>(type, alloca)));
     return nullptr;
 }
 
 VariableDefExprAST *VariableDefExprAST::ParseVar(CompileUnit * unit,
-                                                 CodeBlockAST *codeblock,
-                                                 std::string   idName,
-                                                 std::string   type)
+                                                 CodeBlockAST *codeblock)
 {
-    std::cout << std::left << std::setw(35)
-              << "Variable definition found:" << idName << " with type:" << type
-              << std::endl;
-    Token    nexToken  = *(unit->icurTok + 1);
-    ExprAST *initValue = nullptr;
+    TypeAST *typeAST = TypeAST::ParseType(unit);
+
+    Token       nexToken = unit->next_tok();
+    std::string idName   = nexToken.tokenValue;
+    nexToken             = *(unit->icurTok + 1);
+    ExprAST *initValue   = nullptr;
 
     if (nexToken.type != tok_syntax || nexToken.tokenValue != ";") {
         if (nexToken.type == tok_syntax && nexToken.tokenValue == "=") {
@@ -82,5 +79,9 @@ VariableDefExprAST *VariableDefExprAST::ParseVar(CompileUnit * unit,
             throw e;
         }
     }
-    return new VariableDefExprAST(unit, codeblock, idName, type, initValue);
+
+    std::cout << std::left << std::setw(35)
+              << "Variable definition found:" << idName
+              << " with type:" << typeAST->name << std::endl;
+    return new VariableDefExprAST(unit, codeblock, idName, typeAST, initValue);
 }
