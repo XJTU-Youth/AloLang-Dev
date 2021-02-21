@@ -18,6 +18,7 @@
 #include "ast/ExternAST.h"
 #include "ast/FunctionAST.h"
 #include "ast/TypeAST.h"
+#include "ast/VariableDefExprAST.h"
 #include "utils.h"
 #include <fstream>
 #include <iostream>
@@ -61,7 +62,7 @@ void scanToken(CompileUnit *unit)
         }
 
         // Debug token dump
-        std::cout << token.dump() << std::endl;
+        // std::cout << token.dump() << std::endl;
 
         unit->tokenList.push_back(token);
     } while (token.type != tok_eof);
@@ -118,11 +119,25 @@ void CompileUnit::compile()
                 externast->getDemangledName(), externast));
             break;
         }
+        case tok_identifier: {
+            //全局变量
+            VariableDefExprAST *var =
+                VariableDefExprAST::ParseVar(this, nullptr);
+            Token token = next_tok();
+            globalVariables.insert(
+                std::pair<std::string, VariableDefExprAST *>(var->idName, var));
+            break;
+        }
         default:
             std::cerr << "unexpected token:" << icurTok->dump() << std::endl;
         }
     } while (next_tok().type != tok_eof);
     std::cout << "Start codegen:" << name << std::endl;
+    std::map<std::string, VariableDefExprAST *>::iterator gVar_iter;
+    for (gVar_iter = globalVariables.begin();
+         gVar_iter != globalVariables.end(); gVar_iter++) {
+        gVar_iter->second->Codegen(nullptr);
+    }
     std::map<std::string, ExternAST *>::iterator extern_iter;
     for (extern_iter = externs.begin(); extern_iter != externs.end();
          extern_iter++) {

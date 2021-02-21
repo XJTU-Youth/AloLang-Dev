@@ -6,6 +6,7 @@
  */
 
 #include "UnaryExprAST.h"
+#include "../CompileError.hpp"
 
 UnaryExprAST::UnaryExprAST(CompileUnit *unit, const std::string &op,
                            ExprAST *operand)
@@ -13,6 +14,8 @@ UnaryExprAST::UnaryExprAST(CompileUnit *unit, const std::string &op,
 {
     this->op      = op;
     this->operand = operand;
+    CompileError e("一元运算符未实现");
+    throw e;
 }
 
 UnaryExprAST::~UnaryExprAST()

@@ -128,12 +128,6 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
 
 llvm::Function *PrototypeAST::Codegen()
 {
-    // Make the function type:  double(double,double) etc.
-    /*
-     llvm::FunctionType *FT =
-     llvm::FunctionType::get(Type::getDoubleTy(TheContext),llvm::Doubles,
-     false);
-     */
     std::vector<llvm::Type *> llvmArgs;
     for (int i = 0; i < args.size(); i++) {
         llvmArgs.push_back(args[i].first->Codegen());
@@ -180,6 +174,7 @@ llvm::Function *PrototypeAST::Codegen()
      }*/
     // todo:参数处理
     // Set names for all arguments.
+
     unsigned Idx = 0;
     for (llvm::Function::arg_iterator AI = F->arg_begin(); Idx != args.size();
          ++AI, ++Idx) {

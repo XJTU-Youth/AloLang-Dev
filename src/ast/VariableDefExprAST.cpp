@@ -45,18 +45,29 @@ static llvm::AllocaInst *CreateEntryBlockAlloca(CompileUnit *      unit,
 
 llvm::Value *VariableDefExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
-    llvm::BasicBlock *insertBlock = builder->GetInsertBlock();
-    llvm::Function *  function    = insertBlock->getParent();
-    alloca = CreateEntryBlockAlloca(unit, function, idName, type);
-    if (argID != -1) {
-        builder->CreateStore(function->getArg(argID), alloca);
+    if (codeblock == nullptr) {
+        llvm::GlobalVariable *gVar = new llvm::GlobalVariable(
+            *unit->module, type->Codegen(), false,
+            llvm::GlobalValue::ExternalLinkage, nullptr);
+        unit->globalVariablesCodegen.insert(
+            std::pair<std::string, llvm::Value *>(idName, gVar));
+        //全局变量
+    } else {
+        //局部变量
+        llvm::BasicBlock *insertBlock = builder->GetInsertBlock();
+        llvm::Function *  function    = insertBlock->getParent();
+        alloca = CreateEntryBlockAlloca(unit, function, idName, type);
+        if (argID != -1) {
+            builder->CreateStore(function->getArg(argID), alloca);
+        }
+        if (initValue != nullptr) {
+            builder->CreateStore(initValue->Codegen(builder), alloca);
+        }
+        codeblock->namedValues.insert(
+            std::pair<std::string, std::pair<TypeAST *, llvm::AllocaInst *>>(
+                idName,
+                std::pair<TypeAST *, llvm::AllocaInst *>(type, alloca)));
     }
-    if (initValue != nullptr) {
-        builder->CreateStore(initValue->Codegen(builder), alloca);
-    }
-    codeblock->namedValues.insert(
-        std::pair<std::string, std::pair<TypeAST *, llvm::AllocaInst *>>(
-            idName, std::pair<TypeAST *, llvm::AllocaInst *>(type, alloca)));
     return nullptr;
 }
 
@@ -72,6 +83,10 @@ VariableDefExprAST *VariableDefExprAST::ParseVar(CompileUnit * unit,
 
     if (nexToken.type != tok_syntax || nexToken.tokenValue != ";") {
         if (nexToken.type == tok_syntax && nexToken.tokenValue == "=") {
+            if (codeblock == nullptr) {
+                CompileError e("全局变量初始化未实现");
+                throw e;
+            }
             unit->next_tok();
             initValue = ExprAST::ParseExpression(unit, codeblock, false);
         } else {

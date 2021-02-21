@@ -18,6 +18,7 @@
 class TypeAST;
 class FunctionAST;
 class ExternAST;
+class VariableDefExprAST;
 class CompileUnit
 {
   public:
@@ -27,17 +28,20 @@ class CompileUnit
     Token next_tok();
     void  build();
 
-    FlexLexer *                          lexer;
-    std::string                          name;
-    std::string                          source;
-    std::istringstream                   sis;
-    llvm::LLVMContext *                  context;
-    llvm::Module *                       module;
-    std::vector<Token>                   tokenList;
-    std::vector<Token>::iterator         icurTok;
-    std::map<std::string, FunctionAST *> functions;
-    std::map<std::string, ExternAST *>   externs;
-    std::map<std::string, llvm::Type *>  types; // Codgen用
+    FlexLexer *                                 lexer;
+    std::string                                 name;
+    std::string                                 source;
+    std::istringstream                          sis;
+    llvm::LLVMContext *                         context;
+    llvm::Module *                              module;
+    std::vector<Token>                          tokenList;
+    std::vector<Token>::iterator                icurTok;
+    std::map<std::string, VariableDefExprAST *> globalVariables;
+    std::map<std::string, FunctionAST *>        functions;
+    std::map<std::string, ExternAST *>          externs;
+    std::map<std::string, llvm::Type *>         types;           // Codgen用
+    std::map<std::string, llvm::Value *> globalVariablesCodegen; // Codgen用
+    // std::map<std::string, >
 };
 
 #endif /* COMPILER_COMPILEUNIT_H_ */
