@@ -7,6 +7,7 @@
 
 #include "UnaryExprAST.h"
 #include "../CompileError.hpp"
+#include "TypeAST.h"
 
 UnaryExprAST::UnaryExprAST(CompileUnit *unit, const std::string &op,
                            ExprAST *operand)
@@ -14,8 +15,12 @@ UnaryExprAST::UnaryExprAST(CompileUnit *unit, const std::string &op,
 {
     this->op      = op;
     this->operand = operand;
-    CompileError e("一元运算符未实现");
-    throw e;
+    if (op == "!") {
+        this->type = new TypeAST(unit, "bool");
+    } else {
+        CompileError e("一元运算符:" + op + "未实现");
+        throw e;
+    }
 }
 
 UnaryExprAST::~UnaryExprAST()
@@ -25,5 +30,8 @@ UnaryExprAST::~UnaryExprAST()
 
 llvm::Value *UnaryExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
+    if (op == "!") {
+        return builder->CreateXor(operand->Codegen(builder), 1);
+    }
     return nullptr;
 }

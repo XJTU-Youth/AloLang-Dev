@@ -83,6 +83,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             token = unit->next_tok();
             return result;
         } else {
+            unit->next_tok();
             return new UnaryExprAST(unit, token.tokenValue,
                                     ParseExpression(unit, codeblock, false));
             std::cerr << "error3:" << token.dump() << std::endl;
