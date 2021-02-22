@@ -15,6 +15,7 @@
         * [alolang关键字:anytype](language/keyword/type/anytype/index)
         * [alolang关键字:float](language/keyword/type/float/index)
         * [alolang关键字:enum](language/keyword/type/enum/index)
+        * [alolang关键字:type](language/keyword/type/type/index)
         * [alolang关键字:void](language/keyword/type/void/index)
         * [alolang关键字:char](language/keyword/type/char/index)
         * [alolang关键字:bool](language/keyword/type/bool/index)
