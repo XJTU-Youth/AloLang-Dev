@@ -95,7 +95,7 @@ void CompileUnit::compile()
     std::cout << "Start compiling:" << name << std::endl;
     initInnerType(this);
     scanToken(this);
-    do {
+    while (icurTok->type != tok_eof) {
         switch (icurTok->type) {
         case tok_fun: {
             FunctionAST *func_ast = FunctionAST::ParseFunction(this);
@@ -131,7 +131,7 @@ void CompileUnit::compile()
         default:
             std::cerr << "unexpected token:" << icurTok->dump() << std::endl;
         }
-    } while (next_tok().type != tok_eof);
+    }
     std::cout << "Start codegen:" << name << std::endl;
     std::map<std::string, VariableDefExprAST *>::iterator gVar_iter;
     for (gVar_iter = globalVariables.begin();

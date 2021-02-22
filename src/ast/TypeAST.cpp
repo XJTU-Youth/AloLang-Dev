@@ -39,10 +39,12 @@ llvm::Type *TypeAST::Codegen()
 
 TypeAST *TypeAST::ParseType(CompileUnit *unit)
 {
-    Token token = unit->next_tok();
+    Token token = *unit->icurTok;
     if (token.type != tok_identifier) {
         CompileError e("Expected type but got " + token.dump());
         throw e;
     }
-    return new TypeAST(unit, token.tokenValue);
+    TypeAST *result = new TypeAST(unit, token.tokenValue);
+    token           = unit->next_tok();
+    return result;
 }

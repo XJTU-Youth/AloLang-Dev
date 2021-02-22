@@ -42,11 +42,12 @@ ExternAST *ExternAST::ParseExtern(CompileUnit *unit)
     // todo:对externC的处理
     std::cout << std::left << std::setw(35)
               << "Function extern found:" << proto->name << std::endl;
-    Token token = unit->next_tok();
+    Token token = *(unit->icurTok);
     if (token.type != tok_syntax || token.tokenValue != ";") {
         CompileError e("丟失分号: \"" + token.dump() + "\" 前");
         throw e;
     }
+    token = unit->next_tok();
 
     return new ExternAST(unit, proto);
 }

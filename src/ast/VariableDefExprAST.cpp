@@ -76,9 +76,9 @@ VariableDefExprAST *VariableDefExprAST::ParseVar(CompileUnit * unit,
 {
     TypeAST *typeAST = TypeAST::ParseType(unit);
 
-    Token       nexToken = unit->next_tok();
+    Token       nexToken = *(unit->icurTok);
     std::string idName   = nexToken.tokenValue;
-    nexToken             = *(unit->icurTok + 1);
+    nexToken             = unit->next_tok();
     ExprAST *initValue   = nullptr;
 
     if (nexToken.type != tok_syntax || nexToken.tokenValue != ";") {

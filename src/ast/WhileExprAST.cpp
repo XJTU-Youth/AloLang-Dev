@@ -49,6 +49,7 @@ llvm::Value *WhileExprAST::Codegen(llvm::IRBuilder<> *builder)
 WhileExprAST *WhileExprAST::ParseWhileExpr(CompileUnit * unit,
                                            CodeBlockAST *parent)
 {
+    unit->next_tok();
     ExprAST *     condition = ExprAST::ParseExpression(unit, parent, false);
     CodeBlockAST *body      = CodeBlockAST::ParseCodeBlock(unit, "", parent);
     return new WhileExprAST(unit, parent, condition, body);

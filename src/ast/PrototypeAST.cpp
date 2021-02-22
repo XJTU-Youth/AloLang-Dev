@@ -56,11 +56,7 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
     }
 
     while (true) {
-        if (FnName == "main") {
-            token = unit->next_tok(); // ).
-            break;
-        }
-        token = *(unit->icurTok + 1);
+        token = unit->next_tok();
         if (token.type == tok_syntax && token.tokenValue == ",") {
             token = unit->next_tok();
             continue;
@@ -71,7 +67,7 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
         }
         TypeAST *type = TypeAST::ParseType(unit);
         // todo:错误处理
-        token                                  = unit->next_tok();
+        token                                  = *unit->icurTok;
         std::string                       name = token.tokenValue;
         std::pair<TypeAST *, std::string> pair;
         pair.first  = type;
@@ -83,14 +79,14 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
         // TODO:异常处理
     }
 
-    token = *(unit->icurTok + 1); // -> or ; or {
+    token = *(unit->icurTok); // -> or ; or {
     std::vector<TypeAST *> returnTypes;
     if (token.type == tok_return_type) {
         unit->next_tok();
         int bc = 0;
         while (true) {
             // todo:大量异常处理
-            token = *(unit->icurTok + 1); // identifier.
+            token = *unit->icurTok;
             if (token.type == tok_syntax) {
                 if (token.tokenValue == "(") {
                     bc++;

@@ -31,9 +31,8 @@ CodeBlockAST::ParseCodeBlock(CompileUnit *unit, std::string name,
                              CodeBlockAST *                          parent,
                              const std::vector<VariableDefExprAST *> args)
 {
-    Token token = *(unit->icurTok + 1);
+    Token token = *unit->icurTok;
     if (token.type == tok_syntax && token.tokenValue == "{") {
-        unit->next_tok();
         CodeBlockAST *codeblock =
             new CodeBlockAST(unit, std::vector<ExprAST *>(), name, parent);
         std::vector<ExprAST *> &body = codeblock->body;
@@ -41,8 +40,10 @@ CodeBlockAST::ParseCodeBlock(CompileUnit *unit, std::string name,
             argDef->codeblock = codeblock;
             body.push_back(argDef);
         }
+        //解析块内语句
+        Token inBlockToken = unit->next_tok();
         while (true) {
-            Token inBlockToken = *(unit->icurTok + 1);
+            inBlockToken = *(unit->icurTok);
             if (inBlockToken.type == tok_eof) {
                 CompileError e("Unexpexted EOF in function body");
                 throw e;

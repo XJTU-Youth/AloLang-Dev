@@ -27,6 +27,7 @@ IfExprAST::~IfExprAST()
 
 IfExprAST *IfExprAST::ParseIfExpr(CompileUnit *unit, CodeBlockAST *parent)
 {
+    unit->next_tok();
     ExprAST *     condition = ExprAST::ParseExpression(unit, parent, false);
     CodeBlockAST *thenBlock = CodeBlockAST::ParseCodeBlock(unit, "", parent);
     CodeBlockAST *elseBlock = nullptr;
