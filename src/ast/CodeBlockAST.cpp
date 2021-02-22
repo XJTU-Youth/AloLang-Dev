@@ -72,9 +72,13 @@ llvm::BasicBlock *CodeBlockAST::Codegen(llvm::Function *function)
     for (ExprAST *expr : body) {
         expr->Codegen(builder);
     }
-    // builder->CreateRetVoid(); // todo:待处理
+    // builder->CreateRetVoid(); // todo:待处理,main特判
+    // std::cout << name << std::string(function->getName()) << std::endl;
     if (parent == nullptr) {
-        builder->CreateRetVoid();
+        if (std::string(function->getName()) != "main")
+            builder->CreateRetVoid();
+        else
+            builder->CreateRet(0);
     }
 
     return bb;
