@@ -5,6 +5,7 @@
 包含下面这几种
 
 ```
+type
 anytype
 array
 auto
