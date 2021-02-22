@@ -48,9 +48,26 @@ llvm::Value *VariableDefExprAST::Codegen(llvm::IRBuilder<> *builder)
     if (codeblock == nullptr) {
         llvm::GlobalVariable *gVar = new llvm::GlobalVariable(
             *unit->module, type->Codegen(), false,
-            llvm::GlobalValue::ExternalLinkage, nullptr);
-        unit->globalVariablesCodegen.insert(
-            std::pair<std::string, llvm::Value *>(idName, gVar));
+            llvm::GlobalValue::ExternalLinkage, nullptr, idName);
+        // todo:初始填0
+        if (type->name == "int") {
+            llvm::IntegerType *itype =
+                llvm::IntegerType::get(*unit->context, 64);
+            llvm::ConstantInt *res = llvm::ConstantInt::get(itype, 0, true);
+            gVar->setInitializer(res);
+        } else if (type->name == "double") {
+            llvm::Type *    ftype = llvm::Type::getDoubleTy(*unit->context);
+            llvm::Constant *res   = llvm::ConstantFP::get(ftype, 0);
+            gVar->setInitializer(res);
+        } else if (type->name == "bool") {
+            llvm::IntegerType *itype =
+                llvm::IntegerType::get(*unit->context, 1);
+            llvm::ConstantInt *res = llvm::ConstantInt::get(itype, 0, true);
+            gVar->setInitializer(res);
+        }
+        unit->globalVariablesValue.insert(
+            std::pair<std::string, std::pair<TypeAST *, llvm::Value *>>(
+                idName, std::pair<TypeAST *, llvm::Value *>(type, gVar)));
         //全局变量
     } else {
         //局部变量

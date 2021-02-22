@@ -27,11 +27,12 @@ VariableExprAST::~VariableExprAST()
     // TODO Auto-generated destructor stub
 }
 
-llvm::AllocaInst *VariableExprAST::getAlloca()
+llvm::Value *VariableExprAST::getAlloca()
 {
     if (alloca != nullptr) {
         return alloca;
     }
+    //找局部变量
     CodeBlockAST *curCodeBlock = codeblock;
     while (curCodeBlock != nullptr) {
         auto varAST = curCodeBlock->namedValues.find(idName);
@@ -43,8 +44,16 @@ llvm::AllocaInst *VariableExprAST::getAlloca()
             return alloca;
         }
     }
-    CompileError e("can't find variable:" + idName);
-    throw e;
+    //找全局变量
+    auto gVar = unit->globalVariablesValue.find(idName);
+    if (gVar == unit->globalVariablesValue.end()) {
+        CompileError e("can't find variable:" + idName);
+        throw e;
+    } else {
+        type   = gVar->second.first;
+        alloca = gVar->second.second;
+        return alloca;
+    }
 }
 
 llvm::Value *VariableExprAST::Codegen(llvm::IRBuilder<> *builder)

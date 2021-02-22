@@ -136,7 +136,12 @@ void CompileUnit::compile()
     std::map<std::string, VariableDefExprAST *>::iterator gVar_iter;
     for (gVar_iter = globalVariables.begin();
          gVar_iter != globalVariables.end(); gVar_iter++) {
-        gVar_iter->second->Codegen(nullptr);
+        llvm::Value *gVarValue = gVar_iter->second->Codegen(nullptr);
+        globalVariablesValue.insert(
+            std::pair<std::string, std::pair<TypeAST *, llvm::Value *>>(
+                gVar_iter->second->idName,
+                std::pair<TypeAST *, llvm::Value *>(gVar_iter->second->type,
+                                                    gVarValue)));
     }
     std::map<std::string, ExternAST *>::iterator extern_iter;
     for (extern_iter = externs.begin(); extern_iter != externs.end();

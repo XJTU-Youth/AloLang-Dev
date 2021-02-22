@@ -29,7 +29,7 @@ class CodeBlockAST : public BaseAST
 
     llvm::IRBuilder<> *    builder;
     std::vector<ExprAST *> body;
-    std::map<std::string, std::pair<TypeAST *, llvm::AllocaInst *>>
+    std::map<std::string, std::pair<TypeAST *, llvm::Value *>>
                       namedValues; // Codegen阶段用
     std::string       name;
     CodeBlockAST *    parent;

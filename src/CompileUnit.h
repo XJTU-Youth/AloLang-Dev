@@ -39,8 +39,9 @@ class CompileUnit
     std::map<std::string, VariableDefExprAST *> globalVariables;
     std::map<std::string, FunctionAST *>        functions;
     std::map<std::string, ExternAST *>          externs;
-    std::map<std::string, llvm::Type *>         types;           // Codgen用
-    std::map<std::string, llvm::Value *> globalVariablesCodegen; // Codgen用
+    std::map<std::string, llvm::Type *>         types; // Codgen用
+    std::map<std::string, std::pair<TypeAST *, llvm::Value *>>
+        globalVariablesValue; // Codgen用
     // std::map<std::string, >
 };
 
