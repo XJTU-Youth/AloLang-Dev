@@ -1,0 +1,14 @@
+extern func testPrintInt(int i);
+extern "S" func testGetInt() -> int;
+
+func swap(int a, int b) -> int, int {
+    return b;
+}
+
+func main() {
+    int a = testGetInt();
+    int b = testGetInt();
+    a, b= swap(a, b);
+    testPrintInt(a);
+    testPrintInt(b);
+}
