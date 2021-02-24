@@ -30,6 +30,8 @@ while                                   token = tok_key_while;      return token
 
 case|switch                             token = tok_key_switch;     return token;
 
+class                                   token = tok_key_class;      return token;
+
 ->                                      token = tok_return_type;    return token;
 fun                                     token = tok_fun;            return token;
 func                                    token = tok_fun;            return token;
