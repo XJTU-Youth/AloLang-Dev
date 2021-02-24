@@ -15,7 +15,7 @@
 #include "../utils.h"
 
 CallExprAST::CallExprAST(CompileUnit *unit, const std::string &callee,
-                         std::vector<ExprAST *> &args)
+                         ExprAST *args)
     : ExprAST(unit)
 {
     this->callee = callee;
@@ -32,24 +32,11 @@ CallExprAST::~CallExprAST()
 std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
     std::vector<llvm::Value *> result;
-    std::vector<llvm::Value *> argsV;
-
-    for (unsigned i = 0, e = args.size(); i != e; ++i) {
-        std::vector<llvm::Value *> r = args[i]->Codegen(builder);
-        if (r.size() != 1) {
-            CompileError e("Multi/Void type in args found.");
-            throw e;
-        }
-        argsV.push_back(r[0]);
-    }
+    std::vector<llvm::Value *> argsV = args->Codegen(builder);
 
     std::vector<TypeAST *> argStr;
-    for (ExprAST *ast : args) {
-        if (ast->type.size() != 1) {
-            CompileError e("Multi/Void type found.");
-            throw e;
-        }
-        argStr.push_back(ast->type[0]);
+    for (TypeAST *ast : args->type) {
+        argStr.push_back(ast);
     }
     std::string dname = demangle(callee, argStr);
     if (callee == "main") {

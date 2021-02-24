@@ -6,6 +6,7 @@
 #include "BoolExprAST.h"
 #include "CallExprAST.h"
 #include "CodeBlockAST.h"
+#include "EmptyExprAST.h"
 #include "IfExprAST.h"
 #include "IntExprAST.h"
 #include "UnaryExprAST.h"
@@ -76,8 +77,10 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
                 CompileError e("missing ')'");
                 throw e;
             }
-            token = unit->next_tok();
+            unit->next_tok();
             return result;
+        } else if (token.tokenValue == ")") {
+            return new EmptyExprAST(unit);
         } else {
             unit->next_tok();
             return new UnaryExprAST(unit, token.tokenValue,
@@ -97,24 +100,8 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             return varAST;
         } else if (token.tokenValue == "(") {
             //函数调用
-            token = unit->next_tok();
-            token = unit->next_tok();
-            std::vector<ExprAST *> args;
-            while (true) {
-                token = *unit->icurTok;
-                if (token.type == tok_syntax && token.tokenValue == ")") {
-                    unit->next_tok();
-                    break;
-                }
-                if (token.type == tok_syntax && token.tokenValue == ",") {
-                    continue;
-                }
-
-                ExprAST *arg = ExprAST::ParseExpression(unit, codeblock, false);
-                args.push_back(arg);
-                // todo:异常处理
-            }
-
+            token         = unit->next_tok();
+            ExprAST *args = ExprAST::ParseExpression(unit, codeblock, false);
             return new CallExprAST(unit, idName, args);
         } else {
             //变量或赋值

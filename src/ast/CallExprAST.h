@@ -13,13 +13,12 @@
 class CallExprAST : public ExprAST
 {
   public:
-    CallExprAST(CompileUnit *unit, const std::string &callee,
-                std::vector<ExprAST *> &args);
+    CallExprAST(CompileUnit *unit, const std::string &callee, ExprAST *args);
     virtual ~CallExprAST();
     std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
 
-    std::string            callee;
-    std::vector<ExprAST *> args;
+    std::string callee;
+    ExprAST *   args;
 };
 
 #endif /* COMPILER_AST_CALLEXPRAST_H_ */
