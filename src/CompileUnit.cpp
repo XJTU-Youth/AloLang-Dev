@@ -14,6 +14,7 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Verifier.h>
 
+#include "ast/ClassAST.h"
 #include "ast/ExprAST.h"
 #include "ast/ExternAST.h"
 #include "ast/FunctionAST.h"
@@ -133,6 +134,7 @@ void CompileUnit::compile()
         }
     }
     std::cout << "Start codegen:" << name << std::endl;
+    // todo:Class的Codegen
     std::map<std::string, VariableDefExprAST *>::iterator gVar_iter;
     for (gVar_iter = globalVariables.begin();
          gVar_iter != globalVariables.end(); gVar_iter++) {

@@ -19,6 +19,7 @@ class TypeAST;
 class FunctionAST;
 class ExternAST;
 class VariableDefExprAST;
+class ClassAST;
 class CompileUnit
 {
   public:
@@ -36,6 +37,7 @@ class CompileUnit
     llvm::Module *                              module;
     std::vector<Token>                          tokenList;
     std::vector<Token>::iterator                icurTok;
+    std::map<std::string, ClassAST *>           classes;
     std::map<std::string, VariableDefExprAST *> globalVariables;
     std::map<std::string, FunctionAST *>        functions;
     std::map<std::string, ExternAST *>          externs;

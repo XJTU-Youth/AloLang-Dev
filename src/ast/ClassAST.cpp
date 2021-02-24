@@ -16,3 +16,5 @@ ClassAST::~ClassAST()
 {
     // TODO Auto-generated destructor stub
 }
+
+llvm::Type *ClassAST::Codegen() { return nullptr; }
