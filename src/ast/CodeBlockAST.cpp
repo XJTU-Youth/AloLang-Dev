@@ -75,10 +75,15 @@ llvm::BasicBlock *CodeBlockAST::Codegen(llvm::Function *function)
     // builder->CreateRetVoid(); // todo:待处理,main特判
     // std::cout << name << std::string(function->getName()) << std::endl;
     if (parent == nullptr) {
-        if (std::string(function->getName()) != "main")
+        if (std::string(function->getName()) != "main") {
             builder->CreateRetVoid();
-        else
-            builder->CreateRet(0);
+        } else {
+            llvm::IntegerType *type =
+                llvm::IntegerType::get(*unit->context, 32);
+            llvm::ConstantInt *res = llvm::ConstantInt::get(type, 0, true);
+
+            builder->CreateRet(res);
+        }
     }
 
     return bb;

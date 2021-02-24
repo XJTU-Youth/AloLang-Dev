@@ -140,7 +140,11 @@ llvm::Function *PrototypeAST::Codegen()
         }
 
     } else {
-        returnType = llvm::Type::getVoidTy(*unit->context);
+        if (name != "main") {
+            returnType = llvm::Type::getVoidTy(*unit->context);
+        } else {
+            returnType = llvm::IntegerType::get(*unit->context, 32);
+        }
     }
 
     llvm::FunctionType *FT =
