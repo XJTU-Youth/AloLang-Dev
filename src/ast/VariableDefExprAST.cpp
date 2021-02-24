@@ -20,12 +20,12 @@ VariableDefExprAST::VariableDefExprAST(CompileUnit *      unit,
                                        ExprAST *initValue, int argID)
     : ExprAST(unit)
 {
-    this->codeblock = codeblock;
-    this->idName    = idName;
-    this->type      = type;
-    this->alloca    = nullptr;
-    this->initValue = initValue;
-    this->argID     = argID;
+    this->codeblock    = codeblock;
+    this->idName       = idName;
+    this->alloca       = nullptr;
+    this->initValue    = initValue;
+    this->argID        = argID;
+    this->variableType = type;
 }
 
 VariableDefExprAST::~VariableDefExprAST()
@@ -43,23 +43,24 @@ static llvm::AllocaInst *CreateEntryBlockAlloca(CompileUnit *      unit,
     return builder.CreateAlloca(typeAST->Codegen(), 0, VarName.c_str());
 }
 
-llvm::Value *VariableDefExprAST::Codegen(llvm::IRBuilder<> *builder)
+std::vector<llvm::Value *>
+VariableDefExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
     if (codeblock == nullptr) {
         llvm::GlobalVariable *gVar = new llvm::GlobalVariable(
-            *unit->module, type->Codegen(), false,
+            *unit->module, variableType->Codegen(), false,
             llvm::GlobalValue::ExternalLinkage, nullptr, idName);
         // todo:初始填0
-        if (type->name == "int") {
+        if (variableType->name == "int") {
             llvm::IntegerType *itype =
                 llvm::IntegerType::get(*unit->context, 64);
             llvm::ConstantInt *res = llvm::ConstantInt::get(itype, 0, true);
             gVar->setInitializer(res);
-        } else if (type->name == "double") {
+        } else if (variableType->name == "double") {
             llvm::Type *    ftype = llvm::Type::getDoubleTy(*unit->context);
             llvm::Constant *res   = llvm::ConstantFP::get(ftype, 0);
             gVar->setInitializer(res);
-        } else if (type->name == "bool") {
+        } else if (variableType->name == "bool") {
             llvm::IntegerType *itype =
                 llvm::IntegerType::get(*unit->context, 1);
             llvm::ConstantInt *res = llvm::ConstantInt::get(itype, 0, true);
@@ -67,25 +68,31 @@ llvm::Value *VariableDefExprAST::Codegen(llvm::IRBuilder<> *builder)
         }
         unit->globalVariablesValue.insert(
             std::pair<std::string, std::pair<TypeAST *, llvm::Value *>>(
-                idName, std::pair<TypeAST *, llvm::Value *>(type, gVar)));
+                idName,
+                std::pair<TypeAST *, llvm::Value *>(variableType, gVar)));
         //全局变量
     } else {
         //局部变量
         llvm::BasicBlock *insertBlock = builder->GetInsertBlock();
         llvm::Function *  function    = insertBlock->getParent();
-        alloca = CreateEntryBlockAlloca(unit, function, idName, type);
+        alloca = CreateEntryBlockAlloca(unit, function, idName, variableType);
         if (argID != -1) {
             builder->CreateStore(function->getArg(argID), alloca);
         }
         if (initValue != nullptr) {
-            builder->CreateStore(initValue->Codegen(builder), alloca);
+            std::vector<llvm::Value *> ivalues = initValue->Codegen(builder);
+            if (ivalues.size() != 1) {
+                CompileError e("Multi/Void type in init found.");
+                throw e;
+            }
+            builder->CreateStore(ivalues[0], alloca);
         }
         codeblock->namedValues.insert(
             std::pair<std::string, std::pair<TypeAST *, llvm::AllocaInst *>>(
-                idName,
-                std::pair<TypeAST *, llvm::AllocaInst *>(type, alloca)));
+                idName, std::pair<TypeAST *, llvm::AllocaInst *>(variableType,
+                                                                 alloca)));
     }
-    return nullptr;
+    return std::vector<llvm::Value *>();
 }
 
 VariableDefExprAST *VariableDefExprAST::ParseVar(CompileUnit * unit,

@@ -37,11 +37,7 @@ int GetTokPrecedence(Token tok)
     return TokPrec;
 }
 
-ExprAST::ExprAST(CompileUnit *unit) : BaseAST(unit)
-{
-    this->type = nullptr;
-    // TODO Auto-generated constructor stub
-}
+ExprAST::ExprAST(CompileUnit *unit) : BaseAST(unit) { subExpr = nullptr; }
 
 ExprAST::~ExprAST()
 {
@@ -99,10 +95,6 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             VariableDefExprAST *varAST =
                 VariableDefExprAST::ParseVar(unit, codeblock);
             return varAST;
-        } else if (token.tokenValue == "=") {
-            token = unit->next_tok();
-            //赋值
-            return AssignmentAST::ParseAssignment(unit, codeblock, idName);
         } else if (token.tokenValue == "(") {
             //函数调用
             token = unit->next_tok();
@@ -125,9 +117,22 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
 
             return new CallExprAST(unit, idName, args);
         } else {
-            //变量
-            unit->next_tok();
-            return new VariableExprAST(unit, codeblock, idName);
+            //变量或赋值
+            int i = 0;
+            while (true) {
+                token = *(unit->icurTok + i);
+                if (token.type == tok_syntax) {
+                    if (token.tokenValue == "=") {
+                        return AssignmentAST::ParseAssignment(unit, codeblock);
+                        break;
+                    } else if (token.tokenValue != ",") {
+                        //变量
+                        unit->next_tok();
+                        return new VariableExprAST(unit, codeblock, idName);
+                    }
+                }
+                i++;
+            }
         }
         break;
     }
@@ -179,8 +184,12 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
     if (WhileExprAST *v = dynamic_cast<WhileExprAST *>(result)) {
         return result; //跳过分号
     }
+    Token token = *(unit->icurTok);
+    if (token.type == tok_syntax && token.tokenValue == ",") {
+        unit->next_tok();
+        result->subExpr = ExprAST::ParseExpression(unit, codeblock, false);
+    }
     if (root) {
-        Token token = *(unit->icurTok);
         if (token.type != tok_syntax || token.tokenValue != ";") {
             CompileError e("丟失分号: \"" + token.dump() + "\" 前");
             throw e;

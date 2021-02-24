@@ -18,11 +18,12 @@ class VariableDefExprAST : public ExprAST
     virtual ~VariableDefExprAST();
     static VariableDefExprAST *ParseVar(CompileUnit * unit,
                                         CodeBlockAST *codeblock);
-    llvm::Value *              Codegen(llvm::IRBuilder<> *builder);
+    std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
     CodeBlockAST *             codeblock;
     std::string                idName;
     llvm::AllocaInst *         alloca;
     ExprAST *                  initValue;
+    TypeAST *                  variableType;
     int argID; //函数的参数号，函数内变量为-1
 };
 

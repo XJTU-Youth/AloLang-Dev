@@ -20,17 +20,17 @@ BinaryExprAST::BinaryExprAST(CompileUnit *unit, std::string binOP, ExprAST *LHS,
     this->type = LHS->type;
     //整理此段代码，将操作抽象
     if (binOP == "==") {
-        this->type = new TypeAST(unit, "bool");
+        this->type.push_back(new TypeAST(unit, "bool"));
     } else if (binOP == "!=") {
-        this->type = new TypeAST(unit, "bool");
+        this->type.push_back(new TypeAST(unit, "bool"));
     } else if (binOP == ">") {
-        this->type = new TypeAST(unit, "bool");
+        this->type.push_back(new TypeAST(unit, "bool"));
     } else if (binOP == "<") {
-        this->type = new TypeAST(unit, "bool");
+        this->type.push_back(new TypeAST(unit, "bool"));
     } else if (binOP == ">=") {
-        this->type = new TypeAST(unit, "bool");
+        this->type.push_back(new TypeAST(unit, "bool"));
     } else if (binOP == "<=") {
-        this->type = new TypeAST(unit, "bool");
+        this->type.push_back(new TypeAST(unit, "bool"));
     }
 }
 
@@ -39,34 +39,38 @@ BinaryExprAST::~BinaryExprAST()
     // TODO Auto-generated destructor stub
 }
 
-llvm::Value *BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
+std::vector<llvm::Value *> BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
-    llvm::Value *L = LHS->Codegen(builder);
-    llvm::Value *R = RHS->Codegen(builder);
-    if (L == nullptr || R == 0)
-        return 0;
+    std::vector<llvm::Value *> L = LHS->Codegen(builder);
+    std::vector<llvm::Value *> R = RHS->Codegen(builder);
+    std::vector<llvm::Value *> result;
+    if (L.size() != 1 || R.size() != 1) {
+        CompileError e("Bin Expr length != 1");
+        throw e;
+    }
     if (binOP == "+") {
-        return builder->CreateAdd(L, R);
+        result.push_back(builder->CreateAdd(L[0], R[0]));
     } else if (binOP == "-") {
-        return builder->CreateSub(L, R);
+        result.push_back(builder->CreateSub(L[0], R[0]));
     } else if (binOP == "*") {
-        return builder->CreateMul(L, R);
+        result.push_back(builder->CreateMul(L[0], R[0]));
     } else if (binOP == "/") {
-        return builder->CreateFDiv(L, R);
+        result.push_back(builder->CreateFDiv(L[0], R[0]));
     } else if (binOP == "==") {
-        return builder->CreateICmpEQ(L, R);
+        result.push_back(builder->CreateICmpEQ(L[0], R[0]));
     } else if (binOP == "!=") {
-        return builder->CreateICmpNE(L, R);
+        result.push_back(builder->CreateICmpNE(L[0], R[0]));
     } else if (binOP == ">") {
-        return builder->CreateICmpSGT(L, R);
+        result.push_back(builder->CreateICmpSGT(L[0], R[0]));
     } else if (binOP == "<") {
-        return builder->CreateICmpSLT(L, R);
+        result.push_back(builder->CreateICmpSLT(L[0], R[0]));
     } else if (binOP == ">=") {
-        return builder->CreateICmpSGE(L, R);
+        result.push_back(builder->CreateICmpSGE(L[0], R[0]));
     } else if (binOP == "<=") {
-        return builder->CreateICmpSLE(L, R);
+        result.push_back(builder->CreateICmpSLE(L[0], R[0]));
     } else {
         CompileError e("Unknown operator:" + binOP);
         throw e;
     }
+    return result;
 }

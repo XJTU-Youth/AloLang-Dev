@@ -40,7 +40,7 @@ llvm::Value *VariableExprAST::getAlloca()
             curCodeBlock = curCodeBlock->parent;
         } else {
             alloca = varAST->second.second;
-            type   = varAST->second.first;
+            type.push_back(varAST->second.first);
             return alloca;
         }
     }
@@ -50,13 +50,19 @@ llvm::Value *VariableExprAST::getAlloca()
         CompileError e("can't find variable:" + idName);
         throw e;
     } else {
-        type   = gVar->second.first;
+        type.push_back(gVar->second.first);
         alloca = gVar->second.second;
         return alloca;
     }
 }
 
-llvm::Value *VariableExprAST::Codegen(llvm::IRBuilder<> *builder)
+std::vector<llvm::Value *> VariableExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
-    return builder->CreateLoad(getAlloca());
+    std::vector<llvm::Value *> result;
+    result.push_back(builder->CreateLoad(getAlloca()));
+    if (subExpr != nullptr) {
+        std::vector<llvm::Value *> subResult = subExpr->Codegen(builder);
+        result.insert(result.end(), subResult.begin(), subResult.end());
+    }
+    return result;
 }

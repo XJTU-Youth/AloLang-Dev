@@ -16,7 +16,7 @@ class CallExprAST : public ExprAST
     CallExprAST(CompileUnit *unit, const std::string &callee,
                 std::vector<ExprAST *> &args);
     virtual ~CallExprAST();
-    llvm::Value *Codegen(llvm::IRBuilder<> *builder);
+    std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
 
     std::string            callee;
     std::vector<ExprAST *> args;

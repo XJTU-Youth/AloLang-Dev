@@ -29,21 +29,27 @@ CallExprAST::~CallExprAST()
     // TODO Auto-generated destructor stub
 }
 
-llvm::Value *CallExprAST::Codegen(llvm::IRBuilder<> *builder)
+std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
+    std::vector<llvm::Value *> result;
     std::vector<llvm::Value *> argsV;
 
     for (unsigned i = 0, e = args.size(); i != e; ++i) {
-        argsV.push_back(args[i]->Codegen(builder));
+        std::vector<llvm::Value *> r = args[i]->Codegen(builder);
+        if (r.size() != 1) {
+            CompileError e("Multi/Void type in args found.");
+            throw e;
+        }
+        argsV.push_back(r[0]);
     }
 
     std::vector<TypeAST *> argStr;
     for (ExprAST *ast : args) {
-        if (ast->type == nullptr) {
-            CompileError e("Void type found.");
+        if (ast->type.size() != 1) {
+            CompileError e("Multi/Void type found.");
             throw e;
         }
-        argStr.push_back(ast->type);
+        argStr.push_back(ast->type[0]);
     }
     std::string dname = demangle(callee, argStr);
     if (callee == "main") {
@@ -65,14 +71,16 @@ llvm::Value *CallExprAST::Codegen(llvm::IRBuilder<> *builder)
         CompileError e("Function " + dname + " not found.");
         throw e;
     }
-    if (proto->returnDirectly) {
-        type = proto->returnTypes[0];
-    }
+    type = proto->returnTypes;
+
     llvm::Function *CalleeF = unit->module->getFunction(dname);
     if (CalleeF == 0) {
         CompileError e("Function " + dname + " not found in LLVM IR");
         throw e;
     }
-
-    return builder->CreateCall(CalleeF, argsV);
+    llvm::Value *retD = builder->CreateCall(CalleeF, argsV);
+    if (proto->returnDirectly) {
+        result.push_back(retD);
+    }
+    return result;
 }

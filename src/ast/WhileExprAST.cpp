@@ -6,6 +6,7 @@
  */
 
 #include "WhileExprAST.h"
+#include "../CompileError.hpp"
 #include "CodeBlockAST.h"
 
 WhileExprAST::WhileExprAST(CompileUnit *unit, CodeBlockAST *codeblock,
@@ -22,7 +23,7 @@ WhileExprAST::~WhileExprAST()
     // TODO Auto-generated destructor stub
 }
 
-llvm::Value *WhileExprAST::Codegen(llvm::IRBuilder<> *builder)
+std::vector<llvm::Value *> WhileExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
     llvm::Function *  function = builder->GetInsertBlock()->getParent();
     llvm::BasicBlock *MergeBB =
@@ -35,15 +36,19 @@ llvm::Value *WhileExprAST::Codegen(llvm::IRBuilder<> *builder)
 
     // builder->SetInsertPoint(body->endBB);
     builder->SetInsertPoint(condBB);
-    llvm::Value *conditionValue = condition->Codegen(builder);
-    builder->CreateCondBr(conditionValue, bodyBB, MergeBB);
+    std::vector<llvm::Value *> conditionValues = condition->Codegen(builder);
+    if (conditionValues.size() != 1) {
+        CompileError e("Multi/Void type in condition found.");
+        throw e;
+    }
+    builder->CreateCondBr(conditionValues[0], bodyBB, MergeBB);
 
     builder->SetInsertPoint(body->endBB);
     builder->CreateBr(condBB);
 
     builder->SetInsertPoint(MergeBB);
     parent->endBB = MergeBB;
-    return nullptr;
+    return std::vector<llvm::Value *>();
 }
 
 WhileExprAST *WhileExprAST::ParseWhileExpr(CompileUnit * unit,

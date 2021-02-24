@@ -12,8 +12,8 @@
 
 IntExprAST::IntExprAST(CompileUnit *unit, long long val) : ExprAST(unit)
 {
-    this->val  = val;
-    this->type = new TypeAST(unit, "int");
+    this->val = val;
+    this->type.push_back(new TypeAST(unit, "int"));
 }
 
 IntExprAST::~IntExprAST()
@@ -21,9 +21,11 @@ IntExprAST::~IntExprAST()
     // TODO Auto-generated destructor stub
 }
 
-llvm::Value *IntExprAST::Codegen(llvm::IRBuilder<> *builder)
+std::vector<llvm::Value *> IntExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
+    std::vector<llvm::Value *> result;
     llvm::IntegerType *type = llvm::IntegerType::get(*unit->context, 64);
     llvm::ConstantInt *res  = llvm::ConstantInt::get(type, val, true);
-    return res;
+    result.push_back(res);
+    return result;
 }

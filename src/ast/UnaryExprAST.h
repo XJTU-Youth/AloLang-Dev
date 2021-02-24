@@ -15,9 +15,9 @@ class UnaryExprAST : public ExprAST
   public:
     UnaryExprAST(CompileUnit *unit, const std::string &op, ExprAST *operand);
     virtual ~UnaryExprAST();
-    llvm::Value *Codegen(llvm::IRBuilder<> *builder);
-    std::string  op;
-    ExprAST *    operand;
+    std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
+    std::string                op;
+    ExprAST *                  operand;
 };
 
 #endif /* SRC_AST_UNARYEXPRAST_H_ */
