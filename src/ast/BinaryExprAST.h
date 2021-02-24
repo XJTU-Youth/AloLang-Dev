@@ -16,7 +16,7 @@ class BinaryExprAST : public ExprAST
     BinaryExprAST(CompileUnit *unit, std::string binOP, ExprAST *LHS,
                   ExprAST *RHS);
     virtual ~BinaryExprAST();
-    llvm::Value *Codegen(llvm::IRBuilder<> *builder);
+    std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
 
     std::string binOP;
     ExprAST *   LHS;

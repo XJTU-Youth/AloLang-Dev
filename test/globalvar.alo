@@ -1,0 +1,16 @@
+int a;
+
+extern func testPrintInt(int i);
+
+func rec(){
+    if (a < 10){
+        testPrintInt(a);
+        a = a + 1;
+        rec();
+    }
+}
+
+func main(){
+    testPrintInt(a);
+    rec();
+}

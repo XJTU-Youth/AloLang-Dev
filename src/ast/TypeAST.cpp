@@ -6,6 +6,7 @@
  */
 
 #include "TypeAST.h"
+#include "../CompileError.hpp"
 #include "CompileUnit.h"
 
 TypeAST::TypeAST(CompileUnit *unit, std::string name) : BaseAST(unit)
@@ -19,19 +20,31 @@ TypeAST::~TypeAST()
 }
 llvm::Type *TypeAST::Codegen()
 {
-    //内置类型处理
-    if (name == "int") {
-        return llvm::Type::getInt64Ty(*unit->context);
-    } else if (name == "bool") {
-        return llvm::Type::getInt1Ty(*unit->context);
-    } else {
-        //用户定义的类型
-        llvm::StructType *llvm_S =
-            llvm::StructType::create(*unit->context, name);
-        std::vector<llvm::Type *> members;
-        for (TypeAST *member : innerType) {
-            members.push_back(member->Codegen());
-        }
-        return llvm_S;
+    auto typeAST = unit->types.find(name);
+    if (typeAST == unit->types.end()) {
+        CompileError e("can't find type:" + name);
+        throw e;
     }
+    return typeAST->second;
+    /*
+            //用户定义的类型
+            llvm::StructType *llvm_S =
+                llvm::StructType::create(*unit->context, name);
+            std::vector<llvm::Type *> members;
+            for (TypeAST *member : innerType) {
+                members.push_back(member->Codegen());
+            }
+            return llvm_S;*/
+}
+
+TypeAST *TypeAST::ParseType(CompileUnit *unit)
+{
+    Token token = *unit->icurTok;
+    if (token.type != tok_identifier) {
+        CompileError e("Expected type but got " + token.dump());
+        throw e;
+    }
+    TypeAST *result = new TypeAST(unit, token.tokenValue);
+    token           = unit->next_tok();
+    return result;
 }

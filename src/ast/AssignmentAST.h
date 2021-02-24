@@ -14,14 +14,14 @@ class VariableExprAST;
 class AssignmentAST : public ExprAST
 {
   public:
-    AssignmentAST(CompileUnit *unit, VariableExprAST *LHS, ExprAST *RHS);
+    AssignmentAST(CompileUnit *unit, std::vector<VariableExprAST *> LHS,
+                  ExprAST *RHS);
     virtual ~AssignmentAST();
-    llvm::Value *         Codegen(llvm::IRBuilder<> *builder);
-    static AssignmentAST *ParseAssignment(CompileUnit *      unit,
-                                          CodeBlockAST *     codeblock,
-                                          const std::string &LHS);
-    VariableExprAST *     LHS; //左侧变量
-    ExprAST *             RHS;
+    std::vector<llvm::Value *>     Codegen(llvm::IRBuilder<> *builder);
+    static AssignmentAST *         ParseAssignment(CompileUnit * unit,
+                                                   CodeBlockAST *codeblock);
+    std::vector<VariableExprAST *> LHS; //左侧变量
+    ExprAST *                      RHS;
 };
 
 #endif /* SRC_AST_ASSIGNMENTAST_H_ */

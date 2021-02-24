@@ -19,6 +19,7 @@ class ExternAST : public BaseAST
     static ExternAST *ParseExtern(CompileUnit *unit);
     llvm::Function *  Codegen();
     PrototypeAST *    proto;
+    std::string       getDemangledName();
 };
 
 #endif /* COMPILER_AST_EXTERNAST_H_ */

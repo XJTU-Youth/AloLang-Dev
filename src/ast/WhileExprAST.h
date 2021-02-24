@@ -13,9 +13,15 @@
 class WhileExprAST : public ExprAST
 {
   public:
-    WhileExprAST(CompileUnit *unit, CodeBlockAST *codeblock);
+    WhileExprAST(CompileUnit *unit, CodeBlockAST *codeblock, ExprAST *condition,
+                 CodeBlockAST *body);
     virtual ~WhileExprAST();
-    llvm::Value *Codegen(llvm::IRBuilder<> *builder);
+    static WhileExprAST *      ParseWhileExpr(CompileUnit * unit,
+                                              CodeBlockAST *parent);
+    std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
+    ExprAST *                  condition;
+    CodeBlockAST *             body;
+    CodeBlockAST *             parent;
 };
 
 #endif /* SRC_AST_WHILEEXPRAST_H_ */

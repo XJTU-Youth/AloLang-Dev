@@ -33,7 +33,8 @@ enum TokenType {
     tok_key_goto,
     tok_key_if,
     tok_key_while,
-    tok_key_switch
+    tok_key_switch,
+    tok_key_class
 };
 
 class Token

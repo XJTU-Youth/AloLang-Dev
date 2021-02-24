@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.70])
+AC_PREREQ([2.69])
 AC_INIT([AloLang Compiler], [Dev Beta], [https://github.com/XJTU-Youth/AloLang-Dev/issues])
 
 AC_ARG_ENABLE([debug],
@@ -17,11 +17,13 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_LEX(noyywrap)
 AC_PROG_RANLIB
-
 # Checks for libraries.
 # FIXME: Replace 'main' with a function in '-lboost_program_options':
 AC_CHECK_LIB([boost_program_options], [boost::program_options::strip_prefixes])
 AC_CHECK_LIB([LLVM-11], [llvm::demangle])
+
+
+
 
 # Checks for header files.
 AC_CHECK_HEADERS([inttypes.h unistd.h])

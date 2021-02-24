@@ -13,7 +13,7 @@
 #include "llvm/IR/Instructions.h"
 #include <map>
 
-class VariableExprAST;
+class VariableDefExprAST;
 class CodeBlockAST : public BaseAST
 {
   public:
@@ -22,17 +22,18 @@ class CodeBlockAST : public BaseAST
     virtual ~CodeBlockAST();
     static CodeBlockAST *
                       ParseCodeBlock(CompileUnit *unit, std::string name,
-                                     CodeBlockAST *                           parent = nullptr,
-                                     std::map<std::string, VariableExprAST *> namedValues =
-                                         std::map<std::string, VariableExprAST *>());
+                                     CodeBlockAST *                          parent = nullptr,
+                                     const std::vector<VariableDefExprAST *> args =
+                                         std::vector<VariableDefExprAST *>());
     llvm::BasicBlock *Codegen(llvm::Function *function);
 
-    llvm::IRBuilder<> *                      builder;
-    std::vector<ExprAST *>                   body;
-    std::map<std::string, VariableExprAST *> namedValues;
-    std::string                              name;
-    CodeBlockAST *                           parent;
-    llvm::BasicBlock *                       endBB;
+    llvm::IRBuilder<> *    builder;
+    std::vector<ExprAST *> body;
+    std::map<std::string, std::pair<TypeAST *, llvm::Value *>>
+                      namedValues; // Codegen阶段用
+    std::string       name;
+    CodeBlockAST *    parent;
+    llvm::BasicBlock *endBB;
 };
 
 #endif /* COMPILER_AST_CODEBLOCKAST_H_ */

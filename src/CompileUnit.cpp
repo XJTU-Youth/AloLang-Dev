@@ -14,39 +14,34 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Verifier.h>
 
+#include "ast/ClassAST.h"
 #include "ast/ExprAST.h"
 #include "ast/ExternAST.h"
 #include "ast/FunctionAST.h"
 #include "ast/TypeAST.h"
+#include "ast/VariableDefExprAST.h"
 #include "utils.h"
 #include <fstream>
 #include <iostream>
 
 void initInnerType(CompileUnit *unit)
 {
-    unit->types.insert(
-        std::pair<std::string, TypeAST *>("int", new TypeAST(unit, "int")));
-    unit->types.insert(
-        std::pair<std::string, TypeAST *>("bool", new TypeAST(unit, "bool")));
+    unit->types.insert(std::pair<std::string, llvm::Type *>(
+        "int", llvm::Type::getInt64Ty(*unit->context)));
+    unit->types.insert(std::pair<std::string, llvm::Type *>(
+        "double", llvm::Type::getDoubleTy(*unit->context)));
+    unit->types.insert(std::pair<std::string, llvm::Type *>(
+        "bool", llvm::Type::getInt1Ty(*unit->context)));
 }
 
 void scanToken(CompileUnit *unit)
 {
     Token token;
     do {
-        int tokenid  = unit->lexer->yylex();
-        token.type   = TokenType(tokenid);
-        token.lineno = unit->lexer->lineno();
-        switch (token.type) {
-        tok_fun:
-        tok_extern:
-        tok_return:
-        tok_return_type:
-        tok_eof:
-            break;
-        default:
-            token.tokenValue = unit->lexer->YYText();
-        }
+        int tokenid      = unit->lexer->yylex();
+        token.type       = TokenType(tokenid);
+        token.lineno     = unit->lexer->lineno();
+        token.tokenValue = unit->lexer->YYText();
         // Deal with numbers
         if (token.type == tok_number) {
             int numTypeFlag = 10; //进制数
@@ -62,10 +57,13 @@ void scanToken(CompileUnit *unit)
             sprintf(tmp, "%ld",
                     strtol(token.tokenValue.c_str(), NULL, numTypeFlag));
             token.tokenValue = tmp;
+        } else if (token.type == tok_str) {
+            std::string str  = token.tokenValue;
+            token.tokenValue = str.substr(1, str.length() - 2);
         }
 
         // Debug token dump
-        std::cout << token.dump() << std::endl;
+        // std::cout << token.dump() << std::endl;
 
         unit->tokenList.push_back(token);
     } while (token.type != tok_eof);
@@ -80,7 +78,7 @@ CompileUnit::CompileUnit(std::string name, std::string source)
     this->sis    = std::istringstream(source);
     this->lexer  = new yyFlexLexer(sis, std::cerr);
     context      = new llvm::LLVMContext();
-    module       = new llvm::Module("test.ll", *context);
+    module       = new llvm::Module(name, *context);
 }
 
 CompileUnit::~CompileUnit() {}
@@ -98,11 +96,13 @@ void CompileUnit::compile()
     std::cout << "Start compiling:" << name << std::endl;
     initInnerType(this);
     scanToken(this);
-    do {
+    while (icurTok->type != tok_eof) {
         switch (icurTok->type) {
         case tok_fun: {
-            FunctionAST *   func_ast = FunctionAST::ParseFunction(this);
-            llvm::Function *func     = func_ast->Codegen();
+            FunctionAST *func_ast = FunctionAST::ParseFunction(this);
+            functions.insert(std::pair<std::string, FunctionAST *>(
+                func_ast->getDemangledName(), func_ast));
+            // llvm::Function *func = func_ast->Codegen();
             /*llvm::Type*
              type=llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
              false);
@@ -115,23 +115,42 @@ void CompileUnit::compile()
             break;
         }
         case tok_extern: {
+            ExternAST *externast = ExternAST::ParseExtern(this);
+            externs.insert(std::pair<std::string, ExternAST *>(
+                externast->getDemangledName(), externast));
+            break;
+        }
+        case tok_identifier: {
+            //全局变量
+            VariableDefExprAST *var =
+                VariableDefExprAST::ParseVar(this, nullptr);
             Token token = next_tok();
-            if (token.type == tok_eof) {
-                CompileError e("Unexpected EOF in funtion body, line " +
-                               std::to_string(token.lineno));
-                throw e;
-            }
-            if (token.type == tok_fun) {
-                ExternAST::ParseExtern(this)->Codegen();
-            }
-            // todo:对导出非函数符号的处理
+            globalVariables.insert(
+                std::pair<std::string, VariableDefExprAST *>(var->idName, var));
             break;
         }
         default:
-
             std::cerr << "unexpected token:" << icurTok->dump() << std::endl;
         }
-    } while (next_tok().type != tok_eof);
+    }
+    std::cout << "Start codegen:" << name << std::endl;
+    // todo:Class的Codegen
+    std::map<std::string, VariableDefExprAST *>::iterator gVar_iter;
+    for (gVar_iter = globalVariables.begin();
+         gVar_iter != globalVariables.end(); gVar_iter++) {
+        gVar_iter->second->Codegen(nullptr);
+    }
+    std::map<std::string, ExternAST *>::iterator extern_iter;
+    for (extern_iter = externs.begin(); extern_iter != externs.end();
+         extern_iter++) {
+        extern_iter->second->Codegen();
+    }
+    std::map<std::string, FunctionAST *>::iterator function_iter;
+    for (function_iter = functions.begin(); function_iter != functions.end();
+         function_iter++) {
+        function_iter->second->Codegen();
+    }
+
     build();
 }
 

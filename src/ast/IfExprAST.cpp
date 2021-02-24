@@ -27,28 +27,32 @@ IfExprAST::~IfExprAST()
 
 IfExprAST *IfExprAST::ParseIfExpr(CompileUnit *unit, CodeBlockAST *parent)
 {
-    ExprAST *condition = ExprAST::ParseExpression(unit, parent, false);
     unit->next_tok();
+    ExprAST *     condition = ExprAST::ParseExpression(unit, parent, false);
     CodeBlockAST *thenBlock = CodeBlockAST::ParseCodeBlock(unit, "", parent);
     CodeBlockAST *elseBlock = nullptr;
 
     if ((unit->icurTok + 1)->type == tok_key_else) {
         unit->next_tok();
-        unit->next_tok();
         elseBlock = CodeBlockAST::ParseCodeBlock(unit, "", parent);
     }
     return new IfExprAST(unit, parent, condition, thenBlock, elseBlock);
 }
-llvm::Value *IfExprAST::Codegen(llvm::IRBuilder<> *builder)
+std::vector<llvm::Value *> IfExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
-    llvm::Function *  function       = builder->GetInsertBlock()->getParent();
-    llvm::Value *     conditionValue = condition->Codegen(builder);
+    llvm::Function *function = builder->GetInsertBlock()->getParent();
+    std::vector<llvm::Value *> conditionValues = condition->Codegen(builder);
+    if (conditionValues.size() != 1) {
+        CompileError e("Multi/Void type in condition found.");
+        throw e;
+    }
+    llvm::Value *     conditionValue = conditionValues[0];
     llvm::BasicBlock *MergeBB =
         llvm::BasicBlock::Create(*unit->context, "", function);
     llvm::BasicBlock *thenBB = thenBlock->Codegen(function);
     if (elseBlock != nullptr) {
         llvm::BasicBlock *elseBB = elseBlock->Codegen(function);
-        builder->CreateCondBr(condition->Codegen(builder), thenBB, elseBB);
+        builder->CreateCondBr(conditionValue, thenBB, elseBB);
         builder->SetInsertPoint(elseBlock->endBB);
         builder->CreateBr(MergeBB);
     } else {
@@ -58,5 +62,5 @@ llvm::Value *IfExprAST::Codegen(llvm::IRBuilder<> *builder)
     builder->CreateBr(MergeBB);
     builder->SetInsertPoint(MergeBB);
     parent->endBB = MergeBB;
-    return nullptr;
+    return std::vector<llvm::Value *>();
 }

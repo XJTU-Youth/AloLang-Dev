@@ -9,11 +9,12 @@ class ExprAST : public BaseAST
   public:
     ExprAST(CompileUnit *unit);
     virtual ~ExprAST();
-    virtual llvm::Value *Codegen(llvm::IRBuilder<> *builder) = 0;
+    virtual std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder) = 0;
     static ExprAST *ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
                                     bool root);
     static ExprAST *ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock);
-    std::string     type;
+    std::vector<TypeAST *> type;
+    ExprAST *              subExpr;
 };
 
 #endif /* COMPILER_AST_ASTEXPR_H_ */

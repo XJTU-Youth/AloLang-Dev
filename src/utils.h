@@ -8,11 +8,12 @@
 #ifndef COMPILER_UTILS_H_
 #define COMPILER_UTILS_H_
 
+#include <ast/TypeAST.h>
 #include <sstream>
 #include <vector>
 
-std::string demangle(const std::string &             fnName,
-                     const std::vector<std::string> &argTypes);
+std::string demangle(const std::string &           fnName,
+                     const std::vector<TypeAST *> &argTypes);
 
 bool isSyntax(char c);
 void skipSpace(const std::vector<std::string> &words, long unsigned int &i);

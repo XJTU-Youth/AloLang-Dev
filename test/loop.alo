@@ -1,0 +1,9 @@
+extern func testPrintInt(int a);
+
+func main() {
+    int a = 0;
+    while (a < 10){
+        testPrintInt(a);
+        a = a + 1;
+    }
+}

@@ -1,5 +1,5 @@
 extern func testPrintInt(int i);
-extern func testGetInt();
+extern "S" func testGetInt() -> int;
 
 func main()
 {
@@ -9,6 +9,11 @@ func main()
 
     b = 9;
 
+    c = a + b;
+    testPrintInt(c);
+
+    a = testGetInt();
+    b = testGetInt();
     c = a + b;
     testPrintInt(c);
 }

@@ -7,6 +7,7 @@
 
 #include "CodeBlockAST.h"
 #include "../CompileError.hpp"
+#include "VariableDefExprAST.h"
 #include <iostream>
 
 CodeBlockAST::CodeBlockAST(CompileUnit *unit, std::vector<ExprAST *> body,
@@ -25,28 +26,40 @@ CodeBlockAST::~CodeBlockAST()
     // TODO Auto-generated destructor stub
 }
 
-CodeBlockAST *CodeBlockAST::ParseCodeBlock(
-    CompileUnit *unit, std::string name, CodeBlockAST *parent,
-    std::map<std::string, VariableExprAST *> namedValues)
+CodeBlockAST *
+CodeBlockAST::ParseCodeBlock(CompileUnit *unit, std::string name,
+                             CodeBlockAST *                          parent,
+                             const std::vector<VariableDefExprAST *> args)
 {
-    CodeBlockAST *codeblock =
-        new CodeBlockAST(unit, std::vector<ExprAST *>(), name, parent);
-    codeblock->namedValues       = namedValues;
-    std::vector<ExprAST *> &body = codeblock->body;
-
-    while (true) {
-        Token inBlockToken = *(unit->icurTok + 1);
-        if (inBlockToken.type == tok_eof) {
-            CompileError e("Unexpexted EOF in function body");
-            throw e;
+    Token token = *unit->icurTok;
+    if (token.type == tok_syntax && token.tokenValue == "{") {
+        CodeBlockAST *codeblock =
+            new CodeBlockAST(unit, std::vector<ExprAST *>(), name, parent);
+        std::vector<ExprAST *> &body = codeblock->body;
+        for (VariableDefExprAST *argDef : args) {
+            argDef->codeblock = codeblock;
+            body.push_back(argDef);
         }
-        if (inBlockToken.type == tok_syntax && inBlockToken.tokenValue == "}") {
-            unit->next_tok();
-            break;
+        //解析块内语句
+        Token inBlockToken = unit->next_tok();
+        while (true) {
+            inBlockToken = *(unit->icurTok);
+            if (inBlockToken.type == tok_eof) {
+                CompileError e("Unexpexted EOF in function body");
+                throw e;
+            }
+            if (inBlockToken.type == tok_syntax &&
+                inBlockToken.tokenValue == "}") {
+                unit->next_tok();
+                break;
+            }
+            body.push_back(ExprAST::ParseExpression(unit, codeblock, true));
         }
-        body.push_back(ExprAST::ParseExpression(unit, codeblock, true));
+        return codeblock;
+    } else {
+        CompileError e("Expected codeblock");
+        throw e;
     }
-    return codeblock;
 }
 
 llvm::BasicBlock *CodeBlockAST::Codegen(llvm::Function *function)
@@ -59,9 +72,17 @@ llvm::BasicBlock *CodeBlockAST::Codegen(llvm::Function *function)
     for (ExprAST *expr : body) {
         expr->Codegen(builder);
     }
-    // builder->CreateRetVoid(); // todo:待处理
+    // builder->CreateRetVoid(); // todo:待处理,main特判
+    // std::cout << name << std::string(function->getName()) << std::endl;
     if (parent == nullptr) {
-        builder->CreateRetVoid();
+        if (std::string(function->getName()) == "main") {
+
+            llvm::IntegerType *type =
+                llvm::IntegerType::get(*unit->context, 32);
+            llvm::ConstantInt *res = llvm::ConstantInt::get(type, 0, true);
+
+            builder->CreateRet(res);
+        }
     }
 
     return bb;
