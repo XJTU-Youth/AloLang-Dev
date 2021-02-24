@@ -27,15 +27,6 @@ ReturnExprAST *ReturnExprAST::ParseReturnExprAST(CompileUnit * unit,
     return result;
 }
 
-llvm::Value *getGEP(llvm::IRBuilder<> &Builder, llvm::Value *Base,
-                    llvm::ArrayRef<llvm::Value *> Offset)
-{
-    return Builder.CreateGEP(
-        llvm::cast<llvm::PointerType>(Base->getType()->getScalarType())
-            ->getElementType(),
-        Base, Offset, "a");
-}
-
 std::vector<llvm::Value *> ReturnExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
     std::vector<llvm::Value *> returnValue = returnExpr->Codegen(builder);
@@ -46,10 +37,14 @@ std::vector<llvm::Value *> ReturnExprAST::Codegen(llvm::IRBuilder<> *builder)
 
     llvm::StructType *sType  = (llvm::StructType *)function->getReturnType();
     llvm::AllocaInst *alloca = sBuilder.CreateAlloca(sType);
-    std::vector<llvm::Value *> processedValue;
-    for (llvm::Value *value : returnValue) {
-        builder->CreateStore(value, getGEP(*builder, alloca, processedValue));
-        processedValue.push_back(value);
+    for (int i = 0; i < returnValue.size(); i++) {
+        llvm::IntegerType *type = llvm::IntegerType::get(*unit->context, 32);
+        llvm::ConstantInt *res  = llvm::ConstantInt::get(type, i, true);
+
+        llvm::Value *member_ptr = builder->CreateGEP(
+            sType, alloca, {llvm::ConstantInt::get(type, 0, true), res});
+        builder->CreateStore(returnValue[i], member_ptr);
+        // builder->CreateLoad(member_ptr);
     }
     builder->CreateRet(builder->CreateLoad(alloca));
     return std::vector<llvm::Value *>();

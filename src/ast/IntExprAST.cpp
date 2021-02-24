@@ -24,8 +24,14 @@ IntExprAST::~IntExprAST()
 std::vector<llvm::Value *> IntExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
     std::vector<llvm::Value *> result;
-    llvm::IntegerType *type = llvm::IntegerType::get(*unit->context, 64);
-    llvm::ConstantInt *res  = llvm::ConstantInt::get(type, val, true);
+    llvm::IntegerType *rtype = llvm::IntegerType::get(*unit->context, 64);
+    llvm::ConstantInt *res   = llvm::ConstantInt::get(rtype, val, true);
     result.push_back(res);
+    if (subExpr != nullptr) {
+        std::vector<llvm::Value *> subResult = subExpr->Codegen(builder);
+        std::vector<TypeAST *>     subType   = subExpr->type;
+        result.insert(result.end(), subResult.begin(), subResult.end());
+        type.insert(type.end(), subType.begin(), subType.end());
+    }
     return result;
 }

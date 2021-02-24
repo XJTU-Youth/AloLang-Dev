@@ -68,6 +68,19 @@ std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
     llvm::Value *retD = builder->CreateCall(CalleeF, argsV);
     if (proto->returnDirectly) {
         result.push_back(retD);
+    } else {
+        for (unsigned i = 0; i < type.size(); i++) {
+            /*llvm::IntegerType *type =
+                llvm::IntegerType::get(*unit->context, 32);
+            llvm::ConstantInt *res = llvm::ConstantInt::get(type, i, true);*/
+            llvm::Value *member = builder->CreateExtractValue(retD, {i});
+
+            /*llvm::Value *member_ptr = builder->CreateGEP(
+                CalleeF->getReturnType(), retD,
+                {llvm::ConstantInt::get(type, 0, true), res});*/
+            result.push_back(member);
+            // builder->CreateLoad(member_ptr);
+        }
     }
     return result;
 }
