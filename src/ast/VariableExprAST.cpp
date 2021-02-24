@@ -62,7 +62,9 @@ std::vector<llvm::Value *> VariableExprAST::Codegen(llvm::IRBuilder<> *builder)
     result.push_back(builder->CreateLoad(getAlloca()));
     if (subExpr != nullptr) {
         std::vector<llvm::Value *> subResult = subExpr->Codegen(builder);
+        std::vector<TypeAST *>     subType   = subExpr->type;
         result.insert(result.end(), subResult.begin(), subResult.end());
+        type.insert(type.end(), subType.begin(), subType.end());
     }
     return result;
 }
