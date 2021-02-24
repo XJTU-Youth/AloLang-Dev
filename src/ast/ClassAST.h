@@ -15,6 +15,7 @@ class ClassAST : public BaseAST
   public:
     ClassAST(CompileUnit *unit);
     virtual ~ClassAST();
+    llvm::Type *Codegen();
 };
 
 #endif /* SRC_AST_CLASSAST_H_ */
