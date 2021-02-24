@@ -8,10 +8,27 @@ class CompileError : public std::exception
 {
   private:
     std::string error;
+    std::string message;
+    std::string file;
+    uint64_t    line;
 
   public:
-    const char *what() const throw() { return error.c_str(); }
-    CompileError(const char *whatError) { error = whatError; }
-    CompileError(const std::string &whatError) { error = whatError; }
+    const char *what() const throw() { return message.c_str(); }
+    CompileError(const char *whatError, std::string whatFile = "",
+                 uint64_t whatLine = 0)
+    {
+        error   = whatError;
+        file    = whatFile;
+        line    = whatLine;
+        message = file + ": " + std::to_string(line) + ": " + error;
+    }
+    CompileError(const std::string &whatError, std::string whatFile = "",
+                 uint64_t whatLine = 0)
+    {
+        error   = whatError;
+        file    = whatFile;
+        line    = whatLine;
+        message = file + ": " + std::to_string(line) + ": " + error;
+    }
 };
 #endif
