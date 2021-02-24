@@ -96,6 +96,9 @@ std::string Token::dump()
     case tok_key_switch:
         typeStr = "tok_key_switch";
         break;
+    case tok_key_class:
+        typeStr = "tok_key_class";
+        break;
     default:
         typeStr = "not defined";
     }

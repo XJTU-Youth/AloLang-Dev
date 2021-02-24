@@ -15,4 +15,5 @@ libLLVM := $(shell llvm-config --libs)
 includeLLVM := $(shell llvm-config --includedir)
 
 aloc_CPPFLAGS = $(cxxflagsLLVM) -I$(includeLLVM) -I$(srcdir) -fexceptions
-aloc_LDFLAGS = $(ldflagsLLVM) $(libLLVM) -lboost_program_options
+aloc_LDFLAGS = $(ldflagsLLVM) #$(libLLVM) -lboost_program_options
+aloc_LDADD = -lLLVM-11 -lboost_program_options
