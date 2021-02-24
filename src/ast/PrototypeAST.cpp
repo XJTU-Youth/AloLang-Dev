@@ -58,7 +58,6 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
     while (true) {
         token = unit->next_tok();
         if (token.type == tok_syntax && token.tokenValue == ",") {
-            token = unit->next_tok();
             continue;
         }
         if (token.type == tok_syntax && token.tokenValue == ")") {
