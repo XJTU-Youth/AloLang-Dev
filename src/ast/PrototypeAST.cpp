@@ -140,7 +140,13 @@ llvm::Function *PrototypeAST::Codegen()
 
     } else {
         if (name != "main") {
-            returnType = llvm::Type::getVoidTy(*unit->context);
+            llvm::StructType *llvm_S = llvm::StructType::create(*unit->context);
+            std::vector<llvm::Type *> members;
+            for (TypeAST *member : returnTypes) {
+                members.push_back(member->Codegen());
+            }
+            llvm_S->setBody(members);
+            returnType = llvm_S;
         } else {
             returnType = llvm::IntegerType::get(*unit->context, 32);
         }

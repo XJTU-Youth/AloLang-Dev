@@ -9,6 +9,7 @@
 #include "EmptyExprAST.h"
 #include "IfExprAST.h"
 #include "IntExprAST.h"
+#include "ReturnExprAST.h"
 #include "UnaryExprAST.h"
 #include "VariableDefExprAST.h"
 #include "VariableExprAST.h"
@@ -122,6 +123,9 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             }
         }
         break;
+    }
+    case tok_return: {
+        return ReturnExprAST::ParseReturnExprAST(unit, codeblock);
     }
     default: {
         CompileError e("不期待的token：" + token.dump());
