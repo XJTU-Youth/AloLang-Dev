@@ -181,33 +181,41 @@ std::string preProcess(const std::string &code, int cnt)
         } else {
             std::string replaced = doReplace(temp);
             //处理块注释
-            long unsigned int position = replaced.find("*/");
-            if (position != replaced.npos) {
-                if (!isCommented) {
-                    // TODO:错误处理
+            std::string result = "";
+
+            if (!isCommented) {
+                //处理行注释
+                bool              flag     = false;
+                std::string       resulta  = replaced;
+                long unsigned int position = replaced.find("//");
+                if (position != replaced.npos) {
+                    resulta = replaced.substr(0, position);
                 }
-                replaced    = replaced.substr(position + 2,
-                                           replaced.length() - position - 2);
-                isCommented = false;
-            }
-            if (isCommented) {
-                replaced = "";
-            }
-            position = replaced.find("/*");
-            if (position != replaced.npos) {
-                replaced    = replaced.substr(0, position);
-                isCommented = true;
-            }
+                position = resulta.find("/*");
+                if (position != resulta.npos) {
+                    result += resulta.substr(0, position);
+                    isCommented = true;
+                    flag        = true;
+                }
 
-            //处理行注释
-            position = replaced.find("//");
-            if (position != replaced.npos) {
-                replaced = replaced.substr(0, position);
+                position = resulta.find("*/");
+                if (position != resulta.npos) {
+                    if (!isCommented) {
+                        CompileError e("Haven't been commented");
+                        throw e;
+                    }
+                    result += resulta.substr(position + 2,
+                                             resulta.length() - position - 2);
+                    isCommented = false;
+                    flag        = true;
+                }
+                if (!flag) {
+                    result = resulta;
+                }
             }
-
-            int plen = replaced.length();
+            int plen = result.length();
             if (plen > 0) {
-                preprocessoroutput << replaced << std::endl;
+                preprocessoroutput << result << std::endl;
             }
         }
         temp.erase();
