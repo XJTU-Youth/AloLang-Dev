@@ -183,35 +183,36 @@ std::string preProcess(const std::string &code, int cnt)
             //处理块注释
             std::string result = "";
 
-            if (!isCommented) {
-                //处理行注释
-                bool              flag     = false;
-                std::string       resulta  = replaced;
-                long unsigned int position = replaced.find("//");
-                if (position != replaced.npos) {
-                    resulta = replaced.substr(0, position);
-                }
-                position = resulta.find("/*");
-                if (position != resulta.npos) {
-                    result += resulta.substr(0, position);
-                    isCommented = true;
-                    flag        = true;
-                }
+            //处理行注释
+            bool              flag     = false;
+            std::string       resulta  = replaced;
+            long unsigned int position = replaced.find("//");
+            if (position != replaced.npos) {
+                resulta = replaced.substr(0, position);
+            }
+            position = resulta.find("/*");
+            if (position != resulta.npos) {
+                result += resulta.substr(0, position);
+                isCommented = true;
+                flag        = true;
+            }
 
-                position = resulta.find("*/");
-                if (position != resulta.npos) {
-                    if (!isCommented) {
-                        CompileError e("Haven't been commented");
-                        throw e;
-                    }
-                    result += resulta.substr(position + 2,
-                                             resulta.length() - position - 2);
-                    isCommented = false;
-                    flag        = true;
+            position = resulta.find("*/");
+            if (position != resulta.npos) {
+                if (!isCommented) {
+                    CompileError e("Haven't been commented");
+                    throw e;
                 }
-                if (!flag) {
-                    result = resulta;
-                }
+                result += resulta.substr(position + 2,
+                                         resulta.length() - position - 2);
+                isCommented = false;
+                flag        = true;
+            }
+            if (!flag) {
+                result = resulta;
+            }
+            if (isCommented) {
+                result = "";
             }
             int plen = result.length();
             if (plen > 0) {
