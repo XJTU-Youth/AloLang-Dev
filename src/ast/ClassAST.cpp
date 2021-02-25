@@ -7,10 +7,14 @@
 
 #include "ClassAST.h"
 #include "../CompileError.hpp"
+#include "TypeAST.h"
 
-ClassAST::ClassAST(CompileUnit *unit) : BaseAST(unit)
+ClassAST::ClassAST(CompileUnit *unit, const std::string &className,
+                   std::vector<VariableDefExprAST *> members)
+    : BaseAST(unit)
 {
-    // TODO Auto-generated constructor stub
+    this->className = className;
+    this->members   = members;
 }
 
 ClassAST::~ClassAST()
@@ -33,16 +37,30 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
         CompileError e("Expected {");
         throw e;
     }
+    std::vector<VariableDefExprAST *> members;
     while (true) {
         token = unit->next_tok();
         //解析成员方法，成员变量
         if (token.type == tok_syntax && token.tokenValue == "}") {
             break;
         }
+        VariableDefExprAST *memberDef =
+            VariableDefExprAST::ParseVar(unit, nullptr);
+        members.push_back(memberDef);
     }
     token              = unit->next_tok();
-    ClassAST *classAST = new ClassAST(unit);
+    ClassAST *classAST = new ClassAST(unit, className, members);
     return classAST;
 }
 
-llvm::Type *ClassAST::Codegen() { return nullptr; }
+llvm::Type *ClassAST::Codegen()
+{
+    llvm::StructType *llvm_S =
+        llvm::StructType::create(*unit->context, className);
+    std::vector<llvm::Type *> sMembers;
+    for (VariableDefExprAST *member : members) {
+        sMembers.push_back(member->variableType->Codegen());
+    }
+    llvm_S->setBody(sMembers);
+    return llvm_S;
+}

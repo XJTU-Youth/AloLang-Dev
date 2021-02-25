@@ -63,7 +63,7 @@ void scanToken(CompileUnit *unit)
         }
 
         // Debug token dump
-        std::cout << token.dump() << std::endl;
+        // std::cout << token.dump() << std::endl;
 
         unit->tokenList.push_back(token);
     } while (token.type != tok_eof);
@@ -131,6 +131,8 @@ void CompileUnit::compile()
         }
         case tok_key_class: {
             ClassAST *classAST = ClassAST::ParseClass(this);
+            classes.insert(std::pair<std::string, ClassAST *>(
+                classAST->className, classAST));
             break;
         }
         default: {
@@ -140,7 +142,14 @@ void CompileUnit::compile()
         }
     }
     std::cout << "Start codegen:" << name << std::endl;
-    // todo:Class的Codegen
+    std::map<std::string, ClassAST *>::iterator class_iter;
+    for (class_iter = classes.begin(); class_iter != classes.end();
+         class_iter++) {
+        llvm::Type *classType = class_iter->second->Codegen();
+        types.insert(
+            std::pair<std::string, llvm::Type *>(class_iter->first, classType));
+    }
+
     std::map<std::string, VariableDefExprAST *>::iterator gVar_iter;
     for (gVar_iter = globalVariables.begin();
          gVar_iter != globalVariables.end(); gVar_iter++) {
