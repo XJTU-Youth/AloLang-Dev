@@ -29,7 +29,7 @@ ReturnExprAST *ReturnExprAST::ParseReturnExprAST(CompileUnit * unit,
 
 std::vector<llvm::Value *> ReturnExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
-    std::vector<llvm::Value *> returnValue = returnExpr->Codegen(builder);
+    std::vector<llvm::Value *> returnValue = returnExpr->CodegenChain(builder);
     llvm::Function *function = builder->GetInsertBlock()->getParent();
 
     llvm::IRBuilder<> sBuilder(&function->getEntryBlock(),

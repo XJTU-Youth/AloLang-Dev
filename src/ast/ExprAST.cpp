@@ -189,3 +189,15 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
     }
     return result;
 }
+
+std::vector<llvm::Value *> ExprAST::CodegenChain(llvm::IRBuilder<> *builder)
+{
+    std::vector<llvm::Value *> result = this->Codegen(builder);
+    if (subExpr != nullptr) {
+        std::vector<llvm::Value *> subResult = subExpr->Codegen(builder);
+        std::vector<TypeAST *>     subType   = subExpr->type;
+        result.insert(result.end(), subResult.begin(), subResult.end());
+        type.insert(type.end(), subType.begin(), subType.end());
+    }
+    return result;
+}

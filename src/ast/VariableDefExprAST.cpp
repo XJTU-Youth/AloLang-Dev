@@ -80,7 +80,8 @@ VariableDefExprAST::Codegen(llvm::IRBuilder<> *builder)
             builder->CreateStore(function->getArg(argID), alloca);
         }
         if (initValue != nullptr) {
-            std::vector<llvm::Value *> ivalues = initValue->Codegen(builder);
+            std::vector<llvm::Value *> ivalues =
+                initValue->CodegenChain(builder);
             if (ivalues.size() != 1) {
                 CompileError e("Multi/Void type in init found.");
                 throw e;

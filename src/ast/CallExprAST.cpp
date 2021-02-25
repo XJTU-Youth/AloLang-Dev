@@ -32,7 +32,7 @@ CallExprAST::~CallExprAST()
 std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
     std::vector<llvm::Value *> result;
-    std::vector<llvm::Value *> argsV = args->Codegen(builder);
+    std::vector<llvm::Value *> argsV = args->CodegenChain(builder);
 
     std::vector<TypeAST *> argStr;
     for (TypeAST *ast : args->type) {
