@@ -3,8 +3,10 @@ extern func testPrintInt(int i);
 func main() {
     int a = 1;
     int b = 1;
-    while (a < 100000000){
-        a,b = (a+b),a;
+    int c;
+    while (a < 4611686018427387903){
+        c=a+b;
+        a,b = c,a;
     }
     testPrintInt(a);
 }
