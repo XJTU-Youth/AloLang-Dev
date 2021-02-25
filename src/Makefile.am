@@ -3,7 +3,7 @@ bin_PROGRAMS = aloc
 aloc_SOURCES = aloc.cpp CompileUnit.cpp preprocessor.cpp Token.cpp utils.cpp\
     ast/AssignmentAST.cpp ast/BaseAST.cpp ast/BinaryExprAST.cpp ast/BoolExprAST.cpp\
     ast/CallExprAST.cpp ast/ClassAST.cpp ast/CodeBlockAST.cpp ast/EmptyExprAST.cpp ast/ExprAST.cpp ast/ExternAST.cpp\
-    ast/FunctionAST.cpp ast/IntExprAST.cpp ast/IfExprAST.cpp ast/PrototypeAST.cpp ast/ReturnExprAST.cpp\
+    ast/FunctionAST.cpp ast/IntExprAST.cpp ast/IfExprAST.cpp ast/MemberExprAST.cpp ast/PrototypeAST.cpp ast/ReturnExprAST.cpp\
     ast/TypeAST.cpp ast/VariableDefExprAST.cpp ast/VariableExprAST.cpp ast/WhileExprAST.cpp\
     ast/UnaryExprAST.cpp yacc_stuff/tokenizer.lpp
 
