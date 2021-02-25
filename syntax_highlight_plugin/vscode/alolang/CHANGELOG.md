@@ -4,6 +4,10 @@ All notable changes to the "alolang" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## Dev Beta 0.0.5
+
+- Added support for class
+
 ## Dev Beta 0.0.4
 
 - Added support for extern behavior
