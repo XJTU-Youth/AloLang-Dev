@@ -31,6 +31,7 @@ int GetTokPrecedence(Token tok)
     BinopPrecedence["-"]  = 200;
     BinopPrecedence["*"]  = 300;
     BinopPrecedence["/"]  = 300;
+    BinopPrecedence["%"]  = 300;
 
     int TokPrec = BinopPrecedence[tok.tokenValue];
     if (TokPrec <= 0) {
