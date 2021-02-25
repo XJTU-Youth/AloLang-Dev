@@ -9,6 +9,7 @@
 #include "EmptyExprAST.h"
 #include "IfExprAST.h"
 #include "IntExprAST.h"
+#include "MemberExprAST.h"
 #include "ReturnExprAST.h"
 #include "UnaryExprAST.h"
 #include "VariableDefExprAST.h"
@@ -114,7 +115,8 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
                     if (token.tokenValue == "=") {
                         return AssignmentAST::ParseAssignment(unit, codeblock);
                         break;
-                    } else if (token.tokenValue != ",") {
+                    } else if (token.tokenValue != "," &&
+                               token.tokenValue != ".") {
                         //变量
                         unit->next_tok();
                         return new VariableExprAST(unit, codeblock, idName);
@@ -169,7 +171,12 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
     if (LHS == nullptr) {
         return nullptr;
     }
-    ExprAST *result = ParseBinOpRHS(unit, codeblock, 0, LHS);
+    ExprAST *result;
+    if (unit->icurTok->type == tok_syntax && unit->icurTok->tokenValue == ".") {
+        result = MemberExprAST::ParseMemberExprAST(unit, codeblock, LHS);
+    } else {
+        result = ParseBinOpRHS(unit, codeblock, 0, LHS);
+    }
     if (IfExprAST *v = dynamic_cast<IfExprAST *>(result)) {
         return result; //跳过分号
     }

@@ -10,7 +10,7 @@
 #include "TypeAST.h"
 
 ClassAST::ClassAST(CompileUnit *unit, const std::string &className,
-                   std::vector<VariableDefExprAST *> members)
+                   std::map<std::string, VariableDefExprAST *> members)
     : BaseAST(unit)
 {
     this->className = className;
@@ -37,7 +37,7 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
         CompileError e("Expected {");
         throw e;
     }
-    std::vector<VariableDefExprAST *> members;
+    std::map<std::string, VariableDefExprAST *> members;
     while (true) {
         token = unit->next_tok();
         //解析成员方法，成员变量
@@ -46,7 +46,8 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
         }
         VariableDefExprAST *memberDef =
             VariableDefExprAST::ParseVar(unit, nullptr);
-        members.push_back(memberDef);
+        members.insert(std::pair<std::string, VariableDefExprAST *>(
+            memberDef->idName, memberDef));
     }
     token              = unit->next_tok();
     ClassAST *classAST = new ClassAST(unit, className, members);
@@ -57,9 +58,11 @@ llvm::Type *ClassAST::Codegen()
 {
     llvm::StructType *llvm_S =
         llvm::StructType::create(*unit->context, className);
-    std::vector<llvm::Type *> sMembers;
-    for (VariableDefExprAST *member : members) {
-        sMembers.push_back(member->variableType->Codegen());
+    std::vector<llvm::Type *>                             sMembers;
+    std::map<std::string, VariableDefExprAST *>::iterator member_iter;
+    for (member_iter = members.begin(); member_iter != members.end();
+         member_iter++) {
+        sMembers.push_back(member_iter->second->variableType->Codegen());
     }
     llvm_S->setBody(sMembers);
     return llvm_S;

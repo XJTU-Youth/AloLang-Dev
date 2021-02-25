@@ -15,12 +15,12 @@ class ClassAST : public BaseAST
 {
   public:
     ClassAST(CompileUnit *unit, const std::string &className,
-             std::vector<VariableDefExprAST *> members);
+             std::map<std::string, VariableDefExprAST *> members);
     virtual ~ClassAST();
-    llvm::Type *                      Codegen();
-    static ClassAST *                 ParseClass(CompileUnit *unit);
-    std::vector<VariableDefExprAST *> members;
-    std::string                       className;
+    llvm::Type *                                Codegen();
+    static ClassAST *                           ParseClass(CompileUnit *unit);
+    std::map<std::string, VariableDefExprAST *> members;
+    std::string                                 className;
 };
 
 #endif /* SRC_AST_CLASSAST_H_ */
