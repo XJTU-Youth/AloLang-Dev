@@ -2,7 +2,7 @@ extern func testPrintInt(int i);
 extern "S" func testGetInt() -> int;
 
 func swap(int a, int b) -> int, int {
-    return b;
+    return b/*,a*/;
 }
 
 func main() {

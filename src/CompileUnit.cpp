@@ -129,8 +129,14 @@ void CompileUnit::compile()
                 std::pair<std::string, VariableDefExprAST *>(var->idName, var));
             break;
         }
-        default:
-            std::cerr << "unexpected token:" << icurTok->dump() << std::endl;
+        case tok_key_class: {
+            ClassAST *classAST = ClassAST::ParseClass(this);
+            break;
+        }
+        default: {
+            CompileError e("unexpected token:" + icurTok->dump());
+            throw e;
+        }
         }
     }
     std::cout << "Start codegen:" << name << std::endl;
