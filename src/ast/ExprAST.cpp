@@ -31,6 +31,7 @@ int GetTokPrecedence(Token tok)
     BinopPrecedence["-"]  = 200;
     BinopPrecedence["*"]  = 300;
     BinopPrecedence["/"]  = 300;
+    BinopPrecedence["%"]  = 300;
 
     int TokPrec = BinopPrecedence[tok.tokenValue];
     if (TokPrec <= 0) {
@@ -186,6 +187,18 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
             throw e;
         }
         unit->next_tok();
+    }
+    return result;
+}
+
+std::vector<llvm::Value *> ExprAST::CodegenChain(llvm::IRBuilder<> *builder)
+{
+    std::vector<llvm::Value *> result = this->Codegen(builder);
+    if (subExpr != nullptr) {
+        std::vector<llvm::Value *> subResult = subExpr->Codegen(builder);
+        std::vector<TypeAST *>     subType   = subExpr->type;
+        result.insert(result.end(), subResult.begin(), subResult.end());
+        type.insert(type.end(), subType.begin(), subType.end());
     }
     return result;
 }

@@ -129,12 +129,27 @@ void CompileUnit::compile()
                 std::pair<std::string, VariableDefExprAST *>(var->idName, var));
             break;
         }
-        default:
-            std::cerr << "unexpected token:" << icurTok->dump() << std::endl;
+        case tok_key_class: {
+            ClassAST *classAST = ClassAST::ParseClass(this);
+            classes.insert(std::pair<std::string, ClassAST *>(
+                classAST->className, classAST));
+            break;
+        }
+        default: {
+            CompileError e("unexpected token:" + icurTok->dump());
+            throw e;
+        }
         }
     }
     std::cout << "Start codegen:" << name << std::endl;
-    // todo:Class的Codegen
+    std::map<std::string, ClassAST *>::iterator class_iter;
+    for (class_iter = classes.begin(); class_iter != classes.end();
+         class_iter++) {
+        llvm::Type *classType = class_iter->second->Codegen();
+        types.insert(
+            std::pair<std::string, llvm::Type *>(class_iter->first, classType));
+    }
+
     std::map<std::string, VariableDefExprAST *>::iterator gVar_iter;
     for (gVar_iter = globalVariables.begin();
          gVar_iter != globalVariables.end(); gVar_iter++) {

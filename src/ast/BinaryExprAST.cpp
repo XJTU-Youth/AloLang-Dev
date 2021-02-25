@@ -41,8 +41,8 @@ BinaryExprAST::~BinaryExprAST()
 
 std::vector<llvm::Value *> BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
-    std::vector<llvm::Value *> L = LHS->Codegen(builder);
-    std::vector<llvm::Value *> R = RHS->Codegen(builder);
+    std::vector<llvm::Value *> L = LHS->CodegenChain(builder);
+    std::vector<llvm::Value *> R = RHS->CodegenChain(builder);
     std::vector<llvm::Value *> result;
     if (L.size() != 1 || R.size() != 1) {
         CompileError e("Bin Expr length != 1");
@@ -56,6 +56,8 @@ std::vector<llvm::Value *> BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
         result.push_back(builder->CreateMul(L[0], R[0]));
     } else if (binOP == "/") {
         result.push_back(builder->CreateFDiv(L[0], R[0]));
+    } else if (binOP == "%") {
+        result.push_back(builder->CreateSRem(L[0], R[0]));
     } else if (binOP == "==") {
         result.push_back(builder->CreateICmpEQ(L[0], R[0]));
     } else if (binOP == "!=") {

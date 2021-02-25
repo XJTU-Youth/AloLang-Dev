@@ -33,7 +33,7 @@ std::vector<llvm::Value *> UnaryExprAST::Codegen(llvm::IRBuilder<> *builder)
     std::vector<llvm::Value *> result;
     if (op == "!") {
 
-        std::vector<llvm::Value *> Rs = operand->Codegen(builder);
+        std::vector<llvm::Value *> Rs = operand->CodegenChain(builder);
         if (Rs.size() != 1) {
             CompileError e("Unary Expr length != 1");
             throw e;

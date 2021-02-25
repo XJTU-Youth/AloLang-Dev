@@ -47,7 +47,7 @@ AssignmentAST *AssignmentAST::ParseAssignment(CompileUnit * unit,
 
 std::vector<llvm::Value *> AssignmentAST::Codegen(llvm::IRBuilder<> *builder)
 {
-    std::vector<llvm::Value *> RHSV = RHS->Codegen(builder);
+    std::vector<llvm::Value *> RHSV = RHS->CodegenChain(builder);
     if (RHSV.size() != LHS.size()) {
         CompileError e("the length of expression isn't equal.");
         throw e;

@@ -26,15 +26,6 @@ llvm::Type *TypeAST::Codegen()
         throw e;
     }
     return typeAST->second;
-    /*
-            //用户定义的类型
-            llvm::StructType *llvm_S =
-                llvm::StructType::create(*unit->context, name);
-            std::vector<llvm::Type *> members;
-            for (TypeAST *member : innerType) {
-                members.push_back(member->Codegen());
-            }
-            return llvm_S;*/
 }
 
 TypeAST *TypeAST::ParseType(CompileUnit *unit)
