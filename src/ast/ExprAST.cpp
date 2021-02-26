@@ -172,11 +172,14 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
         return nullptr;
     }
     ExprAST *result;
-    if (unit->icurTok->type == tok_syntax && unit->icurTok->tokenValue == ".") {
-        result = MemberExprAST::ParseMemberExprAST(unit, codeblock, LHS);
-    } else {
-        result = ParseBinOpRHS(unit, codeblock, 0, LHS);
+
+    while (unit->icurTok->type == tok_syntax &&
+           unit->icurTok->tokenValue == ".") {
+        LHS = MemberExprAST::ParseMemberExprAST(unit, codeblock, LHS);
     }
+
+    result = ParseBinOpRHS(unit, codeblock, 0, LHS);
+
     if (IfExprAST *v = dynamic_cast<IfExprAST *>(result)) {
         return result; //跳过分号
     }

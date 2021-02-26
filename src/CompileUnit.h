@@ -38,7 +38,9 @@ class CompileUnit
     std::vector<Token>                          tokenList;
     std::vector<Token>::iterator                icurTok;
     std::map<std::string, ClassAST *>           classes;
+    std::vector<ClassAST *>                     classesO;
     std::map<std::string, VariableDefExprAST *> globalVariables;
+    std::vector<VariableDefExprAST *>           globalVariablesO;
     std::map<std::string, FunctionAST *>        functions;
     std::map<std::string, ExternAST *>          externs;
     std::map<std::string, llvm::Type *>         types; // Codgen用

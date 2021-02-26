@@ -133,6 +133,7 @@ void CompileUnit::compile()
             ClassAST *classAST = ClassAST::ParseClass(this);
             classes.insert(std::pair<std::string, ClassAST *>(
                 classAST->className, classAST));
+            classesO.push_back(classAST);
             break;
         }
         default: {
@@ -142,12 +143,10 @@ void CompileUnit::compile()
         }
     }
     std::cout << "Start codegen:" << name << std::endl;
-    std::map<std::string, ClassAST *>::iterator class_iter;
-    for (class_iter = classes.begin(); class_iter != classes.end();
-         class_iter++) {
-        llvm::Type *classType = class_iter->second->Codegen();
-        types.insert(
-            std::pair<std::string, llvm::Type *>(class_iter->first, classType));
+    for (ClassAST *classAST : classesO) {
+        llvm::Type *classType = classAST->Codegen();
+        types.insert(std::pair<std::string, llvm::Type *>(classAST->className,
+                                                          classType));
     }
 
     std::map<std::string, VariableDefExprAST *>::iterator gVar_iter;
