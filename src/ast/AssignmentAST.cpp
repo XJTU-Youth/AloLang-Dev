@@ -30,27 +30,31 @@ AssignmentAST *AssignmentAST::ParseAssignment(CompileUnit * unit,
                                               CodeBlockAST *codeblock)
 {
     std::vector<ExprAST *> LHS; //左侧变量
-    Token                  token = *unit->icurTok;
-
+    Token                  token  = *unit->icurTok;
+    ExprAST *              curVar = nullptr;
     while (true) {
         token = *unit->icurTok;
         if (token.type == tok_identifier) {
-            VariableExprAST *var =
-                new VariableExprAST(unit, codeblock, token.tokenValue);
-            if ((unit->icurTok + 1)->type == tok_syntax &&
-                (unit->icurTok + 1)->tokenValue == ".") {
-                unit->next_tok();
-                LHS.push_back(
-                    MemberExprAST::ParseMemberExprAST(unit, codeblock, var));
-            } else {
-                LHS.push_back(var);
-                token = unit->next_tok();
+            curVar = new VariableExprAST(unit, codeblock, token.tokenValue);
+            unit->next_tok();
+        }
+        if (token.type == tok_syntax) {
+            if (curVar == nullptr) {
+                CompileError e("Expected variable before assignment");
+                throw e;
             }
-        } else if (token.type == tok_syntax) {
             if (token.tokenValue == "=") {
+                LHS.push_back(curVar);
+                curVar = nullptr;
                 break;
+            } else if (token.tokenValue == ",") {
+                unit->next_tok();
+                LHS.push_back(curVar);
+                curVar = nullptr;
+            } else if (token.tokenValue == ".") {
+                curVar =
+                    MemberExprAST::ParseMemberExprAST(unit, codeblock, curVar);
             }
-            token = unit->next_tok();
         }
     }
     unit->next_tok();
@@ -66,34 +70,52 @@ std::vector<llvm::Value *> AssignmentAST::Codegen(llvm::IRBuilder<> *builder)
         throw e;
     }
     for (unsigned int i = 0; i < LHS.size(); i++) {
-        if (MemberExprAST *v = dynamic_cast<MemberExprAST *>(LHS[i])) {
-            std::vector<llvm::Value *> result;
-            std::vector<llvm::Value *> bases = v->LHS->Codegen(builder);
-            if (bases.size() != 1) {
-                CompileError e("Multi/Void type found.");
-                throw e;
-            }
-
-            llvm::Value *base = bases[0];
-
-            ClassAST *   baseClass = unit->classes[v->LHS->type[0]->name];
-            unsigned int index =
-                std::distance(std::begin(baseClass->members),
-                              baseClass->members.find(v->member));
-            llvm::Value *av =
-                builder->CreateInsertValue(base, RHSV[i], {index});
-            if (VariableExprAST *basev =
-                    dynamic_cast<VariableExprAST *>(v->LHS)) {
-                builder->CreateStore(av, basev->getAlloca());
+        ExprAST *              curAST = LHS[i];
+        std::vector<ExprAST *> chain;
+        while (true) {
+            chain.push_back(curAST);
+            if (MemberExprAST *v = dynamic_cast<MemberExprAST *>(curAST)) {
+                curAST = v->LHS;
+            } else if (VariableExprAST *v =
+                           dynamic_cast<VariableExprAST *>(curAST)) {
+                break;
             } else {
-                CompileError e("Base isn't variable.");
+                CompileError e("Unknown AST.");
                 throw e;
             }
-        } else if (VariableExprAST *v =
-                       dynamic_cast<VariableExprAST *>(LHS[i])) {
-            builder->CreateStore(RHSV[i],
-                                 v->getAlloca()); // todo:对函数参数赋值
         }
+        VariableExprAST *start =
+            dynamic_cast<VariableExprAST *>(chain[chain.size() - 1]);
+        llvm::Value *             pointer = start->getAlloca();
+        std::vector<unsigned int> idx;
+        std::string               curType = start->type[0]->name;
+        for (int i = chain.size() - 2; i >= 0; i--) {
+            MemberExprAST *v         = dynamic_cast<MemberExprAST *>(chain[i]);
+            std::string    member    = v->member;
+            ClassAST *     baseClass = unit->classes[curType];
+            auto           memberAST = baseClass->members.find(member);
+            if (memberAST == baseClass->members.end()) {
+                CompileError e("Member" + member + " not found.");
+                throw e;
+            }
+            unsigned int index =
+                std::distance(std::begin(baseClass->members), memberAST);
+            idx.push_back(index);
+            curType = baseClass->members[member]->variableType->name;
+        }
+        std::vector<llvm::Value *> idxl;
+        llvm::IntegerType *itype = llvm::IntegerType::get(*unit->context, 32);
+
+        idxl.push_back(llvm::ConstantInt::get(itype, 0, true));
+        for (unsigned int pid : idx) {
+            idxl.push_back(llvm::ConstantInt::get(itype, pid, true));
+        }
+        if (idx.size() != 0) {
+            pointer =
+                builder->CreateGEP(start->type[0]->Codegen(), pointer, idxl);
+        }
+
+        builder->CreateStore(RHSV[i], pointer);
     }
     return std::vector<llvm::Value *>();
 }
