@@ -88,7 +88,7 @@ std::vector<llvm::Value *> AssignmentAST::Codegen(llvm::IRBuilder<> *builder)
             dynamic_cast<VariableExprAST *>(chain[chain.size() - 1]);
         llvm::Value *             pointer = start->getAlloca();
         std::vector<unsigned int> idx;
-        std::string               curType = start->type[0]->name;
+        std::string               curType = start->type[0]->baseClass;
         for (int i = chain.size() - 2; i >= 0; i--) {
             MemberExprAST *v         = dynamic_cast<MemberExprAST *>(chain[i]);
             std::string    member    = v->member;

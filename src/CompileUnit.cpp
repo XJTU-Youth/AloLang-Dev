@@ -21,6 +21,7 @@
 #include "ast/TypeAST.h"
 #include "ast/VariableDefExprAST.h"
 #include "utils.h"
+#include <array>
 #include <fstream>
 #include <iostream>
 
@@ -32,6 +33,109 @@ void initInnerType(CompileUnit *unit)
         "double", llvm::Type::getDoubleTy(*unit->context)));
     unit->types.insert(std::pair<std::string, llvm::Type *>(
         "bool", llvm::Type::getInt1Ty(*unit->context)));
+}
+
+void initInnerOperations(CompileUnit *unit)
+{
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "+"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "int"))));
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "-"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "int"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "*"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "int"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "/"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "double"))));
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "%"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "int"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", ">"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "<"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", ">="}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "<="}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "bool"))));
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "!="}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "=="}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "bool"))));
+    // double
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "+"}, std::pair<llvm::Function *, TypeAST *>(
+                                       nullptr, new TypeAST(unit, "double"))));
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "-"}, std::pair<llvm::Function *, TypeAST *>(
+                                       nullptr, new TypeAST(unit, "double"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "*"}, std::pair<llvm::Function *, TypeAST *>(
+                                       nullptr, new TypeAST(unit, "double"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "/"}, std::pair<llvm::Function *, TypeAST *>(
+                                       nullptr, new TypeAST(unit, "double"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", ">"}, std::pair<llvm::Function *, TypeAST *>(
+                                       nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "<"}, std::pair<llvm::Function *, TypeAST *>(
+                                       nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", ">="}, std::pair<llvm::Function *, TypeAST *>(
+                                        nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "<="}, std::pair<llvm::Function *, TypeAST *>(
+                                        nullptr, new TypeAST(unit, "bool"))));
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "!="}, std::pair<llvm::Function *, TypeAST *>(
+                                        nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "=="}, std::pair<llvm::Function *, TypeAST *>(
+                                        nullptr, new TypeAST(unit, "bool"))));
 }
 
 void scanToken(CompileUnit *unit)
@@ -66,7 +170,7 @@ void scanToken(CompileUnit *unit)
         }
 
         // Debug token dump
-        // std::cout << token.dump() << std::endl;
+        std::cout << token.dump() << std::endl;
 
         unit->tokenList.push_back(token);
     } while (token.type != tok_eof);
@@ -98,6 +202,7 @@ void CompileUnit::compile()
 {
     std::cout << "Start compiling:" << name << std::endl;
     initInnerType(this);
+    initInnerOperations(this);
     scanToken(this);
     while (icurTok->type != tok_eof) {
         switch (icurTok->type) {
@@ -109,7 +214,8 @@ void CompileUnit::compile()
             /*llvm::Type*
              type=llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
              false);
-             module->getOrInsertGlobal(func_ast->proto->name, func->getType());
+             module->getOrInsertGlobal(func_ast->proto->name,
+             func->getType());
 
              llvm::GlobalVariable
              *gVar=module->getNamedGlobal(func_ast->proto->name);
@@ -146,11 +252,9 @@ void CompileUnit::compile()
         }
     }
     std::cout << "Start codegen:" << name << std::endl;
-    for (ClassAST *classAST : classesO) {
+    /*for (ClassAST *classAST : classesO) {
         llvm::Type *classType = classAST->Codegen();
-        types.insert(std::pair<std::string, llvm::Type *>(classAST->className,
-                                                          classType));
-    }
+    }*/
 
     std::map<std::string, VariableDefExprAST *>::iterator gVar_iter;
     for (gVar_iter = globalVariables.begin();

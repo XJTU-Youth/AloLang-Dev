@@ -21,6 +21,10 @@ class BinaryExprAST : public ExprAST
     std::string binOP;
     ExprAST *   LHS;
     ExprAST *   RHS;
+
+  private:
+    llvm::Value *processInnerBinaryOperator(llvm::Value *L, llvm::Value *R,
+                                            llvm::IRBuilder<> *builder);
 };
 
 #endif /* COMPILER_AST_BINARYEXPRAST_H_ */

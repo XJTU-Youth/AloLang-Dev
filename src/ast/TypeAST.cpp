@@ -7,11 +7,32 @@
 
 #include "TypeAST.h"
 #include "../CompileError.hpp"
+#include "ClassAST.h"
 #include "CompileUnit.h"
 
-TypeAST::TypeAST(CompileUnit *unit, std::string name) : BaseAST(unit)
+TypeAST::TypeAST(CompileUnit *unit, std::string baseClass,
+                 std::vector<TypeAST *> genericTypes)
+    : BaseAST(unit)
 {
-    this->name = name;
+    this->baseClass    = baseClass;
+    this->genericTypes = genericTypes;
+    this->pointee      = nullptr;
+    //生成name
+    this->name = baseClass;
+    if (genericTypes.size() != 0) {
+        this->name += "<";
+        for (unsigned int i = 0; i < genericTypes.size() - 1; i++) {
+            this->name += genericTypes[i]->name + ",";
+        }
+        this->name += genericTypes[genericTypes.size() - 1]->name + ">";
+    }
+}
+
+TypeAST::TypeAST(CompileUnit *unit, TypeAST *pointee) : BaseAST(unit)
+{
+    this->pointee = pointee;
+    //生成name
+    this->name = pointee->name + "*";
 }
 
 TypeAST::~TypeAST()
@@ -20,12 +41,28 @@ TypeAST::~TypeAST()
 }
 llvm::Type *TypeAST::Codegen()
 {
-    auto typeAST = unit->types.find(name);
-    if (typeAST == unit->types.end()) {
-        CompileError e("can't find type:" + name);
-        throw e;
+    if (pointee == nullptr) {
+        //非指针类型
+        auto typeAST = unit->types.find(name);
+        if (typeAST == unit->types.end()) {
+            //没有找到实例化过的泛型
+            auto classAST = unit->classes.find(baseClass);
+            if (classAST == unit->classes.end()) {
+                CompileError e("can't find class:" + baseClass);
+                throw e;
+            } else {
+                llvm::Type *classType = classAST->second->Codegen(genericTypes);
+                unit->types.insert(
+                    std::pair<std::string, llvm::Type *>(name, classType));
+                return classType;
+                //构建泛型
+            }
+        } else {
+            return typeAST->second;
+        }
+    } else {
+        return llvm::PointerType::get(pointee->Codegen(), 0);
     }
-    return typeAST->second;
 }
 
 TypeAST *TypeAST::ParseType(CompileUnit *unit)
@@ -35,7 +72,20 @@ TypeAST *TypeAST::ParseType(CompileUnit *unit)
         CompileError e("Expected type but got " + token.dump());
         throw e;
     }
-    TypeAST *result = new TypeAST(unit, token.tokenValue);
-    token           = unit->next_tok();
+    std::string baseClass = token.tokenValue;
+
+    token = unit->next_tok();
+    if (token.type == tok_syntax && token.tokenValue == "<") {
+        std::vector<TypeAST *> genericTypes;
+        unit->next_tok();
+        while (!(token.type == tok_syntax && token.tokenValue == ">")) {
+            genericTypes.push_back(TypeAST::ParseType(unit));
+            token = *unit->icurTok;
+        }
+        unit->next_tok();
+        TypeAST *result = new TypeAST(unit, baseClass, genericTypes);
+        return result;
+    }
+    TypeAST *result = new TypeAST(unit, baseClass);
     return result;
 }

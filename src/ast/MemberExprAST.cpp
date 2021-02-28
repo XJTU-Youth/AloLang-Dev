@@ -48,16 +48,17 @@ std::vector<llvm::Value *> MemberExprAST::Codegen(llvm::IRBuilder<> *builder)
 
     llvm::Value *base = bases[0];
 
-    ClassAST *baseClass = unit->classes[LHS->type[0]->name];
+    ClassAST *baseClass = unit->classes[LHS->type[0]->baseClass];
     auto      memberAST = baseClass->members.find(member);
     if (memberAST == baseClass->members.end()) {
-        CompileError e("Member" + member + " not found.");
+        CompileError e("Member " + member + " not found.");
         throw e;
     }
     unsigned int index =
         std::distance(std::begin(baseClass->members), memberAST);
 
-    type.push_back(baseClass->members[member]->variableType);
+    type.push_back(baseClass->getRealType(
+        baseClass->members[member]->variableType, LHS->type[0]->genericTypes));
     llvm::Value *member = builder->CreateExtractValue(base, {index});
     result.push_back(member);
     return result;
