@@ -59,7 +59,6 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
         if (token.tokenValue.find(".") == std::string::npos) {
             return new IntExprAST(unit,
                                   strtol(token.tokenValue.c_str(), NULL, 10));
-
         } else {
             return new DoubleExprAST(unit, std::stod(token.tokenValue.c_str()));
         }
@@ -111,10 +110,15 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             return new CallExprAST(unit, idName, args);
         } else {
             //变量或变量定义或赋值
-            int i = 1;
+            int i = 1, ci = 1;
             while (true) {
                 token = *(unit->icurTok + i);
                 if (token.type == tok_syntax) {
+                    if (token.tokenValue == "*") {
+                        i++;
+                        ci++;
+                        continue;
+                    }
                     if (token.tokenValue == "=") {
                         return AssignmentAST::ParseAssignment(unit, codeblock);
                         break;
@@ -130,7 +134,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
                             VariableDefExprAST::ParseVar(unit, codeblock);
                         return varAST;
                     }
-                } else if (token.type == tok_identifier && i == 1) {
+                } else if (token.type == tok_identifier && i == ci) {
                     //变量定义
                     VariableDefExprAST *varAST =
                         VariableDefExprAST::ParseVar(unit, codeblock);

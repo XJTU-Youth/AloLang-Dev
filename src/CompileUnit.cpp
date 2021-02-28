@@ -37,6 +37,7 @@ void initInnerType(CompileUnit *unit)
 
 void initInnerOperations(CompileUnit *unit)
 {
+    // binOP
     unit->binOperators.insert(std::pair<std::array<std::string, 3>,
                                         std::pair<llvm::Function *, TypeAST *>>(
         {"int", "int", "+"}, std::pair<llvm::Function *, TypeAST *>(
@@ -162,7 +163,7 @@ void scanToken(CompileUnit *unit)
                 sprintf(tmp, "%f", strtod(token.tokenValue.c_str(), NULL));
             else
                 sprintf(tmp, "%ld",
-                    strtol(token.tokenValue.c_str(), NULL, numTypeFlag));
+                        strtol(token.tokenValue.c_str(), NULL, numTypeFlag));
             token.tokenValue = tmp;
         } else if (token.type == tok_str) {
             std::string str  = token.tokenValue;

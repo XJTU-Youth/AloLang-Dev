@@ -11,6 +11,7 @@
 #include "CodeBlockAST.h"
 #include "MemberExprAST.h"
 #include "TypeAST.h"
+#include "UnaryExprAST.h"
 #include "VariableExprAST.h"
 
 AssignmentAST::AssignmentAST(CompileUnit *unit, std::vector<ExprAST *> LHS,
@@ -30,8 +31,9 @@ AssignmentAST *AssignmentAST::ParseAssignment(CompileUnit * unit,
                                               CodeBlockAST *codeblock)
 {
     std::vector<ExprAST *> LHS; //左侧变量
-    Token                  token  = *unit->icurTok;
-    ExprAST *              curVar = nullptr;
+    Token                  token    = *unit->icurTok;
+    ExprAST *              curVar   = nullptr;
+    int                    pointnum = 0;
     while (true) {
         token = *unit->icurTok;
         if (token.type == tok_identifier) {
@@ -44,16 +46,30 @@ AssignmentAST *AssignmentAST::ParseAssignment(CompileUnit * unit,
                 throw e;
             }
             if (token.tokenValue == "=") {
+                for (int i = 0; i < pointnum; i++) {
+                    curVar = new UnaryExprAST(unit, "*", curVar);
+                }
                 LHS.push_back(curVar);
-                curVar = nullptr;
+                curVar   = nullptr;
+                pointnum = 0;
                 break;
             } else if (token.tokenValue == ",") {
+                for (int i = 0; i < pointnum; i++) {
+                    curVar = new UnaryExprAST(unit, "*", curVar);
+                }
                 unit->next_tok();
                 LHS.push_back(curVar);
-                curVar = nullptr;
+                curVar   = nullptr;
+                pointnum = 0;
+
             } else if (token.tokenValue == ".") {
                 curVar =
                     MemberExprAST::ParseMemberExprAST(unit, codeblock, curVar);
+            } else if (token.tokenValue == "*") {
+                pointnum++;
+            } else {
+                CompileError e("Unknown token:" + token.dump());
+                throw e;
             }
         }
     }

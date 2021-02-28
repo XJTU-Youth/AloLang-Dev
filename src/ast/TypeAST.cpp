@@ -72,20 +72,23 @@ TypeAST *TypeAST::ParseType(CompileUnit *unit)
         CompileError e("Expected type but got " + token.dump());
         throw e;
     }
-    std::string baseClass = token.tokenValue;
+    std::string            baseClass = token.tokenValue;
+    std::vector<TypeAST *> genericTypes;
 
     token = unit->next_tok();
     if (token.type == tok_syntax && token.tokenValue == "<") {
-        std::vector<TypeAST *> genericTypes;
+
         unit->next_tok();
         while (!(token.type == tok_syntax && token.tokenValue == ">")) {
             genericTypes.push_back(TypeAST::ParseType(unit));
             token = *unit->icurTok;
         }
-        unit->next_tok();
-        TypeAST *result = new TypeAST(unit, baseClass, genericTypes);
-        return result;
+        token = unit->next_tok();
     }
-    TypeAST *result = new TypeAST(unit, baseClass);
+    TypeAST *result = new TypeAST(unit, baseClass, genericTypes);
+    while (token.type == tok_syntax && token.tokenValue == "*") {
+        result = new TypeAST(unit, result);
+        token  = unit->next_tok();
+    }
     return result;
 }
