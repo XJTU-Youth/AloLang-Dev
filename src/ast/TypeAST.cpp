@@ -16,6 +16,7 @@ TypeAST::TypeAST(CompileUnit *unit, std::string baseClass,
 {
     this->baseClass    = baseClass;
     this->genericTypes = genericTypes;
+    this->pointee      = nullptr;
     //生成name
     this->name = baseClass;
     if (genericTypes.size() != 0) {
@@ -27,28 +28,40 @@ TypeAST::TypeAST(CompileUnit *unit, std::string baseClass,
     }
 }
 
+TypeAST::TypeAST(CompileUnit *unit, TypeAST *pointee) : BaseAST(unit)
+{
+    this->pointee = pointee;
+    //生成name
+    this->name = pointee->name + "*";
+}
+
 TypeAST::~TypeAST()
 {
     // TODO Auto-generated destructor stub
 }
 llvm::Type *TypeAST::Codegen()
 {
-    auto typeAST = unit->types.find(name);
-    if (typeAST == unit->types.end()) {
-        //没有找到实例化过的泛型
-        auto classAST = unit->classes.find(baseClass);
-        if (classAST == unit->classes.end()) {
-            CompileError e("can't find class:" + baseClass);
-            throw e;
+    if (pointee == nullptr) {
+        //非指针类型
+        auto typeAST = unit->types.find(name);
+        if (typeAST == unit->types.end()) {
+            //没有找到实例化过的泛型
+            auto classAST = unit->classes.find(baseClass);
+            if (classAST == unit->classes.end()) {
+                CompileError e("can't find class:" + baseClass);
+                throw e;
+            } else {
+                llvm::Type *classType = classAST->second->Codegen(genericTypes);
+                unit->types.insert(
+                    std::pair<std::string, llvm::Type *>(name, classType));
+                return classType;
+                //构建泛型
+            }
         } else {
-            llvm::Type *classType = classAST->second->Codegen(genericTypes);
-            unit->types.insert(
-                std::pair<std::string, llvm::Type *>(name, classType));
-            return classType;
-            //构建泛型
+            return typeAST->second;
         }
     } else {
-        return typeAST->second;
+        return llvm::PointerType::get(pointee->Codegen(), 0);
     }
 }
 
