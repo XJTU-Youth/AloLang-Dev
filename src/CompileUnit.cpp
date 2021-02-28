@@ -21,6 +21,7 @@
 #include "ast/TypeAST.h"
 #include "ast/VariableDefExprAST.h"
 #include "utils.h"
+#include <array>
 #include <fstream>
 #include <iostream>
 
@@ -32,6 +33,57 @@ void initInnerType(CompileUnit *unit)
         "double", llvm::Type::getDoubleTy(*unit->context)));
     unit->types.insert(std::pair<std::string, llvm::Type *>(
         "bool", llvm::Type::getInt1Ty(*unit->context)));
+}
+
+void initInnerOperations(CompileUnit *unit)
+{
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "+"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "int"))));
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "-"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "int"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "*"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "int"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "/"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "int"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", ">"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "<"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", ">="}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "<="}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "bool"))));
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "!="}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "=="}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "bool"))));
 }
 
 void scanToken(CompileUnit *unit)
@@ -95,6 +147,7 @@ void CompileUnit::compile()
 {
     std::cout << "Start compiling:" << name << std::endl;
     initInnerType(this);
+    initInnerOperations(this);
     scanToken(this);
     while (icurTok->type != tok_eof) {
         switch (icurTok->type) {
@@ -106,7 +159,8 @@ void CompileUnit::compile()
             /*llvm::Type*
              type=llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
              false);
-             module->getOrInsertGlobal(func_ast->proto->name, func->getType());
+             module->getOrInsertGlobal(func_ast->proto->name,
+             func->getType());
 
              llvm::GlobalVariable
              *gVar=module->getNamedGlobal(func_ast->proto->name);

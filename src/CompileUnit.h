@@ -43,7 +43,9 @@ class CompileUnit
     std::vector<VariableDefExprAST *>           globalVariablesO;
     std::map<std::string, FunctionAST *>        functions;
     std::map<std::string, ExternAST *>          externs;
-    std::map<std::string, llvm::Type *>         types; // Codgen用
+    std::map<std::array<std::string, 3>, std::pair<llvm::Function *, TypeAST *>>
+                                        binOperators; // LHS type,RHS type,binOP
+    std::map<std::string, llvm::Type *> types;        // Codgen用
     std::map<std::string, std::pair<TypeAST *, llvm::Value *>>
         globalVariablesValue; // Codgen用
     // std::map<std::string, >
