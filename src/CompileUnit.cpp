@@ -197,11 +197,9 @@ void CompileUnit::compile()
         }
     }
     std::cout << "Start codegen:" << name << std::endl;
-    for (ClassAST *classAST : classesO) {
+    /*for (ClassAST *classAST : classesO) {
         llvm::Type *classType = classAST->Codegen();
-        types.insert(std::pair<std::string, llvm::Type *>(classAST->className,
-                                                          classType));
-    }
+    }*/
 
     std::map<std::string, VariableDefExprAST *>::iterator gVar_iter;
     for (gVar_iter = globalVariables.begin();

@@ -7,6 +7,7 @@
 
 #include "TypeAST.h"
 #include "../CompileError.hpp"
+#include "ClassAST.h"
 #include "CompileUnit.h"
 
 TypeAST::TypeAST(CompileUnit *unit, std::string baseClass,
@@ -34,10 +35,21 @@ llvm::Type *TypeAST::Codegen()
 {
     auto typeAST = unit->types.find(name);
     if (typeAST == unit->types.end()) {
-        CompileError e("can't find type:" + name);
-        throw e;
+        //没有找到实例化过的泛型
+        auto classAST = unit->classes.find(baseClass);
+        if (classAST == unit->classes.end()) {
+            CompileError e("can't find class:" + baseClass);
+            throw e;
+        } else {
+            llvm::Type *classType = classAST->second->Codegen(genericTypes);
+            unit->types.insert(
+                std::pair<std::string, llvm::Type *>(name, classType));
+            return classType;
+            //构建泛型
+        }
+    } else {
+        return typeAST->second;
     }
-    return typeAST->second;
 }
 
 TypeAST *TypeAST::ParseType(CompileUnit *unit)

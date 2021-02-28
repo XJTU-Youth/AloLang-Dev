@@ -68,16 +68,37 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
     return classAST;
 }
 
-llvm::Type *ClassAST::Codegen()
+TypeAST *ClassAST::getRealType(TypeAST *              type,
+                               std::vector<TypeAST *> igenericTypes)
 {
+    auto it = find(genericTypes.begin(), genericTypes.end(), type->name);
+
+    if (it != genericTypes.end()) {
+        //泛型
+        int index = it - genericTypes.begin();
+        return igenericTypes[index];
+    } else {
+        return type;
+    }
+}
+
+llvm::Type *ClassAST::Codegen(std::vector<TypeAST *> igenericTypes)
+{
+    if (igenericTypes.size() != genericTypes.size()) {
+        CompileError e("generic isn't equal");
+        throw e;
+    }
     llvm::StructType *llvm_S =
         llvm::StructType::create(*unit->context, className);
     std::vector<llvm::Type *>                             sMembers;
     std::map<std::string, VariableDefExprAST *>::iterator member_iter;
     for (member_iter = members.begin(); member_iter != members.end();
          member_iter++) {
+
         VariableDefExprAST *memberVariable = member_iter->second;
-        sMembers.push_back(memberVariable->variableType->Codegen());
+        TypeAST *           mType =
+            getRealType(memberVariable->variableType, igenericTypes);
+        sMembers.push_back(mType->Codegen());
     }
     llvm_S->setBody(sMembers);
     return llvm_S;
