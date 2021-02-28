@@ -58,6 +58,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
         return new IntExprAST(unit, strtol(token.tokenValue.c_str(), NULL, 10));
     }
     case tok_key_literal: {
+        unit->next_tok();
         if (token.tokenValue == "true") {
             return new BoolExprAST(unit, true);
         } else {
@@ -96,19 +97,14 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
         //函数调用或定义
         std::string idName = token.tokenValue;
         token              = *(unit->icurTok + 1);
-        if (token.type == tok_identifier) {
-            //定义
-            VariableDefExprAST *varAST =
-                VariableDefExprAST::ParseVar(unit, codeblock);
-            return varAST;
-        } else if (token.tokenValue == "(") {
+        if (token.tokenValue == "(") {
             //函数调用
             token         = unit->next_tok();
             ExprAST *args = ExprAST::ParseExpression(unit, codeblock, false);
             return new CallExprAST(unit, idName, args);
         } else {
-            //变量或赋值
-            int i = 0;
+            //变量或变量定义或赋值
+            int i = 1;
             while (true) {
                 token = *(unit->icurTok + i);
                 if (token.type == tok_syntax) {
@@ -116,11 +112,22 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
                         return AssignmentAST::ParseAssignment(unit, codeblock);
                         break;
                     } else if (token.tokenValue != "," &&
-                               token.tokenValue != ".") {
+                               token.tokenValue != "." &&
+                               token.tokenValue != "<") {
                         //变量
                         unit->next_tok();
                         return new VariableExprAST(unit, codeblock, idName);
+                    } else if (token.tokenValue == "<") {
+                        //变量定义
+                        VariableDefExprAST *varAST =
+                            VariableDefExprAST::ParseVar(unit, codeblock);
+                        return varAST;
                     }
+                } else if (token.type == tok_identifier && i == 1) {
+                    //变量定义
+                    VariableDefExprAST *varAST =
+                        VariableDefExprAST::ParseVar(unit, codeblock);
+                    return varAST;
                 }
                 i++;
             }
