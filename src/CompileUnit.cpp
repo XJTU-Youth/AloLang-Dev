@@ -54,7 +54,10 @@ void scanToken(CompileUnit *unit)
             else if (token.tokenValue.substr(0, 1) == "0")
                 numTypeFlag = 8;
             char tmp[256];
-            sprintf(tmp, "%ld",
+            if (token.tokenValue.find(".") != std::string::npos)
+                sprintf(tmp, "%f", strtod(token.tokenValue.c_str(), NULL));
+            else
+                sprintf(tmp, "%ld",
                     strtol(token.tokenValue.c_str(), NULL, numTypeFlag));
             token.tokenValue = tmp;
         } else if (token.type == tok_str) {
