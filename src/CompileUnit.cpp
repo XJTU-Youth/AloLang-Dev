@@ -54,7 +54,7 @@ void initInnerOperations(CompileUnit *unit)
     unit->binOperators.insert(std::pair<std::array<std::string, 3>,
                                         std::pair<llvm::Function *, TypeAST *>>(
         {"int", "int", "/"}, std::pair<llvm::Function *, TypeAST *>(
-                                 nullptr, new TypeAST(unit, "int"))));
+                                 nullptr, new TypeAST(unit, "double"))));
 
     unit->binOperators.insert(std::pair<std::array<std::string, 3>,
                                         std::pair<llvm::Function *, TypeAST *>>(
@@ -115,7 +115,7 @@ void scanToken(CompileUnit *unit)
         }
 
         // Debug token dump
-        // std::cout << token.dump() << std::endl;
+        std::cout << token.dump() << std::endl;
 
         unit->tokenList.push_back(token);
     } while (token.type != tok_eof);

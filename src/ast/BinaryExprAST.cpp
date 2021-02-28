@@ -51,7 +51,12 @@ std::vector<llvm::Value *> BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
         } else if (binOP == "*") {
             result.push_back(builder->CreateMul(L[0], R[0]));
         } else if (binOP == "/") {
-            result.push_back(builder->CreateSDiv(L[0], R[0]));
+            TypeAST *    doubleType = new TypeAST(unit, "double");
+            llvm::Value *lv =
+                builder->CreateSIToFP(L[0], doubleType->Codegen());
+            llvm::Value *rv =
+                builder->CreateSIToFP(R[0], doubleType->Codegen());
+            result.push_back(builder->CreateFDiv(lv, rv));
         } else if (binOP == "%") {
             result.push_back(builder->CreateSRem(L[0], R[0]));
         } else if (binOP == "==") {

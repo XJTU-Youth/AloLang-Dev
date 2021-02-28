@@ -6,6 +6,7 @@
 #include "BoolExprAST.h"
 #include "CallExprAST.h"
 #include "CodeBlockAST.h"
+#include "DoubleExprAST.h"
 #include "EmptyExprAST.h"
 #include "IfExprAST.h"
 #include "IntExprAST.h"
@@ -55,7 +56,13 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
     switch (token.type) {
     case tok_number: {
         unit->next_tok();
-        return new IntExprAST(unit, strtol(token.tokenValue.c_str(), NULL, 10));
+        if (token.tokenValue.find(".") == std::string::npos) {
+            return new IntExprAST(unit,
+                                  strtol(token.tokenValue.c_str(), NULL, 10));
+
+        } else {
+            return new DoubleExprAST(unit, std::stod(token.tokenValue.c_str()));
+        }
     }
     case tok_key_literal: {
         unit->next_tok();
