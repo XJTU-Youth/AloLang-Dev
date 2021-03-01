@@ -24,16 +24,17 @@ int GetTokPrecedence(Token tok)
         return -1;
     }
     std::map<std::string, int> BinopPrecedence;
-    BinopPrecedence["=="] = 100;
-    BinopPrecedence[">"]  = 100;
-    BinopPrecedence["<"]  = 100;
-    BinopPrecedence[">="] = 100;
-    BinopPrecedence["<="] = 100;
-    BinopPrecedence["+"]  = 200;
-    BinopPrecedence["-"]  = 200;
-    BinopPrecedence["*"]  = 300;
-    BinopPrecedence["/"]  = 300;
-    BinopPrecedence["%"]  = 300;
+    BinopPrecedence["=="] = 200;
+    BinopPrecedence[">"]  = 200;
+    BinopPrecedence["<"]  = 200;
+    BinopPrecedence[">="] = 200;
+    BinopPrecedence["<="] = 200;
+    BinopPrecedence["+"]  = 300;
+    BinopPrecedence["-"]  = 300;
+    BinopPrecedence["*"]  = 400;
+    BinopPrecedence["/"]  = 400;
+    BinopPrecedence["%"]  = 400;
+    BinopPrecedence["="]  = 100;
 
     int TokPrec = BinopPrecedence[tok.tokenValue];
     if (TokPrec <= 0) {
@@ -119,12 +120,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
                         ci++;
                         continue;
                     }
-                    if (token.tokenValue == "=") {
-                        return AssignmentAST::ParseAssignment(unit, codeblock);
-                        break;
-                    } else if (token.tokenValue != "," &&
-                               token.tokenValue != "." &&
-                               token.tokenValue != "<") {
+                    if (token.tokenValue != "." && token.tokenValue != "<") {
                         //变量
                         unit->next_tok();
                         return new VariableExprAST(unit, codeblock, idName);
@@ -189,14 +185,20 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
     if (LHS == nullptr) {
         return nullptr;
     }
-    ExprAST *result;
+    ExprAST *result = LHS;
 
     while (unit->icurTok->type == tok_syntax &&
            unit->icurTok->tokenValue == ".") {
         LHS = MemberExprAST::ParseMemberExprAST(unit, codeblock, LHS);
     }
 
-    result = ParseBinOpRHS(unit, codeblock, 0, LHS);
+    Token token = *(unit->icurTok);
+    if (token.type == tok_syntax && token.tokenValue == ",") {
+        unit->next_tok();
+        result->subExpr = ExprAST::ParseExpression(unit, codeblock, false);
+    }
+
+    result = ParseBinOpRHS(unit, codeblock, 0, result);
 
     if (IfExprAST *v = dynamic_cast<IfExprAST *>(result)) {
         return result; //跳过分号
@@ -204,11 +206,7 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
     if (WhileExprAST *v = dynamic_cast<WhileExprAST *>(result)) {
         return result; //跳过分号
     }
-    Token token = *(unit->icurTok);
-    if (token.type == tok_syntax && token.tokenValue == ",") {
-        unit->next_tok();
-        result->subExpr = ExprAST::ParseExpression(unit, codeblock, false);
-    }
+    token = *(unit->icurTok);
     if (root) {
         if (token.type != tok_syntax || token.tokenValue != ";") {
             CompileError e("丟失分号: \"" + token.dump() + "\" 前");
