@@ -18,4 +18,6 @@ class ExprAST : public BaseAST
     ExprAST *              subExpr;
 };
 
+static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
+                              int ExprPrec, ExprAST *LHS);
 #endif /* COMPILER_AST_ASTEXPR_H_ */
