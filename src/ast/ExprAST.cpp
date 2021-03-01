@@ -99,7 +99,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
         } else {
             unit->next_tok();
             result = new UnaryExprAST(unit, token.tokenValue,
-                                      ParseExpression(unit, codeblock, false));
+                                      ParsePrimary(unit, codeblock));
         }
         break;
     }
