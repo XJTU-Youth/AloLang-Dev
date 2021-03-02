@@ -1,4 +1,4 @@
-# alolang关键字:signed
+# signed
 
 * 用于表明一个变量位有符号类型
 

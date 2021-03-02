@@ -1,4 +1,4 @@
-# alolang关键字:char
+# char
 
 * 用于char类型的声明。
 

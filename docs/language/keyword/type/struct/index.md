@@ -1,3 +1,3 @@
-# alolang关键字:struct
+# struct
 
 * 用于对结构体的声明
