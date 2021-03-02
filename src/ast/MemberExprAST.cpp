@@ -29,7 +29,7 @@ MemberExprAST *MemberExprAST::ParseMemberExprAST(CompileUnit * unit,
 {
     Token token = unit->next_tok();
     if (token.type != tok_identifier) {
-        CompileError e("Expected identifier");
+        CompileError e("Expected identifier",token.file,token.lineno);
         throw e;
     }
     MemberExprAST *result = new MemberExprAST(unit, LHS, token.tokenValue);

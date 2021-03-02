@@ -28,7 +28,7 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
 {
     Token token = unit->next_tok();
     if (token.type != tok_identifier) {
-        CompileError e("Expected identifier");
+        CompileError e("Expected identifier",token.file,token.lineno);
         throw e;
     }
     std::string              className = token.tokenValue;
@@ -48,7 +48,7 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
         token = unit->next_tok();
     }
     if (token.type != tok_syntax || token.tokenValue != "{") {
-        CompileError e("Expected {");
+        CompileError e("Expected {",token.file,token.lineno);
         throw e;
     }
     std::map<std::string, VariableDefExprAST *> members;

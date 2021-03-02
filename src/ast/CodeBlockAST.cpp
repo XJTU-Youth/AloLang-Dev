@@ -57,7 +57,7 @@ CodeBlockAST::ParseCodeBlock(CompileUnit *unit, std::string name,
         }
         return codeblock;
     } else {
-        CompileError e("Expected codeblock");
+        CompileError e("Expected codeblock",token.file,token.lineno);
         throw e;
     }
 }

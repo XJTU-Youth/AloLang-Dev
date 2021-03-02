@@ -28,7 +28,7 @@ class CompileError : public std::exception
         error   = whatError;
         file    = whatFile;
         line    = whatLine;
-        message = file + ": " + std::to_string(line) + ": " + error;
+        message = file + ":" + std::to_string(line) + ": " + error;
     }
 };
 #endif

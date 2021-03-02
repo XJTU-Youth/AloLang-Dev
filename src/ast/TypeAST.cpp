@@ -69,7 +69,7 @@ TypeAST *TypeAST::ParseType(CompileUnit *unit)
 {
     Token token = *unit->icurTok;
     if (token.type != tok_identifier) {
-        CompileError e("Expected type but got " + token.dump());
+        CompileError e("Expected type but got " + token.dump(),token.file,token.lineno);
         throw e;
     }
     std::string            baseClass = token.tokenValue;

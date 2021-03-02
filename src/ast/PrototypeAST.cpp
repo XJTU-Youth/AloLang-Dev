@@ -107,13 +107,13 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
     } else {
         if (token.tokenValue == "{") {
             if (!hasBody) {
-                CompileError e("Unexpected function body");
+                CompileError e("Unexpected function body",token.file,token.lineno);
                 throw e;
             }
         }
         if (token.tokenValue == ";") {
             if (hasBody) {
-                CompileError e("Unexpected ;");
+                CompileError e("Unexpected ;",token.file,token.lineno);
                 throw e;
             }
         }
