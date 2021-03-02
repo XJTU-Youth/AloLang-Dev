@@ -45,7 +45,7 @@ std::vector<Tline> processPreInstruction(const std::string &line, int cnt, int l
         std::string importFileContent;
         std::getline(t_fin__, importFileContent, char(EOF));
         t_fin__.close();
-        return preProcess(importFileContent, cnt + 1);
+        return preProcess(importFileContent, cnt + 1, instruction.second);
     } else if (instruction.first == "def") {
         //解析宏定义
         std::string var, data;
@@ -158,7 +158,7 @@ std::string doReplace(std::string &line)
 }
 
 //递归预处理
-std::vector<Tline> preProcess(const std::string &code, int cnt)
+std::vector<Tline> preProcess(const std::string &code, int cnt, std::string FN)
 {
     if (cnt == 128) {
         CompileError e("preprocessor recursion too deep");
@@ -219,7 +219,7 @@ std::vector<Tline> preProcess(const std::string &code, int cnt)
             }
             int plen = result.length();
             if (plen > 0) {
-                processedLines.push_back(Tline(std::pair<std::string,int>("",lineno),result));
+                processedLines.push_back(Tline(std::pair<std::string,int>(FN,lineno),result));
             }
         }
         temp.erase();
