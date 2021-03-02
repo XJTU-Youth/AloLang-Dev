@@ -14,6 +14,12 @@ func main()
 
     a = testGetInt();
     b = testGetInt();
-    c = a + b;
+    // c = a & b;
+    // testPrintInt(c);
+    // c = a | b;
+    // testPrintInt(c);
+    c = a - b;
+    testPrintInt(c);
+    c = a * b;
     testPrintInt(c);
 }
