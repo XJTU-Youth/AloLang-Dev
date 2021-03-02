@@ -17,24 +17,55 @@
 #include "WhileExprAST.h"
 #include <iostream>
 
-int GetTokPrecedence(Token tok)
+std::map<std::string, int> BinopPrecedence;
+std::map<std::string, int> UnaryopPrecedence;
+
+void initTokPrecedence()
+{
+    BinopPrecedence["="] = 1;
+
+    BinopPrecedence[","]  = 2;
+    BinopPrecedence["||"] = 3;
+
+    BinopPrecedence["&&"] = 4;
+
+    BinopPrecedence["|"] = 5;
+
+    BinopPrecedence["^"] = 6;
+
+    BinopPrecedence["&"] = 7;
+
+    BinopPrecedence["=="] = 8;
+    BinopPrecedence["!="] = 8;
+
+    BinopPrecedence[">"]  = 9;
+    BinopPrecedence["<"]  = 9;
+    BinopPrecedence[">="] = 9;
+    BinopPrecedence["<="] = 9;
+
+    BinopPrecedence[">>"] = 9;
+    BinopPrecedence["<<"] = 9;
+
+    BinopPrecedence["+"] = 10;
+    BinopPrecedence["-"] = 10;
+
+    BinopPrecedence["*"] = 11;
+    BinopPrecedence["/"] = 11;
+    BinopPrecedence["%"] = 11;
+
+    BinopPrecedence[".*"] = 12;
+
+    BinopPrecedence["."] = 14;
+
+    UnaryopPrecedence["!"] = 13;
+    UnaryopPrecedence["&"] = 13;
+}
+
+int GetBinTokPrecedence(Token tok)
 {
     if (tok.type != tok_syntax) {
         return -1;
     }
-    std::map<std::string, int> BinopPrecedence;
-    BinopPrecedence["=="] = 200;
-    BinopPrecedence[">"]  = 200;
-    BinopPrecedence["<"]  = 200;
-    BinopPrecedence[">="] = 200;
-    BinopPrecedence["<="] = 200;
-    BinopPrecedence["+"]  = 300;
-    BinopPrecedence["-"]  = 300;
-    BinopPrecedence["*"]  = 400;
-    BinopPrecedence["/"]  = 400;
-    BinopPrecedence["%"]  = 400;
-    BinopPrecedence["="]  = 100;
-    BinopPrecedence[","]  = 200;
 
     int TokPrec = BinopPrecedence[tok.tokenValue];
     if (TokPrec <= 0) {
@@ -43,7 +74,24 @@ int GetTokPrecedence(Token tok)
     return TokPrec;
 }
 
-ExprAST::ExprAST(CompileUnit *unit) : BaseAST(unit) { subExpr = nullptr; }
+int GetUnaryTokPrecedence(Token tok)
+{
+    if (tok.type != tok_syntax) {
+        return -1;
+    }
+
+    int TokPrec = UnaryopPrecedence[tok.tokenValue];
+    if (TokPrec <= 0) {
+        return -1;
+    }
+    return TokPrec;
+}
+
+ExprAST::ExprAST(CompileUnit *unit) : BaseAST(unit)
+{
+    subExpr = nullptr;
+    initTokPrecedence();
+}
 
 ExprAST::~ExprAST()
 {
@@ -96,10 +144,11 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             unit->next_tok();
         } else if (token.tokenValue == ")") {
             result = new EmptyExprAST(unit);
+        } else if (GetUnaryTokPrecedence(token) != -1) {
+            result = nullptr;
         } else {
-            unit->next_tok();
-            result = new UnaryExprAST(unit, token.tokenValue,
-                                      ParsePrimary(unit, codeblock));
+            CompileError e("不期待的syntax_token：" + token.dump());
+            throw e;
         }
         break;
     }
@@ -150,9 +199,6 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
         throw e;
     }
     }
-    if (result == nullptr) {
-        return nullptr;
-    }
     /*if (token.type == tok_syntax && token.tokenValue == ",") {
         unit->next_tok();
         ExprAST *subExpr = ParseBinOpRHS(unit, codeblock, 200, result);
@@ -169,8 +215,13 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
 {
     ExprAST *cExpr = LHS;
     while (1) {
-        Token token   = *unit->icurTok;
-        int   TokPrec = GetTokPrecedence(token);
+        Token token = *unit->icurTok;
+        int   TokPrec;
+        if (LHS == nullptr) {
+            TokPrec = GetUnaryTokPrecedence(token);
+        } else {
+            TokPrec = GetBinTokPrecedence(token);
+        }
         if (TokPrec < ExprPrec) {
             return LHS;
         }
@@ -180,7 +231,7 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
         if (!RHS)
             return nullptr;
 
-        int NextPrec = GetTokPrecedence(*(unit->icurTok));
+        int NextPrec = GetBinTokPrecedence(*(unit->icurTok));
         if (TokPrec < NextPrec) {
             RHS = ParseBinOpRHS(unit, codeblock, TokPrec + 1, RHS);
             if (RHS == nullptr) {
@@ -190,6 +241,13 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
         if (token.tokenValue == ",") {
             cExpr->subExpr = RHS;
             cExpr          = RHS;
+        } else if (token.tokenValue == ".") {
+            if (VariableExprAST *v = dynamic_cast<VariableExprAST *>(RHS)) {
+                LHS = new MemberExprAST(unit, LHS, v->idName);
+            } else {
+                CompileError e("成员方法调用未实现");
+                throw e;
+            }
         } else {
             LHS = new BinaryExprAST(unit, token.tokenValue, LHS, RHS);
         }
@@ -199,16 +257,12 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
 ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
                                   bool root)
 {
-    ExprAST *LHS = ParsePrimary(unit, codeblock);
-    if (LHS == nullptr) {
-        return nullptr;
-    }
-    ExprAST *result = LHS;
+    ExprAST *result = ParsePrimary(unit, codeblock);
 
-    while (unit->icurTok->type == tok_syntax &&
+    /*while (unit->icurTok->type == tok_syntax &&
            unit->icurTok->tokenValue == ".") {
         LHS = MemberExprAST::ParseMemberExprAST(unit, codeblock, LHS);
-    }
+    }*/
 
     result = ParseBinOpRHS(unit, codeblock, 0, result);
 
