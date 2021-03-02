@@ -7,6 +7,7 @@
 
 #include "UnaryExprAST.h"
 #include "../CompileError.hpp"
+#include "MemberExprAST.h"
 #include "TypeAST.h"
 #include "VariableExprAST.h"
 
@@ -39,6 +40,7 @@ std::vector<llvm::Value *> UnaryExprAST::Codegen(llvm::IRBuilder<> *builder)
         if (VariableExprAST *v = dynamic_cast<VariableExprAST *>(operand)) {
             result.push_back(v->getAlloca());
             this->type.push_back(new TypeAST(unit, operand->type[0]));
+        } else if (MemberExprAST *v = dynamic_cast<MemberExprAST *>(operand)) {
         } else {
             CompileError e("& can only be used with variable");
             throw e;

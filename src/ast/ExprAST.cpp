@@ -113,7 +113,8 @@ ExprAST::~ExprAST()
     // TODO Auto-generated destructor stub
 }
 
-ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
+ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
+                               bool root)
 {
     ExprAST *result;
     // todo:除了函数调用之外的语句解析
@@ -177,7 +178,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             while (true) {
                 token = *(unit->icurTok + i);
                 if (token.type == tok_syntax) {
-                    if (token.tokenValue == "*") {
+                    if (token.tokenValue == "*" && root) {
                         i++;
                         ci++;
                         continue;
@@ -275,7 +276,7 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
 ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
                                   bool root)
 {
-    ExprAST *result = ParsePrimary(unit, codeblock);
+    ExprAST *result = ParsePrimary(unit, codeblock, root);
 
     /*while (unit->icurTok->type == tok_syntax &&
            unit->icurTok->tokenValue == ".") {

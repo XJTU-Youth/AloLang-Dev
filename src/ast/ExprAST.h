@@ -13,7 +13,8 @@ class ExprAST : public BaseAST
     std::vector<llvm::Value *>         CodegenChain(llvm::IRBuilder<> *builder);
     static ExprAST *ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
                                     bool root);
-    static ExprAST *ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock);
+    static ExprAST *ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
+                                 bool root = false);
     std::vector<TypeAST *> type;
     ExprAST *              subExpr;
 };
