@@ -15,13 +15,13 @@ func main() {
     test1.succ = &test3;
 
     test1.data = 1;
-    *test1.pred.data = 2;
-    *test1.succ.data = 3;
+    *(test1.pred).data = 2;
+    *(test1.succ).data = 3;
 
     testPrintInt(test1.data);
     testPrintInt(test2.data);
     testPrintInt(test3.data);
-    testPrintInt(*test1.succ.data);
-    testPrintInt(*test1.pred.data);
+    testPrintInt(*(test1.succ).data);
+    testPrintInt(*(test1.pred).data);
 
 }
