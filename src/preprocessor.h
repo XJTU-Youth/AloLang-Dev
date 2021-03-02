@@ -11,7 +11,7 @@
 
 typedef std::pair<std::pair<std::string,int>,std::string> Tline;
 
-std::vector<Tline> preProcess(const std::string &code, int cnt);
+std::vector<Tline> preProcess(const std::string &code, int cnt, std::string FN);
 
 
 #endif

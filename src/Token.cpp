@@ -102,7 +102,7 @@ std::string Token::dump()
     default:
         typeStr = "not defined";
     }
-    ss << std::left << "Line " << std::setw(6) << lineno
+    ss << std::right << std::setw(25) << file << ":" << std::left << std::setw(6) << lineno
        << " type:" << std::setw(16) << typeStr << " data:" << tokenValue;
     return ss.str();
 }
