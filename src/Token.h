@@ -46,6 +46,7 @@ class Token
     TokenType   type;
     std::string tokenValue;
     uint64_t    lineno;
+    std::string file;
 };
 
 #endif /* COMPILER_TOKEN_H_ */

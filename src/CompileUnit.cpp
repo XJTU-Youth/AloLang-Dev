@@ -141,52 +141,57 @@ void initInnerOperations(CompileUnit *unit)
 
 void scanToken(CompileUnit *unit)
 {
-    Token token;
-    do {
-        int tokenid      = unit->lexer->yylex();
-        token.type       = TokenType(tokenid);
-        token.lineno     = unit->lexer->lineno();
-        token.tokenValue = unit->lexer->YYText();
-        // Deal with numbers
-        if (token.type == tok_number) {
-            int numTypeFlag = 10; //进制数
-            if (token.tokenValue.substr(0, 2) == "0x" ||
-                token.tokenValue.substr(0, 2) == "0X")
-                numTypeFlag = 16;
-            else if (token.tokenValue.substr(0, 2) == "0b" ||
-                     token.tokenValue.substr(0, 2) == "0B")
-                numTypeFlag = 2;
-            else if (token.tokenValue.substr(0, 1) == "0")
-                numTypeFlag = 8;
-            char tmp[256];
-            if (token.tokenValue.find(".") != std::string::npos)
-                sprintf(tmp, "%f", strtod(token.tokenValue.c_str(), NULL));
-            else
-                sprintf(tmp, "%ld",
+    for (Tline line : unit->srclines) {
+        std::istringstream is(line.second);
+        FlexLexer *        lexer = new yyFlexLexer(is, std::cerr);
+        Token              token;
+
+        do {
+            int tokenid      = lexer->yylex();
+            token.type       = TokenType(tokenid);
+            token.file       = line.first.first;
+            token.lineno     = line.first.second;
+            token.tokenValue = lexer->YYText();
+            // Deal with numbers
+            if (token.type == tok_number) {
+                int numTypeFlag = 10; //进制数
+                if (token.tokenValue.substr(0, 2) == "0x" ||
+                    token.tokenValue.substr(0, 2) == "0X")
+                    numTypeFlag = 16;
+                else if (token.tokenValue.substr(0, 2) == "0b" ||
+                         token.tokenValue.substr(0, 2) == "0B")
+                    numTypeFlag = 2;
+                else if (token.tokenValue.substr(0, 1) == "0")
+                    numTypeFlag = 8;
+                char tmp[256];
+                if (token.tokenValue.find(".") != std::string::npos)
+                    sprintf(tmp, "%f", strtod(token.tokenValue.c_str(), NULL));
+                else
+                    sprintf(
+                        tmp, "%ld",
                         strtol(token.tokenValue.c_str(), NULL, numTypeFlag));
-            token.tokenValue = tmp;
-        } else if (token.type == tok_str) {
-            std::string str  = token.tokenValue;
-            token.tokenValue = str.substr(1, str.length() - 2);
-        }
+                token.tokenValue = tmp;
+            } else if (token.type == tok_str) {
+                std::string str  = token.tokenValue;
+                token.tokenValue = str.substr(1, str.length() - 2);
+            }
 
-        // Debug token dump
-        std::cout << token.dump() << std::endl;
+            // Debug token dump
+            std::cout << token.dump() << std::endl;
 
-        unit->tokenList.push_back(token);
-    } while (token.type != tok_eof);
+            unit->tokenList.push_back(token);
+        } while (token.type != tok_eof);
+    }
 
     unit->icurTok = unit->tokenList.begin();
 }
 
-CompileUnit::CompileUnit(std::string name, std::string source)
+CompileUnit::CompileUnit(std::string name, std::vector<Tline> lines)
 {
-    this->name   = name;
-    this->source = source;
-    this->sis    = std::istringstream(source);
-    this->lexer  = new yyFlexLexer(sis, std::cerr);
-    context      = new llvm::LLVMContext();
-    module       = new llvm::Module(name, *context);
+    name     = name;
+    srclines = lines;
+    context  = new llvm::LLVMContext();
+    module   = new llvm::Module(name, *context);
 }
 
 CompileUnit::~CompileUnit() {}

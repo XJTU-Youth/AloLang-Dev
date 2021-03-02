@@ -9,7 +9,9 @@
 #include <sstream>
 #include <string>
 
-std::string preProcess(const std::string &code, int cnt);
-// extern static std::vector<std::pair<std::string,int>>;
+typedef std::pair<std::pair<std::string,int>,std::string> Tline;
+
+std::vector<Tline> preProcess(const std::string &code, int cnt);
+
 
 #endif

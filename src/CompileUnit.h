@@ -9,6 +9,7 @@
 #define COMPILER_COMPILEUNIT_H_
 
 #include "Token.h"
+#include "preprocessor.h"
 #include <FlexLexer.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
@@ -23,16 +24,17 @@ class ClassAST;
 class CompileUnit
 {
   public:
-    CompileUnit(std::string name, std::string source);
+    CompileUnit(std::string name, std::vector<Tline> lines);
     virtual ~CompileUnit();
     void  compile();
     Token next_tok();
     void  build();
 
-    FlexLexer *                                 lexer;
-    std::string                                 name;
-    std::string                                 source;
-    std::istringstream                          sis;
+    // FlexLexer *                                 lexer;
+    std::string name;
+    // std::string source;
+    // std::istringstream                          sis;
+    std::vector<Tline>                          srclines;
     llvm::LLVMContext *                         context;
     llvm::Module *                              module;
     std::vector<Token>                          tokenList;

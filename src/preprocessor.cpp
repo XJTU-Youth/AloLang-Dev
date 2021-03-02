@@ -32,7 +32,7 @@ std::pair<std::string, std::string> genFactor(const std::string &line)
     }
 }
 
-std::string processPreInstruction(const std::string &line, int cnt)
+std::vector<Tline> processPreInstruction(const std::string &line, int cnt, int lineno)
 {
     std::pair<std::string, std::string> instruction =
         genFactor(line); //解析后的预编译指令
@@ -68,7 +68,7 @@ std::string processPreInstruction(const std::string &line, int cnt)
             data = instruction.second.substr(i + 1, len - i - 1);
         }
         variable[var] = data;
-        return "";
+        return std::vector<Tline>{Tline(std::pair<std::string,int>("",lineno),"")};
     } else if (instruction.first == "rmdef") {
         if (instruction.second.length() == 0) {
             CompileError e("no second instruction");
@@ -80,7 +80,7 @@ std::string processPreInstruction(const std::string &line, int cnt)
             throw e;
             //找不到宏定义
         }
-        return "";
+        return std::vector<Tline>{Tline(std::pair<std::string,int>("",lineno),"")};
     } else if (instruction.first == "ifdef") {
         if (instruction.second.length() == 0) {
             CompileError e("no second instruction");
@@ -93,7 +93,7 @@ std::string processPreInstruction(const std::string &line, int cnt)
             closeifstack++;
         }
         currentifstack++;
-        return "";
+        return std::vector<Tline>{Tline(std::pair<std::string,int>("",lineno),"")};
     } else if (instruction.first == "ifndef") {
         if (instruction.second.length() == 0) {
             CompileError e("no second instruction");
@@ -106,7 +106,7 @@ std::string processPreInstruction(const std::string &line, int cnt)
             closeifstack++;
         }
         currentifstack++;
-        return "";
+        return std::vector<Tline>{Tline(std::pair<std::string,int>("",lineno),"")};
     } else if (instruction.first == "endif") {
         if (currentifstack == 0) {
             CompileError e("no second instruction");
@@ -116,7 +116,7 @@ std::string processPreInstruction(const std::string &line, int cnt)
             closeifstack--;
         }
         currentifstack--;
-        return "";
+        return std::vector<Tline>{Tline(std::pair<std::string,int>("",lineno),"")};
     } else {
         CompileError e("Unrecognized preprocessor command");
         throw e;
@@ -158,26 +158,29 @@ std::string doReplace(std::string &line)
 }
 
 //递归预处理
-std::string preProcess(const std::string &code, int cnt)
+std::vector<Tline> preProcess(const std::string &code, int cnt)
 {
     if (cnt == 128) {
         CompileError e("preprocessor recursion too deep");
         throw e;
     }
     std::istringstream buft_fin__(code);
-    std::stringstream  preprocessoroutput;
+    // std::stringstream  preprocessoroutput;
+    std::vector<Tline> processedLines;
     std::string        temp;
     bool               isCommented = false;
+    int lineno = 0;
     while (std::getline(buft_fin__, temp)) {
+        lineno++;
         if (closeifstack > 0 && temp.substr(0, 6) != "%endif" &&
             temp.substr(0, 7) != "%ifndef" && temp.substr(0, 6) != "%ifdef") {
             continue;
         }
         if (temp[0] == '%') {
-            std::string processedPreInstruction =
-                processPreInstruction(temp, cnt);
+            auto processedPreInstruction =
+                processPreInstruction(temp, cnt, lineno);
             if (processedPreInstruction.size() > 0)
-                preprocessoroutput << processedPreInstruction << std::endl;
+                std::move(processedPreInstruction.begin(), processedPreInstruction.end(), std::back_inserter(processedLines));
         } else {
             std::string replaced = doReplace(temp);
             //处理块注释
@@ -216,10 +219,10 @@ std::string preProcess(const std::string &code, int cnt)
             }
             int plen = result.length();
             if (plen > 0) {
-                preprocessoroutput << result << std::endl;
+                processedLines.push_back(Tline(std::pair<std::string,int>("",lineno),result));
             }
         }
         temp.erase();
     }
-    return preprocessoroutput.str();
+    return processedLines;
 }
