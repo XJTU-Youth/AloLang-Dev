@@ -113,7 +113,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
             ExprAST *args = ExprAST::ParseExpression(unit, codeblock, false);
             result        = new CallExprAST(unit, idName, args);
         } else {
-            //变量或变量定义或赋值
+            //变量或变量定义
             int i = 1, ci = 1;
             while (true) {
                 token = *(unit->icurTok + i);
@@ -123,7 +123,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
                         ci++;
                         continue;
                     }
-                    if (token.tokenValue != "." && token.tokenValue != "<") {
+                    if (token.tokenValue != "<") {
                         //变量
                         unit->next_tok();
                         result = new VariableExprAST(unit, codeblock, idName);
