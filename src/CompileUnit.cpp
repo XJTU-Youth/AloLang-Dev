@@ -146,7 +146,7 @@ void scanToken(CompileUnit *unit)
         FlexLexer *        lexer = new yyFlexLexer(is, std::cerr);
         Token              token;
 
-        do {
+        while (1) {
             int tokenid      = lexer->yylex();
             token.type       = TokenType(tokenid);
             token.file       = line.first.first;
@@ -178,17 +178,20 @@ void scanToken(CompileUnit *unit)
 
             // Debug token dump
             std::cout << token.dump() << std::endl;
-
+            if (token.type == tok_eof)
+                break;
             unit->tokenList.push_back(token);
-        } while (token.type != tok_eof);
+        }
     }
-
+    Token TEOF;
+    TEOF.type = tok_eof;
+    unit->tokenList.push_back(TEOF);
     unit->icurTok = unit->tokenList.begin();
 }
 
-CompileUnit::CompileUnit(std::string name, std::vector<Tline> lines)
+CompileUnit::CompileUnit(std::string Iname, std::vector<Tline> lines)
 {
-    name     = name;
+    name     = Iname;
     srclines = lines;
     context  = new llvm::LLVMContext();
     module   = new llvm::Module(name, *context);

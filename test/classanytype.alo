@@ -26,4 +26,8 @@ func main() {
     testPrintInt(*(test1.succ).data);
     testPrintInt(*(test1.pred).data);
     testPrintInt(*testint1);
+
+    if (1) 
+        testPrintInt(114514);
+
 }
