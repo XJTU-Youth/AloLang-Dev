@@ -18,10 +18,12 @@ func main() {
     *(test1.pred).data = 2;
     *(test1.succ).data = 3;
 
+    int* testint1 = &(test1.data);
+
     testPrintInt(test1.data);
     testPrintInt(test2.data);
     testPrintInt(test3.data);
     testPrintInt(*(test1.succ).data);
     testPrintInt(*(test1.pred).data);
-
+    testPrintInt(*testint1);
 }
