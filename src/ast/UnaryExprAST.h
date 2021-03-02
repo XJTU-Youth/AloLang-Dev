@@ -13,11 +13,13 @@
 class UnaryExprAST : public ExprAST
 {
   public:
-    UnaryExprAST(CompileUnit *unit, const std::string &op, ExprAST *operand);
+    UnaryExprAST(CompileUnit *unit, const std::string &op, ExprAST *operand,
+                 bool leftop);
     virtual ~UnaryExprAST();
     std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
     std::string                op;
     ExprAST *                  operand;
+    bool                       leftop;
 };
 
 #endif /* SRC_AST_UNARYEXPRAST_H_ */

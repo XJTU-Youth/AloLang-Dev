@@ -11,11 +11,12 @@
 #include "VariableExprAST.h"
 
 UnaryExprAST::UnaryExprAST(CompileUnit *unit, const std::string &op,
-                           ExprAST *operand)
+                           ExprAST *operand, bool leftop)
     : ExprAST(unit)
 {
     this->op      = op;
     this->operand = operand;
+    this->leftop  = leftop;
     /*if (op == "!") {
         this->type.push_back(new TypeAST(unit, "bool"));
     } else if (op == "&") {

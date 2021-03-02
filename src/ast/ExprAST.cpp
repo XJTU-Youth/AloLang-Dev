@@ -18,7 +18,8 @@
 #include <iostream>
 
 std::map<std::string, int> BinopPrecedence;
-std::map<std::string, int> UnaryopPrecedence;
+std::map<std::string, int> LUnaryopPrecedence;
+std::map<std::string, int> RUnaryopPrecedence;
 
 void initTokPrecedence()
 {
@@ -57,8 +58,9 @@ void initTokPrecedence()
 
     BinopPrecedence["."] = 14;
 
-    UnaryopPrecedence["!"] = 13;
-    UnaryopPrecedence["&"] = 13;
+    LUnaryopPrecedence["*"] = 13;
+    LUnaryopPrecedence["!"] = 13;
+    LUnaryopPrecedence["&"] = 13;
 }
 
 int GetBinTokPrecedence(Token tok)
@@ -74,13 +76,26 @@ int GetBinTokPrecedence(Token tok)
     return TokPrec;
 }
 
-int GetUnaryTokPrecedence(Token tok)
+int GetLUnaryTokPrecedence(Token tok)
 {
     if (tok.type != tok_syntax) {
         return -1;
     }
 
-    int TokPrec = UnaryopPrecedence[tok.tokenValue];
+    int TokPrec = LUnaryopPrecedence[tok.tokenValue];
+    if (TokPrec <= 0) {
+        return -1;
+    }
+    return TokPrec;
+}
+
+int GetRUnaryTokPrecedence(Token tok)
+{
+    if (tok.type != tok_syntax) {
+        return -1;
+    }
+
+    int TokPrec = RUnaryopPrecedence[tok.tokenValue];
     if (TokPrec <= 0) {
         return -1;
     }
@@ -142,13 +157,8 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock)
                 throw e;
             }
             unit->next_tok();
-        } else if (token.tokenValue == ")") {
-            result = new EmptyExprAST(unit);
-        } else if (GetUnaryTokPrecedence(token) != -1) {
-            result = nullptr;
         } else {
-            CompileError e("不期待的syntax_token：" + token.dump());
-            throw e;
+            result = new EmptyExprAST(unit);
         }
         break;
     }
@@ -218,7 +228,7 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
         Token token = *unit->icurTok;
         int   TokPrec;
         if (LHS == nullptr) {
-            TokPrec = GetUnaryTokPrecedence(token);
+            TokPrec = GetLUnaryTokPrecedence(token);
         } else {
             TokPrec = GetBinTokPrecedence(token);
         }
@@ -248,6 +258,14 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
                 CompileError e("成员方法调用未实现");
                 throw e;
             }
+        } else if (dynamic_cast<EmptyExprAST *>(LHS) != nullptr &&
+                   GetLUnaryTokPrecedence(token) != -1) {
+            //左一元运算符
+            LHS = new UnaryExprAST(unit, token.tokenValue, RHS, true);
+        } else if (dynamic_cast<EmptyExprAST *>(RHS) != nullptr &&
+                   GetRUnaryTokPrecedence(token) != -1) {
+            //右一元运算符
+            LHS = new UnaryExprAST(unit, token.tokenValue, LHS, false);
         } else {
             LHS = new BinaryExprAST(unit, token.tokenValue, LHS, RHS);
         }
