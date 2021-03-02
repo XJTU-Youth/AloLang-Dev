@@ -1,4 +1,4 @@
-# alolang关键词:auto
+# auto
 
 * 占位符类型说明符
 

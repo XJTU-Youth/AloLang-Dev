@@ -1,4 +1,4 @@
-# alolang关键字:goto
+# goto
 * goto语句:用于goto语句的声明
 
 例子：

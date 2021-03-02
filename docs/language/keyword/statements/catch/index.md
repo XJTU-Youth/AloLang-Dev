@@ -1,2 +1,2 @@
-# alolang关键字:catch
+# catch
 * 用于try-catch块

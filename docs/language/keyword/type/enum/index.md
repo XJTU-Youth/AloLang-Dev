@@ -1,3 +1,3 @@
-# alolang关键字:enum
+# enum
 
 * 用于对枚举的声明
