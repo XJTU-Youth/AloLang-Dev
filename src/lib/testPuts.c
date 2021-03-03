@@ -23,6 +23,6 @@ extern int _alolang_10testGetInt()
 extern double _alolang_13testGetDouble()
 {
     double a;
-    scanf("%f", &a);
+    scanf("%lf", &a);
     return a;   
 }

@@ -3,17 +3,19 @@ extern "S" func testGetDouble() -> double;
 
 func main()
 {
-    double a = 2;
+    double a = 2.0;
     double b;
     double c;
 
-    b = 9;
+    b = 9.0;
 
     c = a + b;
     testPrintDouble(c);
 
     a = testGetDouble();
     b = testGetDouble();
+    testPrintDouble(a);
+    testPrintDouble(b);
     // c = a & b;
     // testPrintInt(c);
     // c = a | b;
