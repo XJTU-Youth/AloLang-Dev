@@ -6,11 +6,12 @@
  */
 
 #include "BoolExprAST.h"
+#include "TypeAST.h"
 
 BoolExprAST::BoolExprAST(CompileUnit *unit, bool val) : ExprAST(unit)
 {
     this->val = val;
-    type      = "bool";
+    type.push_back(new TypeAST(unit, "bool"));
 }
 
 BoolExprAST::~BoolExprAST()
@@ -18,9 +19,11 @@ BoolExprAST::~BoolExprAST()
     // TODO Auto-generated destructor stub
 }
 
-llvm::Value *BoolExprAST::Codegen(llvm::IRBuilder<> *builder)
+std::vector<llvm::Value *> BoolExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
-    llvm::IntegerType *type = llvm::IntegerType::get(*unit->context, 1);
-    llvm::ConstantInt *res  = llvm::ConstantInt::get(type, val, true);
-    return res;
+    std::vector<llvm::Value *> result;
+    llvm::IntegerType *        type = llvm::IntegerType::get(*unit->context, 1);
+    llvm::ConstantInt *        res  = llvm::ConstantInt::get(type, val, true);
+    result.push_back(res);
+    return result;
 }

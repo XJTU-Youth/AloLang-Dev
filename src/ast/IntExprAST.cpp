@@ -6,13 +6,12 @@
  */
 
 #include "IntExprAST.h"
-#include <llvm/IR/Constants.h>
-#include <llvm/IR/DerivedTypes.h>
+#include "TypeAST.h"
 
 IntExprAST::IntExprAST(CompileUnit *unit, long long val) : ExprAST(unit)
 {
-    this->val  = val;
-    this->type = "int";
+    this->val = val;
+    this->type.push_back(new TypeAST(unit, "int"));
 }
 
 IntExprAST::~IntExprAST()
@@ -20,9 +19,11 @@ IntExprAST::~IntExprAST()
     // TODO Auto-generated destructor stub
 }
 
-llvm::Value *IntExprAST::Codegen(llvm::IRBuilder<> *builder)
+std::vector<llvm::Value *> IntExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
-    llvm::IntegerType *type = llvm::IntegerType::get(*unit->context, 64);
-    llvm::ConstantInt *res  = llvm::ConstantInt::get(type, val, true);
-    return res;
+    std::vector<llvm::Value *> result;
+    llvm::IntegerType *rtype = llvm::IntegerType::get(*unit->context, 64);
+    llvm::ConstantInt *res   = llvm::ConstantInt::get(rtype, val, true);
+    result.push_back(res);
+    return result;
 }

@@ -16,11 +16,15 @@ class BinaryExprAST : public ExprAST
     BinaryExprAST(CompileUnit *unit, std::string binOP, ExprAST *LHS,
                   ExprAST *RHS);
     virtual ~BinaryExprAST();
-    llvm::Value *Codegen(llvm::IRBuilder<> *builder);
+    std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
 
     std::string binOP;
     ExprAST *   LHS;
     ExprAST *   RHS;
+
+  private:
+    llvm::Value *processInnerBinaryOperator(llvm::Value *L, llvm::Value *R,
+                                            llvm::IRBuilder<> *builder);
 };
 
 #endif /* COMPILER_AST_BINARYEXPRAST_H_ */

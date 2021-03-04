@@ -18,11 +18,11 @@ class IfExprAST : public ExprAST
               CodeBlockAST *thenBlock, CodeBlockAST *elseBlock);
     virtual ~IfExprAST();
     static IfExprAST *ParseIfExpr(CompileUnit *unit, CodeBlockAST *parent);
-    llvm::Value *     Codegen(llvm::IRBuilder<> *builder);
-    ExprAST *         condition;
-    CodeBlockAST *    thenBlock;
-    CodeBlockAST *    elseBlock;
-    CodeBlockAST *    parent;
+    std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
+    ExprAST *                  condition;
+    CodeBlockAST *             thenBlock;
+    CodeBlockAST *             elseBlock;
+    CodeBlockAST *             parent;
 };
 
 #endif /* SRC_AST_IFEXPRAST_H_ */

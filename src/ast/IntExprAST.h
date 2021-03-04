@@ -15,7 +15,7 @@ class IntExprAST : public ExprAST
   public:
     IntExprAST(CompileUnit *unit, long long val);
     virtual ~IntExprAST();
-    llvm::Value *Codegen(llvm::IRBuilder<> *builder);
+    std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
 
     long long val;
 };

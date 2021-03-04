@@ -101,12 +101,12 @@ int main(int argc, char *argv[])
                 }
                 std::string buff; //源码
                 std::getline(fin, buff, char(EOF));
-                std::string preProcessed;
+                std::vector<Tline> preProcessed;
                 fin.close();
                 // std::string header = "%import types\n";
                 // buff = header + buff;
                 try {
-                    preProcessed = preProcess(buff, 0);
+                    preProcessed = preProcess(buff, 0, input_file_name);
                     // cout << preProcessed;
                     // todo:这行代码写的极不规范，尽快修改
                     CompileUnit(input_file_name, preProcessed).compile();

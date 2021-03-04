@@ -72,7 +72,7 @@ std::string demangle(const std::string &line)
         CompileError e("some error happened"); // todo:错误信息
         throw e;
     }
-    skipSpace(words, i);
+
     if (words[i] != ")") {
         //有参数
         while (true) {
@@ -85,7 +85,8 @@ std::string demangle(const std::string &line)
             }
             if (words[i] != ",") {
                 // TODO:异常处理（逗号）
-                CompileError e("some error happened (comma)"); // todo:错误信息
+                CompileError e("Expected comma got " +
+                               words[i]); // todo:错误信息
                 throw e;
             }
         }

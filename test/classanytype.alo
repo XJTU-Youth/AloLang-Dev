@@ -1,0 +1,33 @@
+extern func testPrintInt(int i);
+
+class node<A> {
+    node<A>* pred;
+    node<A>* succ;
+    A data;
+}
+
+func main() {
+    node<int> test1;
+    node<int> test2;
+    node<int> test3;
+
+    test1.pred = &test2;
+    test1.succ = &test3;
+
+    test1.data = 1;
+    test1.pred->data = 2;
+    test1.succ->data = 3;
+
+    int* testint1 = &(test1.data);
+
+    testPrintInt(test1.data);
+    testPrintInt(test2.data);
+    testPrintInt(test3.data);
+    testPrintInt((*(test1.succ)).data);
+    testPrintInt((*(test1.pred)).data);
+    testPrintInt(*testint1);
+
+    if (true) 
+        testPrintInt(114514);
+
+}

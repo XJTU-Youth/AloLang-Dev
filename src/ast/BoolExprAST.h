@@ -15,8 +15,8 @@ class BoolExprAST : public ExprAST
   public:
     BoolExprAST(CompileUnit *unit, bool val);
     virtual ~BoolExprAST();
-    llvm::Value *Codegen(llvm::IRBuilder<> *builder);
-    bool         val;
+    std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
+    bool                       val;
 };
 
 #endif /* SRC_AST_BOOLEXPRAST_H_ */

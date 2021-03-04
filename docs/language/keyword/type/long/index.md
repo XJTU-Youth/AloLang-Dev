@@ -1,3 +1,3 @@
-# alolang关键字:long
+# long
 
 * 用于对long类型的声明

@@ -6,11 +6,38 @@
  */
 
 #include "TypeAST.h"
+#include "../CompileError.hpp"
+#include "ClassAST.h"
 #include "CompileUnit.h"
 
-TypeAST::TypeAST(CompileUnit *unit, std::string name) : BaseAST(unit)
+TypeAST::TypeAST(CompileUnit *unit, std::string baseClass,
+                 std::vector<TypeAST *> genericTypes)
+    : BaseAST(unit)
 {
-    this->name = name;
+    this->baseClass    = baseClass;
+    this->genericTypes = genericTypes;
+    this->pointee      = nullptr;
+    initName();
+    //生成name
+}
+
+void TypeAST::initName()
+{
+    this->name = baseClass;
+    if (genericTypes.size() != 0) {
+        this->name += "<";
+        for (unsigned int i = 0; i < genericTypes.size() - 1; i++) {
+            this->name += genericTypes[i]->name + ",";
+        }
+        this->name += genericTypes[genericTypes.size() - 1]->name + ">";
+    }
+}
+
+TypeAST::TypeAST(CompileUnit *unit, TypeAST *pointee) : BaseAST(unit)
+{
+    this->pointee = pointee;
+    //生成name
+    this->name = pointee->name + "*";
 }
 
 TypeAST::~TypeAST()
@@ -19,19 +46,53 @@ TypeAST::~TypeAST()
 }
 llvm::Type *TypeAST::Codegen()
 {
-    //内置类型处理
-    if (name == "int") {
-        return llvm::Type::getInt64Ty(*unit->context);
-    } else if (name == "bool") {
-        return llvm::Type::getInt1Ty(*unit->context);
-    } else {
-        //用户定义的类型
-        llvm::StructType *llvm_S =
-            llvm::StructType::create(*unit->context, name);
-        std::vector<llvm::Type *> members;
-        for (TypeAST *member : innerType) {
-            members.push_back(member->Codegen());
+    if (pointee == nullptr) {
+        //非指针类型
+        auto typeAST = unit->types.find(name);
+        if (typeAST == unit->types.end()) {
+            //没有找到实例化过的泛型
+            auto classAST = unit->classes.find(baseClass);
+            if (classAST == unit->classes.end()) {
+                CompileError e("can't find class:" + baseClass);
+                throw e;
+            } else {
+                llvm::Type *classType = classAST->second->Codegen(genericTypes);
+                return classType;
+                //构建泛型
+            }
+        } else {
+            return typeAST->second;
         }
-        return llvm_S;
+    } else {
+        return llvm::PointerType::get(pointee->Codegen(), 0);
     }
+}
+
+TypeAST *TypeAST::ParseType(CompileUnit *unit)
+{
+    Token token = *unit->icurTok;
+    if (token.type != tok_identifier) {
+        CompileError e("Expected type but got " + token.dump(), token.file,
+                       token.lineno);
+        throw e;
+    }
+    std::string            baseClass = token.tokenValue;
+    std::vector<TypeAST *> genericTypes;
+
+    token = unit->next_tok();
+    if (token.type == tok_syntax && token.tokenValue == "<") {
+
+        unit->next_tok();
+        while (!(token.type == tok_syntax && token.tokenValue == ">")) {
+            genericTypes.push_back(TypeAST::ParseType(unit));
+            token = *unit->icurTok;
+        }
+        token = unit->next_tok();
+    }
+    TypeAST *result = new TypeAST(unit, baseClass, genericTypes);
+    while (token.type == tok_syntax && token.tokenValue == "*") {
+        result = new TypeAST(unit, result);
+        token  = unit->next_tok();
+    }
+    return result;
 }

@@ -2,7 +2,7 @@
     "name": "alolang",
     "displayName": "AloLang",
     "description": "Syntax Highlight for AloLang",
-    "version": "0.0.3",
+    "version": "0.0.6",
     "publisher": "AloLangDevTeam",
     "license": "GPLv3",
     "repository": {
@@ -10,7 +10,7 @@
         "url": "https://gitee.com/alolang-dev-team/AloLang-Dev.git"
     },
     "engines": {
-        "vscode": "^1.53.0"
+        "vscode": "^1.50.0"
     },
     "categories": [
         "Programming Languages"

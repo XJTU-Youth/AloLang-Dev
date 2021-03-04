@@ -1,4 +1,4 @@
-# alolang关键字:false
+# false
 
 * 布尔字面量
 

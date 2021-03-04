@@ -31,6 +31,14 @@ Waiting to be reported.
 
 ## Release Notes
 
+### Dev Beta 0.0.5
+
+- Added support for class
+
+### Dev Beta 0.0.4
+
+- Added support for extern behavior
+
 ### Dev Beta 0.0.3
 
 - Bugfix
