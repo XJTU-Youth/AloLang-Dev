@@ -56,7 +56,8 @@ void initTokPrecedence()
 
     BinopPrecedence[".*"] = 12;
 
-    BinopPrecedence["."] = 14;
+    BinopPrecedence["."]  = 14;
+    BinopPrecedence["->"] = 14;
 
     LUnaryopPrecedence["*"] = 13;
     LUnaryopPrecedence["!"] = 13;
@@ -206,7 +207,8 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
         return ReturnExprAST::ParseReturnExprAST(unit, codeblock);
     }
     default: {
-        CompileError e("不期待的token：" + token.dump(),token.file,token.lineno);
+        CompileError e("不期待的token：" + token.dump(), token.file,
+                       token.lineno);
         throw e;
     }
     }
@@ -254,7 +256,14 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
             cExpr          = RHS;
         } else if (token.tokenValue == ".") {
             if (VariableExprAST *v = dynamic_cast<VariableExprAST *>(RHS)) {
-                LHS = new MemberExprAST(unit, LHS, v->idName);
+                LHS = new MemberExprAST(unit, LHS, v->idName, false);
+            } else {
+                CompileError e("成员方法调用未实现");
+                throw e;
+            }
+        } else if (token.tokenValue == "->") {
+            if (VariableExprAST *v = dynamic_cast<VariableExprAST *>(RHS)) {
+                LHS = new MemberExprAST(unit, LHS, v->idName, true);
             } else {
                 CompileError e("成员方法调用未实现");
                 throw e;

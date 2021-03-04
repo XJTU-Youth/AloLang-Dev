@@ -80,7 +80,7 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
 
     token = *(unit->icurTok); // -> or ; or {
     std::vector<TypeAST *> returnTypes;
-    if (token.type == tok_return_type) {
+    if (token.type == tok_syntax && token.tokenValue == "->") {
         unit->next_tok();
         int bc = 0;
         while (true) {
@@ -107,13 +107,14 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
     } else {
         if (token.tokenValue == "{") {
             if (!hasBody) {
-                CompileError e("Unexpected function body",token.file,token.lineno);
+                CompileError e("Unexpected function body", token.file,
+                               token.lineno);
                 throw e;
             }
         }
         if (token.tokenValue == ";") {
             if (hasBody) {
-                CompileError e("Unexpected ;",token.file,token.lineno);
+                CompileError e("Unexpected ;", token.file, token.lineno);
                 throw e;
             }
         }

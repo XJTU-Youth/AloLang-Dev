@@ -104,6 +104,7 @@ std::vector<llvm::Value *> BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
             ExprAST *              curAST = LHS[i];
             std::vector<ExprAST *> chain;
             llvm::Value *          pointer;
+            bool                   pointerFlag;
             if (UnaryExprAST *v = dynamic_cast<UnaryExprAST *>(curAST)) {
                 if (v->op != "*") {
                     CompileError e("Operator " + v->op +
@@ -117,20 +118,35 @@ std::vector<llvm::Value *> BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
                     chain.push_back(curAST);
                     if (MemberExprAST *v =
                             dynamic_cast<MemberExprAST *>(curAST)) {
+                        if (v->isPointer) {
+                            pointerFlag = true;
+                            chain.push_back(v->LHS);
+                            break;
+                        }
                         curAST = v->LHS;
                     } else if (VariableExprAST *v =
                                    dynamic_cast<VariableExprAST *>(curAST)) {
+                        pointerFlag = false;
                         break;
                     } else {
                         CompileError e("Unknown AST.");
                         throw e;
                     }
                 }
-                VariableExprAST *start =
-                    dynamic_cast<VariableExprAST *>(chain[chain.size() - 1]);
-                pointer = start->getAlloca();
+                std::string curType, startType;
+                if (pointerFlag) {
+                    ExprAST *start = chain[chain.size() - 1];
+                    pointer        = start->Codegen(builder)[0];
+                    curType        = start->type[0]->pointee->baseClass;
+                    startType      = start->type[0]->pointee->name;
+                } else {
+                    VariableExprAST *start = dynamic_cast<VariableExprAST *>(
+                        chain[chain.size() - 1]);
+                    pointer   = start->getAlloca();
+                    curType   = start->type[0]->baseClass;
+                    startType = start->type[0]->name;
+                }
                 std::vector<unsigned int> idx;
-                std::string               curType = start->type[0]->baseClass;
                 for (int i = chain.size() - 2; i >= 0; i--) {
                     MemberExprAST *v = dynamic_cast<MemberExprAST *>(chain[i]);
                     std::string    member    = v->member;
@@ -154,8 +170,10 @@ std::vector<llvm::Value *> BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
                     idxl.push_back(llvm::ConstantInt::get(itype, pid, true));
                 }
                 if (idx.size() != 0) {
-                    pointer = builder->CreateGEP(start->type[0]->Codegen(),
-                                                 pointer, idxl);
+                    auto typeAST = unit->types.find(startType);
+
+                    pointer =
+                        builder->CreateGEP(typeAST->second, pointer, idxl);
                 }
             }
 

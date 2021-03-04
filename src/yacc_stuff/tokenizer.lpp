@@ -32,7 +32,6 @@ case|switch                             token = tok_key_switch;     return token
 
 class                                   token = tok_key_class;      return token;
 
-->                                      token = tok_return_type;    return token;
 fun                                     token = tok_fun;            return token;
 func                                    token = tok_fun;            return token;
 extern                                  token = tok_extern;         return token;
@@ -46,7 +45,7 @@ return                                  token = tok_return;         return token
 [1-9][0-9.]*                            token = tok_number;         return token;
 0                                       token = tok_number;         return token;
 
-
+->                                      token = tok_syntax;         return token;
 ==                                      token = tok_syntax;         return token;
 !=                                      token = tok_syntax;         return token;
 \>=                                     token = tok_syntax;         return token;

@@ -11,11 +11,12 @@
 #include "TypeAST.h"
 
 MemberExprAST::MemberExprAST(CompileUnit *unit, ExprAST *LHS,
-                             std::string member)
+                             std::string member, bool isPointer)
     : ExprAST(unit)
 {
-    this->LHS    = LHS;
-    this->member = member;
+    this->LHS       = LHS;
+    this->member    = member;
+    this->isPointer = isPointer;
 }
 
 MemberExprAST::~MemberExprAST()
@@ -23,22 +24,12 @@ MemberExprAST::~MemberExprAST()
     // TODO Auto-generated destructor stub
 }
 
-MemberExprAST *MemberExprAST::ParseMemberExprAST(CompileUnit * unit,
-                                                 CodeBlockAST *codeblock,
-                                                 ExprAST *     LHS)
-{
-    Token token = unit->next_tok();
-    if (token.type != tok_identifier) {
-        CompileError e("Expected identifier",token.file,token.lineno);
-        throw e;
-    }
-    MemberExprAST *result = new MemberExprAST(unit, LHS, token.tokenValue);
-    unit->next_tok();
-    return result;
-}
-
 std::vector<llvm::Value *> MemberExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
+    if (isPointer) {
+        CompileError e("未实现.");
+        throw e;
+    }
     std::vector<llvm::Value *> result;
     std::vector<llvm::Value *> bases = LHS->Codegen(builder);
     if (bases.size() != 1) {

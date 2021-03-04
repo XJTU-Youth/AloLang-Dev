@@ -19,7 +19,6 @@ enum TokenType {
     tok_number,
     tok_type,
     tok_return,
-    tok_return_type,
     tok_syntax,
     tok_str,
     tok_key_op,

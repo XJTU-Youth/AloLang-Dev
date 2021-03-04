@@ -13,14 +13,13 @@
 class MemberExprAST : public ExprAST
 {
   public:
-    MemberExprAST(CompileUnit *unit, ExprAST *LHS, std::string member);
+    MemberExprAST(CompileUnit *unit, ExprAST *LHS, std::string member,
+                  bool isPointer);
     virtual ~MemberExprAST();
     std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
-    static MemberExprAST *     ParseMemberExprAST(CompileUnit * unit,
-                                                  CodeBlockAST *codeblock,
-                                                  ExprAST *     LHS);
     ExprAST *                  LHS;
     std::string                member;
+    bool                       isPointer;
 };
 
 #endif /* SRC_AST_MEMBEREXPRAST_H_ */

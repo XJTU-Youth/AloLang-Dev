@@ -51,9 +51,6 @@ std::string Token::dump()
     case tok_return:
         typeStr = "tok_return";
         break;
-    case tok_return_type:
-        typeStr = "tok_return_type";
-        break;
     case tok_syntax:
         typeStr = "tok_syntax";
         break;
@@ -102,7 +99,8 @@ std::string Token::dump()
     default:
         typeStr = "not defined";
     }
-    ss << std::right << std::setw(25) << file << ":" << std::left << std::setw(6) << lineno
-       << " type:" << std::setw(16) << typeStr << " data:" << tokenValue;
+    ss << std::right << std::setw(25) << file << ":" << std::left
+       << std::setw(6) << lineno << " type:" << std::setw(16) << typeStr
+       << " data:" << tokenValue;
     return ss.str();
 }
