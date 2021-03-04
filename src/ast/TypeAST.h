@@ -17,7 +17,9 @@ class TypeAST : public BaseAST
             std::vector<TypeAST *> genericTypes = std::vector<TypeAST *>());
     TypeAST(CompileUnit *unit, TypeAST *pointee);
     virtual ~TypeAST();
-    static TypeAST *       ParseType(CompileUnit *unit);
+    static TypeAST *ParseType(CompileUnit *unit);
+    void            initName();
+
     llvm::Type *           Codegen();
     std::string            name;
     std::string            baseClass;

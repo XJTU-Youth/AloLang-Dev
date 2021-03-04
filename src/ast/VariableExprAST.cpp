@@ -41,6 +41,9 @@ llvm::Value *VariableExprAST::getAlloca()
         } else {
             alloca = varAST->second.second;
             type.push_back(varAST->second.first);
+            if (varAST->second.first->name == "") {
+                std::cout << "fuck" << std::endl;
+            }
             return alloca;
         }
     }

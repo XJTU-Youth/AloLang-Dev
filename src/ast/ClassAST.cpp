@@ -28,7 +28,7 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
 {
     Token token = unit->next_tok();
     if (token.type != tok_identifier) {
-        CompileError e("Expected identifier",token.file,token.lineno);
+        CompileError e("Expected identifier", token.file, token.lineno);
         throw e;
     }
     std::string              className = token.tokenValue;
@@ -48,7 +48,7 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
         token = unit->next_tok();
     }
     if (token.type != tok_syntax || token.tokenValue != "{") {
-        CompileError e("Expected {",token.file,token.lineno);
+        CompileError e("Expected {", token.file, token.lineno);
         throw e;
     }
     std::map<std::string, VariableDefExprAST *> members;
@@ -71,7 +71,16 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
 TypeAST *ClassAST::getRealType(TypeAST *              type,
                                std::vector<TypeAST *> igenericTypes)
 {
+    if (type->pointee != nullptr) {
+        type->pointee = getRealType(type->pointee, igenericTypes);
+    }
+    for (unsigned int i = 0; i < type->genericTypes.size(); i++) {
+        type->genericTypes[i] =
+            getRealType(type->genericTypes[i], igenericTypes);
+    }
     auto it = find(genericTypes.begin(), genericTypes.end(), type->name);
+
+    type->initName();
 
     if (it != genericTypes.end()) {
         //泛型
@@ -88,8 +97,18 @@ llvm::Type *ClassAST::Codegen(std::vector<TypeAST *> igenericTypes)
         CompileError e("generic isn't equal");
         throw e;
     }
+    std::string name = className;
+    if (igenericTypes.size() != 0) {
+        name += "<";
+        for (unsigned int i = 0; i < igenericTypes.size() - 1; i++) {
+            name += igenericTypes[i]->name + ",";
+        }
+        name += igenericTypes[igenericTypes.size() - 1]->name + ">";
+    }
+
     llvm::StructType *llvm_S =
         llvm::StructType::create(*unit->context, className);
+    unit->types.insert(std::pair<std::string, llvm::Type *>(name, llvm_S));
     std::vector<llvm::Type *>                             sMembers;
     std::map<std::string, VariableDefExprAST *>::iterator member_iter;
     for (member_iter = members.begin(); member_iter != members.end();
@@ -101,5 +120,6 @@ llvm::Type *ClassAST::Codegen(std::vector<TypeAST *> igenericTypes)
         sMembers.push_back(mType->Codegen());
     }
     llvm_S->setBody(sMembers);
+
     return llvm_S;
 }

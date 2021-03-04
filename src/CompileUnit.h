@@ -47,7 +47,6 @@ class CompileUnit
     std::map<std::string, llvm::Type *> types;        // Codgen用
     std::map<std::string, std::pair<TypeAST *, llvm::Value *>>
         globalVariablesValue; // Codgen用
-    // std::map<std::string, >
 };
 
 #endif /* COMPILER_COMPILEUNIT_H_ */

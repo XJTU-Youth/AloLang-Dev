@@ -17,7 +17,12 @@ TypeAST::TypeAST(CompileUnit *unit, std::string baseClass,
     this->baseClass    = baseClass;
     this->genericTypes = genericTypes;
     this->pointee      = nullptr;
+    initName();
     //生成name
+}
+
+void TypeAST::initName()
+{
     this->name = baseClass;
     if (genericTypes.size() != 0) {
         this->name += "<";
@@ -52,8 +57,6 @@ llvm::Type *TypeAST::Codegen()
                 throw e;
             } else {
                 llvm::Type *classType = classAST->second->Codegen(genericTypes);
-                unit->types.insert(
-                    std::pair<std::string, llvm::Type *>(name, classType));
                 return classType;
                 //构建泛型
             }
@@ -69,7 +72,8 @@ TypeAST *TypeAST::ParseType(CompileUnit *unit)
 {
     Token token = *unit->icurTok;
     if (token.type != tok_identifier) {
-        CompileError e("Expected type but got " + token.dump(),token.file,token.lineno);
+        CompileError e("Expected type but got " + token.dump(), token.file,
+                       token.lineno);
         throw e;
     }
     std::string            baseClass = token.tokenValue;
