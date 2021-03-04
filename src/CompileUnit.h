@@ -30,10 +30,7 @@ class CompileUnit
     Token next_tok();
     void  build();
 
-    // FlexLexer *                                 lexer;
-    std::string name;
-    // std::string source;
-    // std::istringstream                          sis;
+    std::string                                 name;
     std::vector<Tline>                          srclines;
     llvm::LLVMContext *                         context;
     llvm::Module *                              module;
