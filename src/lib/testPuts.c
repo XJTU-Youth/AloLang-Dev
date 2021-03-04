@@ -19,3 +19,10 @@ extern int _alolang_10testGetInt()
     scanf("%d", &a);
     return a;
 }
+
+extern double _alolang_13testGetDouble()
+{
+    double a;
+    scanf("%lf", &a);
+    return a;   
+}
