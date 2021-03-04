@@ -31,10 +31,11 @@ CodeBlockAST::ParseCodeBlock(CompileUnit *unit, std::string name,
                              CodeBlockAST *                          parent,
                              const std::vector<VariableDefExprAST *> args)
 {
-    Token token = *unit->icurTok;
+    Token         token = *unit->icurTok;
+    CodeBlockAST *codeblock =
+        new CodeBlockAST(unit, std::vector<ExprAST *>(), name, parent);
+
     if (token.type == tok_syntax && token.tokenValue == "{") {
-        CodeBlockAST *codeblock =
-            new CodeBlockAST(unit, std::vector<ExprAST *>(), name, parent);
         std::vector<ExprAST *> &body = codeblock->body;
         for (VariableDefExprAST *argDef : args) {
             argDef->codeblock = codeblock;
@@ -55,11 +56,16 @@ CodeBlockAST::ParseCodeBlock(CompileUnit *unit, std::string name,
             }
             body.push_back(ExprAST::ParseExpression(unit, codeblock, true));
         }
-        return codeblock;
     } else {
-        CompileError e("Expected codeblock",token.file,token.lineno);
-        throw e;
+        std::vector<ExprAST *> &body = codeblock->body;
+        for (VariableDefExprAST *argDef : args) {
+            argDef->codeblock = codeblock;
+            body.push_back(argDef);
+        }
+        //解析块内语句
+        body.push_back(ExprAST::ParseExpression(unit, codeblock, true));
     }
+    return codeblock;
 }
 
 llvm::BasicBlock *CodeBlockAST::Codegen(llvm::Function *function)
