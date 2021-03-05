@@ -7,15 +7,18 @@
 
 #include "ClassAST.h"
 #include "../CompileError.hpp"
+#include "FunctionAST.h"
 #include "TypeAST.h"
 
 ClassAST::ClassAST(CompileUnit *unit, const std::string &className,
                    std::map<std::string, VariableDefExprAST *> members,
+                   std::map<std::string, FunctionAST *>        functions,
                    std::vector<std::string>                    genericTypes)
     : BaseAST(unit)
 {
     this->className    = className;
     this->members      = members;
+    this->functions    = functions;
     this->genericTypes = genericTypes;
 }
 
@@ -51,23 +54,32 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
         CompileError e("Expected {", token.file, token.lineno);
         throw e;
     }
-    std::map<std::string, VariableDefExprAST *> members;
+
+    ClassAST *classAST = new ClassAST(
+        unit, className, std::map<std::string, VariableDefExprAST *>(),
+        std::map<std::string, FunctionAST *>(), genericTypes);
+    unit->next_tok();
     while (true) {
-        token = unit->next_tok();
         //解析成员方法，成员变量
+        token = *(unit->icurTok);
         if (token.type == tok_syntax && token.tokenValue == "}") {
             break;
         }
         if (token.type == tok_fun) {
+            FunctionAST *funDef = FunctionAST::ParseFunction(unit, classAST);
+            classAST->functions.insert(std::pair<std::string, FunctionAST *>(
+                funDef->getDemangledName(), funDef));
+
         } else {
             VariableDefExprAST *memberDef =
                 VariableDefExprAST::ParseVar(unit, nullptr);
-            members.insert(std::pair<std::string, VariableDefExprAST *>(
-                memberDef->idName, memberDef));
+            classAST->members.insert(
+                std::pair<std::string, VariableDefExprAST *>(memberDef->idName,
+                                                             memberDef));
+            unit->next_tok();
         }
     }
-    token              = unit->next_tok();
-    ClassAST *classAST = new ClassAST(unit, className, members, genericTypes);
+    token = unit->next_tok();
     return classAST;
 }
 
@@ -123,6 +135,12 @@ llvm::Type *ClassAST::Codegen(std::vector<TypeAST *> igenericTypes)
         sMembers.push_back(mType->Codegen());
     }
     llvm_S->setBody(sMembers);
+
+    std::map<std::string, FunctionAST *>::iterator function_iter;
+    for (function_iter = functions.begin(); function_iter != functions.end();
+         function_iter++) {
+        function_iter->second->Codegen();
+    }
 
     return llvm_S;
 }

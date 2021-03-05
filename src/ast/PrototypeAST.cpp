@@ -8,26 +8,32 @@
 #include "PrototypeAST.h"
 #include "../CompileError.hpp"
 #include "../utils.h"
+#include "ClassAST.h"
 #include "TypeAST.h"
-
 #include <iostream>
 
 PrototypeAST::PrototypeAST(
     CompileUnit *unit, const std::string &name,
     const std::vector<std::pair<TypeAST *, std::string>> &args,
-    const std::vector<TypeAST *> &                        returnTypes)
+    const std::vector<TypeAST *> &returnTypes, ClassAST *parentClass)
     : BaseAST(unit)
 {
     this->name           = name;
     this->args           = args;
     this->returnDirectly = false;
     this->returnTypes    = returnTypes;
+    this->parentClass    = parentClass;
     std::vector<TypeAST *> argStr;
     for (std::pair<TypeAST *, std::string> pair : args) {
         argStr.push_back(pair.first);
     }
     if (name != "main") {
-        this->demangledName = demangle(name, argStr);
+        if (parentClass == nullptr) {
+            this->demangledName = demangle(name, argStr);
+        } else {
+            this->demangledName =
+                demangle(name, argStr, parentClass->className);
+        }
     } else {
         this->demangledName = "main";
     }
@@ -38,7 +44,8 @@ PrototypeAST::~PrototypeAST()
     // TODO Auto-generated destructor stub
 }
 
-PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
+PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody,
+                                           ClassAST *parentClass)
 {
     std::vector<std::pair<TypeAST *, std::string>> args;
     Token                                          token = unit->next_tok();
@@ -119,10 +126,10 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
             }
         }
     }
-    return new PrototypeAST(unit, FnName, args, returnTypes);
+    return new PrototypeAST(unit, FnName, args, returnTypes, parentClass);
 }
 
-llvm::Function *PrototypeAST::Codegen()
+llvm::Function *PrototypeAST::Codegen(std::vector<TypeAST *> igenericTypes)
 {
     std::vector<llvm::Type *> llvmArgs;
     for (int i = 0; i < args.size(); i++) {

@@ -18,10 +18,11 @@ class CodeBlockAST : public BaseAST
 {
   public:
     CodeBlockAST(CompileUnit *unit, std::vector<ExprAST *> exprs,
-                 std::string name, CodeBlockAST *parent = nullptr);
+                 std::string name, FunctionAST *baseFunction,
+                 CodeBlockAST *parent = nullptr);
     virtual ~CodeBlockAST();
     static CodeBlockAST *
-                      ParseCodeBlock(CompileUnit *unit, std::string name,
+                      ParseCodeBlock(CompileUnit *unit, std::string name,FunctionAST *baseFunction,
                                      CodeBlockAST *                          parent = nullptr,
                                      const std::vector<VariableDefExprAST *> args =
                                          std::vector<VariableDefExprAST *>());
@@ -34,6 +35,7 @@ class CodeBlockAST : public BaseAST
     std::string       name;
     CodeBlockAST *    parent;
     llvm::BasicBlock *endBB;
+    FunctionAST *     baseFunction;
 };
 
 #endif /* COMPILER_AST_CODEBLOCKAST_H_ */

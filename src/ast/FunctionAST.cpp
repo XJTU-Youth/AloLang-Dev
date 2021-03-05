@@ -16,11 +16,12 @@
 #include <llvm/IR/IRBuilder.h>
 
 FunctionAST::FunctionAST(CompileUnit *unit, PrototypeAST *proto,
-                         CodeBlockAST *body)
+                         CodeBlockAST *body, ClassAST *parentClass)
     : BaseAST(unit)
 {
-    this->proto = proto;
-    this->body  = body;
+    this->proto       = proto;
+    this->body        = body;
+    this->parentClass = parentClass;
 }
 
 FunctionAST::~FunctionAST()
@@ -28,7 +29,7 @@ FunctionAST::~FunctionAST()
     // TODO Auto-generated destructor stub
 }
 
-llvm::Function *FunctionAST::Codegen()
+llvm::Function *FunctionAST::Codegen(std::vector<TypeAST *> igenericTypes)
 {
     llvm::Function *  func = proto->Codegen();
     llvm::BasicBlock *bb   = body->Codegen(func);
@@ -37,9 +38,11 @@ llvm::Function *FunctionAST::Codegen()
     return func;
 }
 
-FunctionAST *FunctionAST::ParseFunction(CompileUnit *unit)
+FunctionAST *FunctionAST::ParseFunction(CompileUnit *unit,
+                                        ClassAST *   parentClass)
 {
-    PrototypeAST *protoType = PrototypeAST::ParsePrototype(unit, true);
+    PrototypeAST *protoType =
+        PrototypeAST::ParsePrototype(unit, true, parentClass);
     std::cout << std::left << std::setw(35)
               << "Function definition found:" << protoType->name << std::endl;
     std::vector<VariableDefExprAST *> args;
@@ -48,8 +51,13 @@ FunctionAST *FunctionAST::ParseFunction(CompileUnit *unit)
         args.push_back(new VariableDefExprAST(unit, nullptr, arg.second,
                                               arg.first, nullptr, i));
     }
+    FunctionAST *result =
+        new FunctionAST(unit, protoType, nullptr, parentClass);
+
     CodeBlockAST *body =
-        CodeBlockAST::ParseCodeBlock(unit, "entry", nullptr, args);
-    return new FunctionAST(unit, protoType, body);
+        CodeBlockAST::ParseCodeBlock(unit, "entry", result, nullptr, args);
+    result->body = body;
+
+    return result;
 }
 std::string FunctionAST::getDemangledName() { return proto->demangledName; }

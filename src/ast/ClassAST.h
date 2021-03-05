@@ -16,6 +16,7 @@ class ClassAST : public BaseAST
   public:
     ClassAST(CompileUnit *unit, const std::string &className,
              std::map<std::string, VariableDefExprAST *> members,
+             std::map<std::string, FunctionAST *>        functions,
              std::vector<std::string>                    genericTypes);
     virtual ~ClassAST();
     llvm::Type *Codegen(std::vector<TypeAST *> genericTypes);

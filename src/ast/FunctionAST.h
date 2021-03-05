@@ -17,14 +17,18 @@
 class FunctionAST : public BaseAST
 {
   public:
-    FunctionAST(CompileUnit *unit, PrototypeAST *proto, CodeBlockAST *body);
+    FunctionAST(CompileUnit *unit, PrototypeAST *proto, CodeBlockAST *body,
+                ClassAST *parentClass = nullptr);
     virtual ~FunctionAST();
-    llvm::Function *Codegen();
-    std::string     getDemangledName();
-    PrototypeAST *  proto;
+    llvm::Function *
+    Codegen(std::vector<TypeAST *> igenericTypes = std::vector<TypeAST *>());
+    std::string   getDemangledName();
+    PrototypeAST *proto;
+    ClassAST *    parentClass;
 
     CodeBlockAST *      body;
-    static FunctionAST *ParseFunction(CompileUnit *unit);
+    static FunctionAST *ParseFunction(CompileUnit *unit,
+                                      ClassAST *   parentClass = nullptr);
 };
 
 #endif /* COMPILER_AST_FUNCTIONAST_H_ */

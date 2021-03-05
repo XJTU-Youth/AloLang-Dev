@@ -11,14 +11,16 @@
 #include <iostream>
 
 CodeBlockAST::CodeBlockAST(CompileUnit *unit, std::vector<ExprAST *> body,
-                           std::string name, CodeBlockAST *parent)
+                           std::string name, FunctionAST *baseFunction,
+                           CodeBlockAST *parent)
     : BaseAST(unit)
 {
-    this->builder = new llvm::IRBuilder<>(*unit->context);
-    this->body    = body;
-    this->name    = name;
-    this->parent  = parent;
-    this->endBB   = nullptr;
+    this->builder      = new llvm::IRBuilder<>(*unit->context);
+    this->body         = body;
+    this->name         = name;
+    this->parent       = parent;
+    this->endBB        = nullptr;
+    this->baseFunction = baseFunction;
 }
 
 CodeBlockAST::~CodeBlockAST()
@@ -28,12 +30,12 @@ CodeBlockAST::~CodeBlockAST()
 
 CodeBlockAST *
 CodeBlockAST::ParseCodeBlock(CompileUnit *unit, std::string name,
-                             CodeBlockAST *                          parent,
+                             FunctionAST *baseFunction, CodeBlockAST *parent,
                              const std::vector<VariableDefExprAST *> args)
 {
-    Token         token = *unit->icurTok;
-    CodeBlockAST *codeblock =
-        new CodeBlockAST(unit, std::vector<ExprAST *>(), name, parent);
+    Token         token     = *unit->icurTok;
+    CodeBlockAST *codeblock = new CodeBlockAST(unit, std::vector<ExprAST *>(),
+                                               name, baseFunction, parent);
 
     if (token.type == tok_syntax && token.tokenValue == "{") {
         std::vector<ExprAST *> &body = codeblock->body;
