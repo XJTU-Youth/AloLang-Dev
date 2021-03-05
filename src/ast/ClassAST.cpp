@@ -58,10 +58,13 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
         if (token.type == tok_syntax && token.tokenValue == "}") {
             break;
         }
-        VariableDefExprAST *memberDef =
-            VariableDefExprAST::ParseVar(unit, nullptr);
-        members.insert(std::pair<std::string, VariableDefExprAST *>(
-            memberDef->idName, memberDef));
+        if (token.type == tok_fun) {
+        } else {
+            VariableDefExprAST *memberDef =
+                VariableDefExprAST::ParseVar(unit, nullptr);
+            members.insert(std::pair<std::string, VariableDefExprAST *>(
+                memberDef->idName, memberDef));
+        }
     }
     token              = unit->next_tok();
     ClassAST *classAST = new ClassAST(unit, className, members, genericTypes);

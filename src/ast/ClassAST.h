@@ -22,6 +22,7 @@ class ClassAST : public BaseAST
     TypeAST *getRealType(TypeAST *type, std::vector<TypeAST *> igenericTypes);
     static ClassAST *                           ParseClass(CompileUnit *unit);
     std::map<std::string, VariableDefExprAST *> members;
+    std::map<std::string, FunctionAST *>        functions;
     std::vector<std::string>                    genericTypes;
     std::string                                 className;
 };

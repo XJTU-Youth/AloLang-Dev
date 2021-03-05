@@ -15,10 +15,14 @@ char syntax[] = {'!', '%', '^', '&', '*', '(',  ')', '+',  '=', '{',
                  ',', '<', '>', '?', '.', '/',  '#', ' '};
 
 std::string demangle(const std::string &           fnName,
-                     const std::vector<TypeAST *> &argTypes)
+                     const std::vector<TypeAST *> &argTypes,
+                     const std::string &           className)
 {
     std::stringstream ss;
     ss << "_alolang_";
+    if (className != "") {
+        ss << "C" << className.length() << className;
+    }
     ss << fnName.length() << fnName;
     for (TypeAST *word : argTypes) {
         ss << word->name.length() << word->name; //得到类型
