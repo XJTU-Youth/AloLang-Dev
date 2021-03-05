@@ -83,9 +83,20 @@ TypeAST *TypeAST::ParseType(CompileUnit *unit)
     if (token.type == tok_syntax && token.tokenValue == "<") {
 
         unit->next_tok();
-        while (!(token.type == tok_syntax && token.tokenValue == ">")) {
+        while (true) {
             genericTypes.push_back(TypeAST::ParseType(unit));
             token = *unit->icurTok;
+            if (token.type == tok_syntax) {
+                if (token.tokenValue == ",") {
+                    token = unit->next_tok();
+                } else if (token.tokenValue == ">") {
+                    break;
+                } else {
+                    CompileError e("Unknown token " + token.dump(), token.file,
+                                   token.lineno);
+                    throw e;
+                }
+            }
         }
         token = unit->next_tok();
     }
