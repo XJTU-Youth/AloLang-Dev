@@ -24,8 +24,6 @@ class PrototypeAST : public BaseAST
                                         ClassAST *parentClass = nullptr);
     std::vector<std::pair<TypeAST *, std::string>> args;
 
-    std::string demangledName;
-
     std::vector<TypeAST *> returnTypes;
     std::string            name;
     bool                   returnDirectly; //直接返回

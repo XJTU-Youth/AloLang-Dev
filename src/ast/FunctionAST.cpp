@@ -31,8 +31,13 @@ FunctionAST::~FunctionAST()
 
 llvm::Function *FunctionAST::Codegen(std::vector<TypeAST *> igenericTypes)
 {
-    llvm::Function *  func = proto->Codegen();
-    llvm::BasicBlock *bb   = body->Codegen(func);
+    llvm::Function *func = proto->Codegen(igenericTypes);
+    unit->globalFunctions.insert(
+        std::pair<std::string, std::pair<PrototypeAST *, llvm::Function *>>(
+            func->getName(),
+            std::pair<PrototypeAST *, llvm::Function *>(proto, func)));
+
+    llvm::BasicBlock *bb = body->Codegen(func);
     // func->getBasicBlockList().push_back(bb);
 
     return func;
@@ -60,4 +65,3 @@ FunctionAST *FunctionAST::ParseFunction(CompileUnit *unit,
 
     return result;
 }
-std::string FunctionAST::getDemangledName() { return proto->demangledName; }

@@ -30,7 +30,8 @@ ExternAST *ExternAST::ParseExtern(CompileUnit *unit)
         } else if (flag.tokenValue == "C") {
             C = true;
         } else {
-            CompileError e("Unknown flag:" + flag.tokenValue,flag.file,flag.lineno);
+            CompileError e("Unknown flag:" + flag.tokenValue, flag.file,
+                           flag.lineno);
             throw e;
         }
     }
@@ -53,10 +54,4 @@ ExternAST *ExternAST::ParseExtern(CompileUnit *unit)
     return new ExternAST(unit, proto);
 }
 
-std::string ExternAST::getDemangledName() { return proto->demangledName; }
-
-llvm::Function *ExternAST::Codegen()
-{
-    proto->Codegen();
-    return 0;
-}
+llvm::Function *ExternAST::Codegen() { return proto->Codegen(); }

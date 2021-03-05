@@ -21,6 +21,7 @@ class TypeAST : public BaseAST
     void            initName();
 
     llvm::Type *           Codegen();
+    std::string            getMangleName();
     std::string            name;
     std::string            baseClass;
     std::vector<TypeAST *> innerType;

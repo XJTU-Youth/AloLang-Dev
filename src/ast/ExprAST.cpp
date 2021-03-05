@@ -184,11 +184,11 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
                         ci++;
                         continue;
                     }
-                    if (token.tokenValue != "<") {
+                    if (token.tokenValue != "<" || !root) {
                         //变量
                         unit->next_tok();
                         result = new VariableExprAST(unit, codeblock, idName);
-                    } else if (token.tokenValue == "<") {
+                    } else if (token.tokenValue == "<" && root) {
                         //变量定义
                         result = VariableDefExprAST::ParseVar(unit, codeblock);
                     }
@@ -257,8 +257,11 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
         } else if (token.tokenValue == ".") {
             if (VariableExprAST *v = dynamic_cast<VariableExprAST *>(RHS)) {
                 LHS = new MemberExprAST(unit, LHS, v->idName, false);
+            } else if (CallExprAST *v = dynamic_cast<CallExprAST *>(RHS)) {
+                v->LHS = LHS;
+                LHS    = v;
             } else {
-                CompileError e("成员方法调用未实现");
+                CompileError e("未知的操作");
                 throw e;
             }
         } else if (token.tokenValue == "->") {

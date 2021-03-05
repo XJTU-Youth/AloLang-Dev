@@ -107,3 +107,16 @@ TypeAST *TypeAST::ParseType(CompileUnit *unit)
     }
     return result;
 }
+
+std::string TypeAST::getMangleName()
+{
+    std::stringstream ss;
+    ss << "C" << baseClass.length() << baseClass;
+    if (genericTypes.size() != 0) {
+        for (unsigned int i = 0; i < genericTypes.size() - 1; i++) {
+            ss << genericTypes[i]->name.length() << genericTypes[i]->name;
+        }
+    }
+    ss << "E";
+    return ss.str();
+}

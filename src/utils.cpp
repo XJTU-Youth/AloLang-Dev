@@ -21,7 +21,7 @@ std::string demangle(const std::string &           fnName,
     std::stringstream ss;
     ss << "_alolang_";
     if (className != "") {
-        ss << "C" << className.length() << className;
+        ss << className;
     }
     ss << fnName.length() << fnName;
     for (TypeAST *word : argTypes) {

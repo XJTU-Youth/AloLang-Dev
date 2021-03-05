@@ -22,7 +22,6 @@ class FunctionAST : public BaseAST
     virtual ~FunctionAST();
     llvm::Function *
     Codegen(std::vector<TypeAST *> igenericTypes = std::vector<TypeAST *>());
-    std::string   getDemangledName();
     PrototypeAST *proto;
     ClassAST *    parentClass;
 

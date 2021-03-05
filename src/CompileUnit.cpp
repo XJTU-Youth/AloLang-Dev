@@ -217,8 +217,7 @@ void CompileUnit::compile()
         switch (icurTok->type) {
         case tok_fun: {
             FunctionAST *func_ast = FunctionAST::ParseFunction(this);
-            functions.insert(std::pair<std::string, FunctionAST *>(
-                func_ast->getDemangledName(), func_ast));
+            functions.push_back(func_ast);
             // llvm::Function *func = func_ast->Codegen();
             /*llvm::Type*
              type=llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
@@ -234,8 +233,7 @@ void CompileUnit::compile()
         }
         case tok_extern: {
             ExternAST *externast = ExternAST::ParseExtern(this);
-            externs.insert(std::pair<std::string, ExternAST *>(
-                externast->getDemangledName(), externast));
+            externs.push_back(externast);
             break;
         }
         case tok_identifier: {
@@ -243,15 +241,13 @@ void CompileUnit::compile()
             VariableDefExprAST *var =
                 VariableDefExprAST::ParseVar(this, nullptr);
             Token token = next_tok();
-            globalVariables.insert(
-                std::pair<std::string, VariableDefExprAST *>(var->idName, var));
+            globalVariables.push_back(var);
             break;
         }
         case tok_key_class: {
             ClassAST *classAST = ClassAST::ParseClass(this);
             classes.insert(std::pair<std::string, ClassAST *>(
                 classAST->className, classAST));
-            classesO.push_back(classAST);
             break;
         }
         default: {
@@ -265,20 +261,19 @@ void CompileUnit::compile()
         llvm::Type *classType = classAST->Codegen();
     }*/
 
-    std::map<std::string, VariableDefExprAST *>::iterator gVar_iter;
-    for (gVar_iter = globalVariables.begin();
-         gVar_iter != globalVariables.end(); gVar_iter++) {
-        gVar_iter->second->Codegen(nullptr);
+    for (VariableDefExprAST *v : globalVariables) {
+        v->Codegen(nullptr); //自动插入globalVariablesValue
     }
     std::map<std::string, ExternAST *>::iterator extern_iter;
-    for (extern_iter = externs.begin(); extern_iter != externs.end();
-         extern_iter++) {
-        extern_iter->second->Codegen();
+    for (ExternAST *v : externs) {
+        llvm::Function *f = v->Codegen();
+        globalFunctions.insert(
+            std::pair<std::string, std::pair<PrototypeAST *, llvm::Function *>>(
+                f->getName(),
+                std::pair<PrototypeAST *, llvm::Function *>(v->proto, f)));
     }
-    std::map<std::string, FunctionAST *>::iterator function_iter;
-    for (function_iter = functions.begin(); function_iter != functions.end();
-         function_iter++) {
-        function_iter->second->Codegen();
+    for (FunctionAST *v : functions) {
+        llvm::Function *f = v->Codegen(); //自动插入globalFunctions
     }
 
     build();

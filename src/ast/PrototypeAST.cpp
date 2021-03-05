@@ -23,20 +23,6 @@ PrototypeAST::PrototypeAST(
     this->returnDirectly = false;
     this->returnTypes    = returnTypes;
     this->parentClass    = parentClass;
-    std::vector<TypeAST *> argStr;
-    for (std::pair<TypeAST *, std::string> pair : args) {
-        argStr.push_back(pair.first);
-    }
-    if (name != "main") {
-        if (parentClass == nullptr) {
-            this->demangledName = demangle(name, argStr);
-        } else {
-            this->demangledName =
-                demangle(name, argStr, parentClass->className);
-        }
-    } else {
-        this->demangledName = "main";
-    }
 }
 
 PrototypeAST::~PrototypeAST()
@@ -131,6 +117,22 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody,
 
 llvm::Function *PrototypeAST::Codegen(std::vector<TypeAST *> igenericTypes)
 {
+    std::vector<TypeAST *> argStr;
+    for (std::pair<TypeAST *, std::string> pair : args) {
+        argStr.push_back(pair.first);
+    }
+    std::string demangledName;
+    if (name != "main") {
+        if (parentClass == nullptr) {
+            demangledName = demangle(name, argStr);
+        } else {
+            demangledName = demangle(
+                name, argStr, parentClass->getRealNameForMangle(igenericTypes));
+        }
+    } else {
+        demangledName = "main";
+    }
+
     std::vector<llvm::Type *> llvmArgs;
     for (int i = 0; i < args.size(); i++) {
         llvmArgs.push_back(args[i].first->Codegen());
@@ -185,9 +187,6 @@ llvm::Function *PrototypeAST::Codegen(std::vector<TypeAST *> igenericTypes)
      return 0;
      }
      }*/
-    // todo:参数处理
-    // Set names for all arguments.
-
     unsigned Idx = 0;
     for (llvm::Function::arg_iterator AI = F->arg_begin(); Idx != args.size();
          ++AI, ++Idx) {

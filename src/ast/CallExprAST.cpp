@@ -15,11 +15,12 @@
 #include "../utils.h"
 
 CallExprAST::CallExprAST(CompileUnit *unit, const std::string &callee,
-                         ExprAST *args)
+                         ExprAST *args, ExprAST *LHS)
     : ExprAST(unit)
 {
     this->callee = callee;
     this->args   = args;
+    this->LHS    = LHS;
     std::cout << std::left << std::setw(35)
               << "Function call found:" << this->callee << std::endl;
 }
@@ -38,20 +39,22 @@ std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
     for (TypeAST *ast : args->type) {
         argStr.push_back(ast);
     }
-    std::string dname = demangle(callee, argStr);
+    std::string  dname;
+    llvm::Value *LHSv; //新构造
+    if (LHS == nullptr) {
+        dname = demangle(callee, argStr);
+    } else {
+        LHSv  = LHS->Codegen(builder)[0];
+        dname = demangle(callee, argStr, LHS->type[0]->getMangleName());
+    }
     if (callee == "main") {
         dname = "main";
     }
     PrototypeAST *proto = nullptr;
 
-    auto externAST = unit->externs.find(dname);
-    if (externAST != unit->externs.end()) {
-        proto = externAST->second->proto;
-    }
-
-    auto functionAST = unit->functions.find(dname);
-    if (functionAST != unit->functions.end()) {
-        proto = functionAST->second->proto;
+    auto functionAST = unit->globalFunctions.find(dname);
+    if (functionAST != unit->globalFunctions.end()) {
+        proto = functionAST->second.first;
     }
 
     if (proto == nullptr) {
@@ -70,16 +73,8 @@ std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
         result.push_back(retD);
     } else {
         for (unsigned i = 0; i < type.size(); i++) {
-            /*llvm::IntegerType *type =
-                llvm::IntegerType::get(*unit->context, 32);
-            llvm::ConstantInt *res = llvm::ConstantInt::get(type, i, true);*/
             llvm::Value *member = builder->CreateExtractValue(retD, {i});
-
-            /*llvm::Value *member_ptr = builder->CreateGEP(
-                CalleeF->getReturnType(), retD,
-                {llvm::ConstantInt::get(type, 0, true), res});*/
             result.push_back(member);
-            // builder->CreateLoad(member_ptr);
         }
     }
     return result;
