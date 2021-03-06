@@ -31,7 +31,7 @@ llvm::Value *
 BinaryExprAST::processInnerBinaryOperator(llvm::Value *L, llvm::Value *R,
                                           llvm::IRBuilder<> *builder)
 {
-    if (LHS->type[0]->name == "int" && RHS->type[0]->name == "int") {
+    if (LHS->type[0]->getName() == "int" && RHS->type[0]->getName() == "int") {
         if (binOP == "+") {
             return builder->CreateAdd(L, R);
         } else if (binOP == "-") {
@@ -58,8 +58,8 @@ BinaryExprAST::processInnerBinaryOperator(llvm::Value *L, llvm::Value *R,
         } else if (binOP == "<=") {
             return builder->CreateICmpSLE(L, R);
         }
-    } else if (LHS->type[0]->name == "double" &&
-               RHS->type[0]->name == "double") {
+    } else if (LHS->type[0]->getName() == "double" &&
+               RHS->type[0]->getName() == "double") {
         if (binOP == "+") {
             return builder->CreateFAdd(L, R);
         } else if (binOP == "-") {
@@ -112,8 +112,8 @@ std::vector<llvm::Value *> BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
             CompileError e("Bin Expr length != 1");
             throw e;
         }
-        std::string LHStype = LHS->type[0]->name;
-        std::string RHStype = RHS->type[0]->name;
+        std::string LHStype = LHS->type[0]->getName();
+        std::string RHStype = RHS->type[0]->getName();
         auto operate = unit->binOperators.find({LHStype, RHStype, binOP});
         if (operate == unit->binOperators.end()) {
             CompileError e("Unknown operator " + binOP + "with type " +

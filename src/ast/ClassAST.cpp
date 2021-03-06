@@ -93,9 +93,7 @@ TypeAST *ClassAST::getRealType(TypeAST *              type,
         type->genericTypes[i] =
             getRealType(type->genericTypes[i], igenericTypes);
     }
-    auto it = find(genericTypes.begin(), genericTypes.end(), type->name);
-
-    type->initName();
+    auto it = find(genericTypes.begin(), genericTypes.end(), type->baseClass);
 
     if (it != genericTypes.end()) {
         //泛型
@@ -116,9 +114,7 @@ TypeAST *ClassAST::getRealType(TypeAST *type)
         type->genericTypes[i] =
             getRealType(type->genericTypes[i], igenericTypes);
     }
-    auto it = find(genericTypes.begin(), genericTypes.end(), type->name);
-
-    type->initName();
+    auto it = find(genericTypes.begin(), genericTypes.end(), type->baseClass);
 
     if (it != genericTypes.end()) {
         //泛型
@@ -135,9 +131,9 @@ std::string ClassAST::getRealName(std::vector<TypeAST *> igenericTypes)
     if (igenericTypes.size() != 0) {
         name += "<";
         for (unsigned int i = 0; i < igenericTypes.size() - 1; i++) {
-            name += igenericTypes[i]->name + ",";
+            name += igenericTypes[i]->getName() + ",";
         }
-        name += igenericTypes[igenericTypes.size() - 1]->name + ">";
+        name += igenericTypes[igenericTypes.size() - 1]->getName() + ">";
     }
     return name;
 }

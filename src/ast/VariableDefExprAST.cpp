@@ -52,16 +52,16 @@ VariableDefExprAST::Codegen(llvm::IRBuilder<> *builder)
             *unit->module, variableType->Codegen(), false,
             llvm::GlobalValue::ExternalLinkage, nullptr, idName);
         // todo:初始填0
-        if (variableType->name == "int") {
+        if (variableType->getName() == "int") {
             llvm::IntegerType *itype =
                 llvm::IntegerType::get(*unit->context, 64);
             llvm::ConstantInt *res = llvm::ConstantInt::get(itype, 0, true);
             gVar->setInitializer(res);
-        } else if (variableType->name == "double") {
+        } else if (variableType->getName() == "double") {
             llvm::Type *    ftype = llvm::Type::getDoubleTy(*unit->context);
             llvm::Constant *res   = llvm::ConstantFP::get(ftype, 0);
             gVar->setInitializer(res);
-        } else if (variableType->name == "bool") {
+        } else if (variableType->getName() == "bool") {
             llvm::IntegerType *itype =
                 llvm::IntegerType::get(*unit->context, 1);
             llvm::ConstantInt *res = llvm::ConstantInt::get(itype, 0, true);
@@ -127,6 +127,6 @@ VariableDefExprAST *VariableDefExprAST::ParseVar(CompileUnit * unit,
 
     std::cout << std::left << std::setw(35)
               << "Variable definition found:" << idName
-              << " with type:" << typeAST->name << std::endl;
+              << " with type:" << typeAST->baseClass << std::endl;
     return new VariableDefExprAST(unit, codeblock, idName, typeAST, initValue);
 }

@@ -18,27 +18,11 @@ TypeAST::TypeAST(CompileUnit *unit, std::string baseClass,
     this->genericTypes = genericTypes;
     this->pointee      = nullptr;
     this->inClass      = inClass;
-    initName();
-    //生成name
-}
-
-void TypeAST::initName()
-{
-    this->name = baseClass;
-    if (genericTypes.size() != 0) {
-        this->name += "<";
-        for (unsigned int i = 0; i < genericTypes.size() - 1; i++) {
-            this->name += genericTypes[i]->name + ",";
-        }
-        this->name += genericTypes[genericTypes.size() - 1]->name + ">";
-    }
 }
 
 TypeAST::TypeAST(CompileUnit *unit, TypeAST *pointee) : BaseAST(unit)
 {
     this->pointee = pointee;
-    //生成name
-    this->name    = pointee->name + "*";
     this->inClass = nullptr;
 }
 
@@ -54,7 +38,7 @@ llvm::Type *TypeAST::Codegen()
     }
     if (pointee == nullptr) {
         //非指针类型
-        auto typeAST = unit->types.find(realType->name);
+        auto typeAST = unit->types.find(realType->getName());
         if (typeAST == unit->types.end()) {
             //没有找到实例化过的泛型
             auto classAST = unit->classes.find(realType->baseClass);
@@ -75,7 +59,7 @@ llvm::Type *TypeAST::Codegen()
     }
 }
 
-TypeAST *TypeAST::ParseType(CompileUnit *unit)
+TypeAST *TypeAST::ParseType(CompileUnit *unit, ClassAST *inClass)
 {
     Token token = *unit->icurTok;
     if (token.type != tok_identifier) {
@@ -107,7 +91,7 @@ TypeAST *TypeAST::ParseType(CompileUnit *unit)
         }
         token = unit->next_tok();
     }
-    TypeAST *result = new TypeAST(unit, baseClass, genericTypes);
+    TypeAST *result = new TypeAST(unit, baseClass, genericTypes, inClass);
     while (token.type == tok_syntax && token.tokenValue == "*") {
         result = new TypeAST(unit, result);
         token  = unit->next_tok();
@@ -115,21 +99,46 @@ TypeAST *TypeAST::ParseType(CompileUnit *unit)
     return result;
 }
 
+std::string TypeAST::getName()
+{
+    TypeAST *realType = this;
+    if (inClass != nullptr) {
+        realType = inClass->getRealType(realType);
+    }
+
+    std::string name = realType->baseClass;
+    if (realType->genericTypes.size() != 0) {
+        name += "<";
+        for (unsigned int i = 0; i < realType->genericTypes.size() - 1; i++) {
+            name += realType->genericTypes[i]->getName() + ",";
+        }
+        name += realType->genericTypes[realType->genericTypes.size() - 1]
+                    ->getName() +
+                ">";
+    }
+    return name;
+}
+
 std::string TypeAST::getMangleName()
 {
+    TypeAST *realType = this;
+    if (inClass != nullptr) {
+        realType = inClass->getRealType(realType);
+    }
     std::stringstream ss;
-    if (pointee == nullptr) {
-        ss << baseClass.length() << baseClass;
-        if (genericTypes.size() != 0) {
-            for (unsigned int i = 0; i < genericTypes.size(); i++) {
-                ss << genericTypes[i]->name.length() << genericTypes[i]->name;
+    if (realType->pointee == nullptr) {
+        ss << realType->baseClass.length() << realType->baseClass;
+        if (realType->genericTypes.size() != 0) {
+            for (unsigned int i = 0; i < realType->genericTypes.size(); i++) {
+                std::string name = realType->genericTypes[i]->getName();
+                ss << name.length() << name;
             }
         }
         ss << "e";
         return ss.str();
     } else {
         ss << "P";
-        ss << pointee->getMangleName();
+        ss << realType->pointee->getMangleName();
         return ss.str();
     }
 }

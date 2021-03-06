@@ -89,7 +89,7 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
         ExprAST *start = chain[chain.size() - 1];
         pointer        = start->Codegen(builder)[0];
         curType        = start->type[0]->pointee->baseClass;
-        startType      = start->type[0]->pointee->name;
+        startType      = start->type[0]->pointee->getName();
     } else {
         VariableExprAST *start =
             dynamic_cast<VariableExprAST *>(chain[chain.size() - 1]);
@@ -99,7 +99,7 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
             throw e;
         }
         curType   = start->type[0]->baseClass;
-        startType = start->type[0]->name;
+        startType = start->type[0]->getName();
     }
     std::vector<unsigned int> idx;
     for (int i = chain.size() - 2; i >= 0; i--) {
@@ -114,7 +114,7 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
         unsigned int index =
             std::distance(std::begin(baseClass->members), memberAST);
         idx.push_back(index);
-        curType = baseClass->members[member]->variableType->name;
+        curType = baseClass->members[member]->variableType->getName();
     }
     std::vector<llvm::Value *> idxl;
     llvm::IntegerType *itype = llvm::IntegerType::get(*unit->context, 32);

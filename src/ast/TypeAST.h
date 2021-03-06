@@ -18,17 +18,16 @@ class TypeAST : public BaseAST
             ClassAST *             inClass      = nullptr);
     TypeAST(CompileUnit *unit, TypeAST *pointee);
     virtual ~TypeAST();
-    static TypeAST *ParseType(CompileUnit *unit);
-    void            initName();
+    static TypeAST *ParseType(CompileUnit *unit, ClassAST *inClass = nullptr);
 
     llvm::Type *Codegen();
     std::string getMangleName();
+    std::string getName();
 
     std::string            baseClass;
     std::vector<TypeAST *> innerType;
     std::vector<TypeAST *> genericTypes;
     TypeAST *              pointee; //指向的类型
-    std::string            name;
     ClassAST *             inClass;
 };
 
