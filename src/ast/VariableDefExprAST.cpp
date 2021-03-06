@@ -9,6 +9,7 @@
 
 #include "../CompileError.hpp"
 #include "CodeBlockAST.h"
+#include "FunctionAST.h"
 #include "IntExprAST.h"
 #include "TypeAST.h"
 #include <iostream>
@@ -100,6 +101,9 @@ VariableDefExprAST *VariableDefExprAST::ParseVar(CompileUnit * unit,
                                                  CodeBlockAST *codeblock)
 {
     TypeAST *typeAST = TypeAST::ParseType(unit);
+    if (codeblock != nullptr) {
+        typeAST->inClass = codeblock->baseFunction->parentClass;
+    }
 
     Token       nexToken = *(unit->icurTok);
     std::string idName   = nexToken.tokenValue;
@@ -115,7 +119,8 @@ VariableDefExprAST *VariableDefExprAST::ParseVar(CompileUnit * unit,
             unit->next_tok();
             initValue = ExprAST::ParseExpression(unit, codeblock, false);
         } else {
-            CompileError e("Unknown token:" + nexToken.dump(),nexToken.file,nexToken.lineno);
+            CompileError e("Unknown token:" + nexToken.dump(), nexToken.file,
+                           nexToken.lineno);
             throw e;
         }
     }

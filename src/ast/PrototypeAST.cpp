@@ -62,8 +62,9 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody,
         token                                  = *unit->icurTok;
         std::string                       name = token.tokenValue;
         std::pair<TypeAST *, std::string> pair;
-        pair.first  = type;
-        pair.second = name;
+        type->inClass = parentClass;
+        pair.first    = type;
+        pair.second   = name;
         args.push_back(pair);
     }
     if (token.type != tok_syntax || token.tokenValue != ")") {
@@ -95,7 +96,9 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody,
                     break;
                 }
             }
-            returnTypes.push_back(TypeAST::ParseType(unit));
+            TypeAST *returnType = TypeAST::ParseType(unit);
+            returnType->inClass = parentClass;
+            returnTypes.push_back(returnType);
         }
     } else {
         if (token.tokenValue == "{") {

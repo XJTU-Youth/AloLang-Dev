@@ -14,7 +14,8 @@ class TypeAST : public BaseAST
 {
   public:
     TypeAST(CompileUnit *unit, std::string baseClass,
-            std::vector<TypeAST *> genericTypes = std::vector<TypeAST *>());
+            std::vector<TypeAST *> genericTypes = std::vector<TypeAST *>(),
+            ClassAST *             inClass      = nullptr);
     TypeAST(CompileUnit *unit, TypeAST *pointee);
     virtual ~TypeAST();
     static TypeAST *ParseType(CompileUnit *unit);
@@ -28,6 +29,7 @@ class TypeAST : public BaseAST
     std::vector<TypeAST *> genericTypes;
     TypeAST *              pointee; //指向的类型
     std::string            name;
+    ClassAST *             inClass;
 };
 
 #endif /* SRC_AST_TYPEAST_H_ */

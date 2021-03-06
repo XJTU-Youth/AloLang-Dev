@@ -106,6 +106,29 @@ TypeAST *ClassAST::getRealType(TypeAST *              type,
     }
 }
 
+TypeAST *ClassAST::getRealType(TypeAST *type)
+{
+    std::vector<TypeAST *> igenericTypes = this->igenericTypes;
+    if (type->pointee != nullptr) {
+        type->pointee = getRealType(type->pointee, igenericTypes);
+    }
+    for (unsigned int i = 0; i < type->genericTypes.size(); i++) {
+        type->genericTypes[i] =
+            getRealType(type->genericTypes[i], igenericTypes);
+    }
+    auto it = find(genericTypes.begin(), genericTypes.end(), type->name);
+
+    type->initName();
+
+    if (it != genericTypes.end()) {
+        //泛型
+        int index = it - genericTypes.begin();
+        return igenericTypes[index];
+    } else {
+        return type;
+    }
+}
+
 std::string ClassAST::getRealName(std::vector<TypeAST *> igenericTypes)
 {
     std::string name = className;
@@ -139,6 +162,7 @@ llvm::Type *ClassAST::Codegen(std::vector<TypeAST *> igenericTypes)
         CompileError e("generic isn't equal");
         throw e;
     }
+    this->igenericTypes    = igenericTypes;
     std::string       name = getRealName(igenericTypes);
     llvm::StructType *llvm_S =
         llvm::StructType::create(*unit->context, className);

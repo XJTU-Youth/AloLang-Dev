@@ -21,6 +21,7 @@ class ClassAST : public BaseAST
     virtual ~ClassAST();
     llvm::Type *Codegen(std::vector<TypeAST *> genericTypes);
     TypeAST *getRealType(TypeAST *type, std::vector<TypeAST *> igenericTypes);
+    TypeAST *getRealType(TypeAST *type);
     std::string getRealName(std::vector<TypeAST *> igenericTypes);
 
     std::string getRealNameForMangle(std::vector<TypeAST *> igenericTypes);
@@ -30,6 +31,7 @@ class ClassAST : public BaseAST
     std::map<std::string, FunctionAST *>        functions;
     std::vector<std::string>                    genericTypes;
     std::string                                 className;
+    std::vector<TypeAST *> igenericTypes; // todo:注意多线程的情形
 };
 
 #endif /* SRC_AST_CLASSAST_H_ */
