@@ -115,11 +115,7 @@ ExprAST::~ExprAST()
     // TODO Auto-generated destructor stub
 }
 
-llvm::Value *ExprAST::getAlloca(llvm::IRBuilder<> *builder)
-{
-    CompileError e("No memory allocaed");
-    throw e;
-}
+llvm::Value *ExprAST::getAlloca(llvm::IRBuilder<> *builder) { return nullptr; }
 
 ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
                                bool root)

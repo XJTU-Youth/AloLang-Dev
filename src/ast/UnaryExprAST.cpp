@@ -48,6 +48,10 @@ std::vector<llvm::Value *> UnaryExprAST::Codegen(llvm::IRBuilder<> *builder)
     std::vector<llvm::Value *> result;
     if (op == "&") {
         llvm::Value *pointer = operand->getAlloca(builder);
+        if (pointer == nullptr) {
+            CompileError e("No memory allocaed");
+            throw e;
+        }
         result.push_back(pointer);
     } else {
         //值操作

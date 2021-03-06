@@ -22,6 +22,7 @@ class ClassAST : public BaseAST
     llvm::Type *Codegen(std::vector<TypeAST *> genericTypes);
     TypeAST *getRealType(TypeAST *type, std::vector<TypeAST *> igenericTypes);
     std::string getRealName(std::vector<TypeAST *> igenericTypes);
+
     std::string getRealNameForMangle(std::vector<TypeAST *> igenericTypes);
 
     static ClassAST *                           ParseClass(CompileUnit *unit);

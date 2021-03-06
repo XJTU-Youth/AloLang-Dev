@@ -9,6 +9,7 @@
 #include "../CompileError.hpp"
 #include "ExternAST.h"
 #include "FunctionAST.h"
+#include "TypeAST.h"
 
 #include <iostream>
 
@@ -33,9 +34,17 @@ CallExprAST::~CallExprAST()
 std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
     std::vector<llvm::Value *> result;
+    std::vector<TypeAST *>     argStr;
     std::vector<llvm::Value *> argsV = args->CodegenChain(builder);
-
-    std::vector<TypeAST *> argStr;
+    if (LHS != nullptr) {
+        llvm::Value *thisV = LHS->getAlloca(builder);
+        if (thisV == nullptr) {
+            CompileError e("No memory allocaed");
+            throw e;
+        }
+        argsV.insert(argsV.begin(), thisV);
+        argStr.push_back(new TypeAST(unit, LHS->type[0]));
+    }
     for (TypeAST *ast : args->type) {
         argStr.push_back(ast);
     }

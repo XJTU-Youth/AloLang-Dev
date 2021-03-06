@@ -27,6 +27,7 @@ MemberExprAST::~MemberExprAST()
 
 std::vector<llvm::Value *> MemberExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
+    type.clear();
     if (isPointer) {
         CompileError e("未实现.");
         throw e;
@@ -58,6 +59,7 @@ std::vector<llvm::Value *> MemberExprAST::Codegen(llvm::IRBuilder<> *builder)
 
 llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
 {
+    type.clear();
     ExprAST *              curAST = this;
     std::vector<ExprAST *> chain;
     llvm::Value *          pointer;
@@ -89,7 +91,11 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
     } else {
         VariableExprAST *start =
             dynamic_cast<VariableExprAST *>(chain[chain.size() - 1]);
-        pointer   = start->getAlloca(builder);
+        pointer = start->getAlloca(builder);
+        if (pointer == nullptr) {
+            CompileError e("No memory allocaed");
+            throw e;
+        }
         curType   = start->type[0]->baseClass;
         startType = start->type[0]->name;
     }
@@ -120,5 +126,7 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
 
         pointer = builder->CreateGEP(typeAST->second, pointer, idxl);
     }
+    type.push_back(new TypeAST(unit, curType));
+
     return pointer;
 }

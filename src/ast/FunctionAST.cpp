@@ -7,8 +7,10 @@
 
 #include "FunctionAST.h"
 #include "../CompileError.hpp"
+#include "ClassAST.h"
 #include "CodeBlockAST.h"
 #include "PrototypeAST.h"
+#include "TypeAST.h"
 #include "VariableDefExprAST.h"
 #include "VariableExprAST.h"
 #include <iomanip>
@@ -48,9 +50,22 @@ FunctionAST *FunctionAST::ParseFunction(CompileUnit *unit,
 {
     PrototypeAST *protoType =
         PrototypeAST::ParsePrototype(unit, true, parentClass);
+    if (parentClass != nullptr) {
+        std::vector<TypeAST *> genericTypes;
+        for (std::string gType : parentClass->genericTypes) {
+            genericTypes.push_back(new TypeAST(unit, gType));
+        }
+        protoType->args.insert(
+            protoType->args.begin(),
+            std::pair<TypeAST *, std::string>(
+                new TypeAST(unit, new TypeAST(unit, parentClass->className,
+                                              genericTypes)),
+                "this"));
+    }
     std::cout << std::left << std::setw(35)
               << "Function definition found:" << protoType->name << std::endl;
     std::vector<VariableDefExprAST *> args;
+
     for (unsigned int i = 0; i < protoType->args.size(); i++) {
         std::pair<TypeAST *, std::string> arg = protoType->args[i];
         args.push_back(new VariableDefExprAST(unit, nullptr, arg.second,
