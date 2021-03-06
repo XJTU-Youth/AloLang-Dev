@@ -1,15 +1,18 @@
 extern func testPrintInt(int i);
 
-class node<A> {
-    node<A>* pred;
-    node<A>* succ;
-    A data;
+class node {
+    node* pred;
+    node* succ;
+    int data;
+    func getdata() -> int {
+        return (*this).data;
+    }
 }
 
 func main() {
-    node<int> test1;
-    node<int> test2;
-    node<int> test3;
+    node test1;
+    node test2;
+    node test3;
 
     test1.pred = &test2;
     test1.succ = &test3;
@@ -20,11 +23,11 @@ func main() {
 
     int* testint1 = &(test1.data);
 
-    testPrintInt(test1.data);
-    testPrintInt(test2.data);
-    testPrintInt(test3.data);
-    testPrintInt((*(test1.succ)).data);
-    testPrintInt((*(test1.pred)).data);
+    testPrintInt(test1.getdata());
+    testPrintInt(test2.getdata());
+    testPrintInt(test3.getdata());
+    testPrintInt((*(test1.succ)).getdata());
+    testPrintInt((*(test1.pred)).getdata());
     testPrintInt(*testint1);
 
     if (true) 
