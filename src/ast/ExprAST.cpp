@@ -115,6 +115,8 @@ ExprAST::~ExprAST()
     // TODO Auto-generated destructor stub
 }
 
+llvm::Value *ExprAST::getAlloca() { return nullptr; }
+
 ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
                                bool root)
 {
