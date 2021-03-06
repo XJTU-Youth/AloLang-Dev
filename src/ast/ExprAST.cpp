@@ -11,6 +11,7 @@
 #include "IntExprAST.h"
 #include "MemberExprAST.h"
 #include "ReturnExprAST.h"
+#include "SizeofExprAST.h"
 #include "UnaryExprAST.h"
 #include "VariableDefExprAST.h"
 #include "VariableExprAST.h"
@@ -204,7 +205,16 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
         break;
     }
     case tok_return: {
-        return ReturnExprAST::ParseReturnExprAST(unit, codeblock);
+        result = ReturnExprAST::ParseReturnExprAST(unit, codeblock);
+        break;
+    }
+    case tok_key_sizeof: {
+        unit->next_tok(); // sizeof
+        unit->next_tok(); //(
+        TypeAST *type = TypeAST::ParseType(unit);
+        unit->next_tok(); //)
+        result = new SizeofExprAST(unit, type);
+        break;
     }
     default: {
         CompileError e("不期待的token：" + token.dump(), token.file,
@@ -212,14 +222,6 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
         throw e;
     }
     }
-    /*if (token.type == tok_syntax && token.tokenValue == ",") {
-        unit->next_tok();
-        ExprAST *subExpr = ParseBinOpRHS(unit, codeblock, 200, result);
-        if (BinaryExprAST *v = dynamic_cast<BinaryExprAST *>(subExpr)) {
-            subExpr = v->RHS;
-        }
-        result->subExpr = subExpr;
-    }*/
     return result;
 }
 

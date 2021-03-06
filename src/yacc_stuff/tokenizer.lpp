@@ -27,6 +27,7 @@ foreach                                 token = tok_key_foreach;    return token
 goto                                    token = tok_key_goto;       return token;
 if                                      token = tok_key_if;         return token;
 while                                   token = tok_key_while;      return token;
+sizeof                                  token = tok_key_sizeof;     return token;
 
 case|switch                             token = tok_key_switch;     return token;
 
