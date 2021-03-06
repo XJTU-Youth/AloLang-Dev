@@ -101,20 +101,8 @@ std::vector<llvm::Value *> BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
             throw e;
         }
         for (unsigned int i = 0; i < LHS.size(); i++) {
-            ExprAST *    curAST = LHS[i];
-            llvm::Value *pointer;
-            if (UnaryExprAST *v = dynamic_cast<UnaryExprAST *>(curAST)) {
-                if (v->op != "*") {
-                    CompileError e("Operator " + v->op +
-                                   " can not be used as assignment");
-                    throw e;
-                } else {
-                    pointer = v->operand->Codegen(builder)[0];
-                }
-            } else {
-                pointer = curAST->getAlloca(builder);
-            }
-
+            ExprAST *    curAST  = LHS[i];
+            llvm::Value *pointer = curAST->getAlloca(builder);
             builder->CreateStore(RHSV[i], pointer);
         }
     } else {
