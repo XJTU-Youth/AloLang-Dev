@@ -43,6 +43,10 @@ std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
             throw e;
         }
         argsV.insert(argsV.begin(), thisV);
+        if (LHS->type.size() != 1) {
+            CompileError e("Multi/void value detected");
+            throw e;
+        }
         argStr.push_back(new TypeAST(unit, LHS->type[0]));
     }
     for (TypeAST *ast : args->type) {

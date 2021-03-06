@@ -35,11 +35,14 @@ UnaryExprAST::~UnaryExprAST()
 }
 llvm::Value *UnaryExprAST::getAlloca(llvm::IRBuilder<> *builder)
 {
-    if (op != "*") {
+    if (op == "*") {
+        type.clear();
+        llvm::Value *ret = operand->Codegen(builder)[0];
+        type.push_back(operand->type[0]->pointee);
+        return ret;
+    } else {
         CompileError e("Operator " + op + " can not be used as assignment");
         throw e;
-    } else {
-        return operand->Codegen(builder)[0];
     }
 }
 
