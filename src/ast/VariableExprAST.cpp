@@ -27,7 +27,7 @@ VariableExprAST::~VariableExprAST()
     // TODO Auto-generated destructor stub
 }
 
-llvm::Value *VariableExprAST::getAlloca()
+llvm::Value *VariableExprAST::getAlloca(llvm::IRBuilder<> *builder)
 {
     if (alloca != nullptr) {
         return alloca;
@@ -62,6 +62,6 @@ llvm::Value *VariableExprAST::getAlloca()
 std::vector<llvm::Value *> VariableExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
     std::vector<llvm::Value *> result;
-    result.push_back(builder->CreateLoad(getAlloca()));
+    result.push_back(builder->CreateLoad(getAlloca(builder)));
     return result;
 }

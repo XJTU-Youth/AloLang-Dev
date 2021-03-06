@@ -39,7 +39,7 @@ std::vector<llvm::Value *> UnaryExprAST::Codegen(llvm::IRBuilder<> *builder)
     std::vector<llvm::Value *> result;
     if (op == "&") {
         if (VariableExprAST *v = dynamic_cast<VariableExprAST *>(operand)) {
-            result.push_back(v->getAlloca());
+            result.push_back(v->getAlloca(builder));
             this->type.push_back(new TypeAST(unit, operand->type[0]));
         } else if (MemberExprAST *v = dynamic_cast<MemberExprAST *>(operand)) {
             llvm::Value *          pointer;
@@ -59,7 +59,7 @@ std::vector<llvm::Value *> UnaryExprAST::Codegen(llvm::IRBuilder<> *builder)
             }
             VariableExprAST *start =
                 dynamic_cast<VariableExprAST *>(chain[chain.size() - 1]);
-            pointer = start->getAlloca();
+            pointer = start->getAlloca(builder);
             std::vector<unsigned int> idx;
             std::string               curType = start->type[0]->baseClass;
             for (int i = chain.size() - 2; i >= 0; i--) {

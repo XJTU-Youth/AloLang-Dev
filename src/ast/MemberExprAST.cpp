@@ -9,6 +9,7 @@
 #include "../CompileError.hpp"
 #include "ClassAST.h"
 #include "TypeAST.h"
+#include "VariableExprAST.h"
 
 MemberExprAST::MemberExprAST(CompileUnit *unit, ExprAST *LHS,
                              std::string member, bool isPointer)
@@ -53,4 +54,71 @@ std::vector<llvm::Value *> MemberExprAST::Codegen(llvm::IRBuilder<> *builder)
     llvm::Value *member = builder->CreateExtractValue(base, {index});
     result.push_back(member);
     return result;
+}
+
+llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
+{
+    ExprAST *              curAST = this;
+    std::vector<ExprAST *> chain;
+    llvm::Value *          pointer;
+    bool                   pointerFlag = false;
+    while (true) {
+        chain.push_back(curAST);
+        if (MemberExprAST *v = dynamic_cast<MemberExprAST *>(curAST)) {
+            if (v->isPointer) {
+                pointerFlag = true;
+                chain.push_back(v->LHS);
+                break;
+            }
+            curAST = v->LHS;
+        } else if (VariableExprAST *v =
+                       dynamic_cast<VariableExprAST *>(curAST)) {
+            pointerFlag = false;
+            break;
+        } else {
+            CompileError e("Unknown AST.");
+            throw e;
+        }
+    }
+    std::string curType, startType;
+    if (pointerFlag) {
+        ExprAST *start = chain[chain.size() - 1];
+        pointer        = start->Codegen(builder)[0];
+        curType        = start->type[0]->pointee->baseClass;
+        startType      = start->type[0]->pointee->name;
+    } else {
+        VariableExprAST *start =
+            dynamic_cast<VariableExprAST *>(chain[chain.size() - 1]);
+        pointer   = start->getAlloca(builder);
+        curType   = start->type[0]->baseClass;
+        startType = start->type[0]->name;
+    }
+    std::vector<unsigned int> idx;
+    for (int i = chain.size() - 2; i >= 0; i--) {
+        MemberExprAST *v         = dynamic_cast<MemberExprAST *>(chain[i]);
+        std::string    member    = v->member;
+        ClassAST *     baseClass = unit->classes[curType];
+        auto           memberAST = baseClass->members.find(member);
+        if (memberAST == baseClass->members.end()) {
+            CompileError e("Member" + member + " not found.");
+            throw e;
+        }
+        unsigned int index =
+            std::distance(std::begin(baseClass->members), memberAST);
+        idx.push_back(index);
+        curType = baseClass->members[member]->variableType->name;
+    }
+    std::vector<llvm::Value *> idxl;
+    llvm::IntegerType *itype = llvm::IntegerType::get(*unit->context, 32);
+
+    idxl.push_back(llvm::ConstantInt::get(itype, 0, true));
+    for (unsigned int pid : idx) {
+        idxl.push_back(llvm::ConstantInt::get(itype, pid, true));
+    }
+    if (idx.size() != 0) {
+        auto typeAST = unit->types.find(startType);
+
+        pointer = builder->CreateGEP(typeAST->second, pointer, idxl);
+    }
+    return pointer;
 }
