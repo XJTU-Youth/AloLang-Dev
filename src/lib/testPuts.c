@@ -2,9 +2,9 @@
 
 extern void _alolang_8testPuts(void) { puts("AloLang Test Function"); }
 
-extern void _alolang_12testPrintInt3int(long long a) { printf("%lld\n", a); }
-extern void _alolang_15testPrintDouble6double(double a) { printf("%lf\n", a); }
-extern void _alolang_13testPrintBool4bool(int a)
+extern void _alolang_12testPrintInt3inte(long long a) { printf("%lld\n", a); }
+extern void _alolang_15testPrintDouble6doublee(double a) { printf("%lf\n", a); }
+extern void _alolang_13testPrintBool4boole(int a)
 {
     if (a) {
         printf("true\n");
@@ -13,16 +13,16 @@ extern void _alolang_13testPrintBool4bool(int a)
     }
 }
 
-extern int _alolang_10testGetInt()
+extern int _alolang_10testGetInte()
 {
     int a;
     scanf("%d", &a);
     return a;
 }
 
-extern double _alolang_13testGetDouble()
+extern double _alolang_13testGetDoublee()
 {
     double a;
     scanf("%lf", &a);
-    return a;   
+    return a;
 }

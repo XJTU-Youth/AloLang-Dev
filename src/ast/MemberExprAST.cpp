@@ -28,10 +28,7 @@ MemberExprAST::~MemberExprAST()
 std::vector<llvm::Value *> MemberExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
     type.clear();
-    if (isPointer) {
-        CompileError e("未实现.");
-        throw e;
-    }
+
     std::vector<llvm::Value *> result;
     std::vector<llvm::Value *> bases = LHS->Codegen(builder);
     if (bases.size() != 1) {
@@ -39,10 +36,15 @@ std::vector<llvm::Value *> MemberExprAST::Codegen(llvm::IRBuilder<> *builder)
         throw e;
     }
 
-    llvm::Value *base = bases[0];
-
-    ClassAST *baseClass = unit->classes[LHS->type[0]->baseClass];
-    auto      memberAST = baseClass->members.find(member);
+    llvm::Value *          base      = bases[0];
+    ClassAST *             baseClass = unit->classes[LHS->type[0]->baseClass];
+    std::vector<TypeAST *> genericTypes = LHS->type[0]->genericTypes;
+    if (isPointer) {
+        baseClass    = unit->classes[LHS->type[0]->pointee->baseClass];
+        base         = builder->CreateLoad(base);
+        genericTypes = LHS->type[0]->pointee->genericTypes;
+    }
+    auto memberAST = baseClass->members.find(member);
     if (memberAST == baseClass->members.end()) {
         CompileError e("Member " + member + " not found.");
         throw e;
@@ -51,7 +53,7 @@ std::vector<llvm::Value *> MemberExprAST::Codegen(llvm::IRBuilder<> *builder)
         std::distance(std::begin(baseClass->members), memberAST);
 
     type.push_back(baseClass->getRealType(
-        baseClass->members[member]->variableType, LHS->type[0]->genericTypes));
+        baseClass->members[member]->variableType, genericTypes));
     llvm::Value *member = builder->CreateExtractValue(base, {index});
     result.push_back(member);
     return result;

@@ -25,7 +25,8 @@ std::string demangle(const std::string &           fnName,
     }
     ss << fnName.length() << fnName;
     for (TypeAST *word : argTypes) {
-        ss << word->name.length() << word->name; //得到类型
+        std::string mangleName = word->getMangleName();
+        ss << mangleName; //得到类型
     }
     return ss.str();
 }

@@ -16,7 +16,7 @@ class ExprAST : public BaseAST
                                     bool root);
     static ExprAST *ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
                                  bool root = false);
-
+    void            appendSubExpr(ExprAST *expr);
     std::vector<TypeAST *> type;
     ExprAST *              subExpr;
 };

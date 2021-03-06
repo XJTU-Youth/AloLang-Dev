@@ -29,9 +29,11 @@ VariableExprAST::~VariableExprAST()
 
 llvm::Value *VariableExprAST::getAlloca(llvm::IRBuilder<> *builder)
 {
+
     if (alloca != nullptr) {
         return alloca;
     }
+    type.clear();
     //找局部变量
     CodeBlockAST *curCodeBlock = codeblock;
     while (curCodeBlock != nullptr) {
@@ -41,9 +43,6 @@ llvm::Value *VariableExprAST::getAlloca(llvm::IRBuilder<> *builder)
         } else {
             alloca = varAST->second.second;
             type.push_back(varAST->second.first);
-            if (varAST->second.first->name == "") {
-                std::cout << "fuck" << std::endl;
-            }
             return alloca;
         }
     }

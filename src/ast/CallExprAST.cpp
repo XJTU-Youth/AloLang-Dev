@@ -7,6 +7,7 @@
 
 #include "CallExprAST.h"
 #include "../CompileError.hpp"
+#include "ClassAST.h"
 #include "ExternAST.h"
 #include "FunctionAST.h"
 #include "TypeAST.h"
@@ -57,8 +58,11 @@ std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
     if (LHS == nullptr) {
         dname = demangle(callee, argStr);
     } else {
-        LHSv  = LHS->Codegen(builder)[0];
-        dname = demangle(callee, argStr, LHS->type[0]->getMangleName());
+        LHSv                  = LHS->Codegen(builder)[0];
+        ClassAST *  baseClass = unit->classes[LHS->type[0]->baseClass];
+        std::string typeMangledName =
+            baseClass->getRealNameForMangle(LHS->type[0]->genericTypes);
+        dname = demangle(callee, argStr, typeMangledName);
     }
     if (callee == "main") {
         dname = "main";

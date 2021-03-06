@@ -25,9 +25,10 @@ class FunctionAST : public BaseAST
     PrototypeAST *proto;
     ClassAST *    parentClass;
 
-    CodeBlockAST *      body;
-    static FunctionAST *ParseFunction(CompileUnit *unit,
-                                      ClassAST *   parentClass = nullptr);
+    CodeBlockAST *         body;
+    std::vector<TypeAST *> igenericTypes;
+    static FunctionAST *   ParseFunction(CompileUnit *unit,
+                                         ClassAST *   parentClass = nullptr);
 };
 
 #endif /* COMPILER_AST_FUNCTIONAST_H_ */

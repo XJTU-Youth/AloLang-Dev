@@ -119,7 +119,12 @@ llvm::Function *PrototypeAST::Codegen(std::vector<TypeAST *> igenericTypes)
 {
     std::vector<TypeAST *> argStr;
     for (std::pair<TypeAST *, std::string> pair : args) {
-        argStr.push_back(pair.first);
+        if (parentClass == nullptr) {
+            argStr.push_back(pair.first);
+        } else {
+            argStr.push_back(
+                parentClass->getRealType(pair.first, igenericTypes));
+        }
     }
     std::string demangledName;
     if (name != "main") {
@@ -187,14 +192,5 @@ llvm::Function *PrototypeAST::Codegen(std::vector<TypeAST *> igenericTypes)
      return 0;
      }
      }*/
-    unsigned Idx = 0;
-    for (llvm::Function::arg_iterator AI = F->arg_begin(); Idx != args.size();
-         ++AI, ++Idx) {
-        AI->setName(args[Idx].second);
-
-        // Add arguments to variable symbol table.
-        // NamedValues[args[Idx]] = AI;
-    }
-
     return F;
 }

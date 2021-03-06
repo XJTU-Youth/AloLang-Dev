@@ -20,13 +20,14 @@ class TypeAST : public BaseAST
     static TypeAST *ParseType(CompileUnit *unit);
     void            initName();
 
-    llvm::Type *           Codegen();
-    std::string            getMangleName();
-    std::string            name;
+    llvm::Type *Codegen();
+    std::string getMangleName();
+
     std::string            baseClass;
     std::vector<TypeAST *> innerType;
     std::vector<TypeAST *> genericTypes;
     TypeAST *              pointee; //指向的类型
+    std::string            name;
 };
 
 #endif /* SRC_AST_TYPEAST_H_ */

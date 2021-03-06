@@ -227,10 +227,18 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
     return result;
 }
 
+void ExprAST::appendSubExpr(ExprAST *expr)
+{
+    ExprAST *curAST = this;
+    while (curAST->subExpr == nullptr) {
+        curAST = curAST->subExpr;
+    }
+    curAST->subExpr = expr;
+}
+
 static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
                               int ExprPrec, ExprAST *LHS)
 {
-    ExprAST *cExpr = LHS;
     while (1) {
         Token token = *unit->icurTok;
         int   TokPrec;
@@ -256,8 +264,7 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
             }
         }
         if (token.tokenValue == ",") {
-            cExpr->subExpr = RHS;
-            cExpr          = RHS;
+            LHS->appendSubExpr(RHS);
         } else if (token.tokenValue == ".") {
             if (VariableExprAST *v = dynamic_cast<VariableExprAST *>(RHS)) {
                 LHS = new MemberExprAST(unit, LHS, v->idName, false);

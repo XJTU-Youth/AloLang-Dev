@@ -33,6 +33,7 @@ FunctionAST::~FunctionAST()
 
 llvm::Function *FunctionAST::Codegen(std::vector<TypeAST *> igenericTypes)
 {
+    this->igenericTypes  = igenericTypes;
     llvm::Function *func = proto->Codegen(igenericTypes);
     unit->globalFunctions.insert(
         std::pair<std::string, std::pair<PrototypeAST *, llvm::Function *>>(

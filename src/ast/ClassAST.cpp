@@ -125,7 +125,8 @@ std::string ClassAST::getRealNameForMangle(std::vector<TypeAST *> igenericTypes)
     ss << "C" << className.length() << className;
     if (igenericTypes.size() != 0) {
         for (unsigned int i = 0; i < igenericTypes.size() - 1; i++) {
-            ss << igenericTypes[i]->name.length() << igenericTypes[i]->name;
+            std::string typeMangleName = igenericTypes[i]->getMangleName();
+            ss << typeMangleName.length() << typeMangleName;
         }
     }
     ss << "E";
@@ -152,7 +153,6 @@ llvm::Type *ClassAST::Codegen(std::vector<TypeAST *> igenericTypes)
         sMembers.push_back(mType->Codegen());
     }
     llvm_S->setBody(sMembers);
-
     std::map<std::string, FunctionAST *>::iterator function_iter;
     for (function_iter = functions.begin(); function_iter != functions.end();
          function_iter++) {
