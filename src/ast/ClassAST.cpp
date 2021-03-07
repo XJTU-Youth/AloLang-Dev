@@ -83,15 +83,16 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
     return classAST;
 }
 
-TypeAST *ClassAST::getRealType(TypeAST *              type,
+TypeAST *ClassAST::getRealType(const TypeAST *        type,
                                std::vector<TypeAST *> igenericTypes)
 {
+    TypeAST *realType = new TypeAST(unit, type->baseClass);
     if (type->pointee != nullptr) {
-        type->pointee = getRealType(type->pointee, igenericTypes);
+        realType->pointee = getRealType(type->pointee, igenericTypes);
     }
     for (unsigned int i = 0; i < type->genericTypes.size(); i++) {
-        type->genericTypes[i] =
-            getRealType(type->genericTypes[i], igenericTypes);
+        realType->genericTypes.push_back(
+            getRealType(type->genericTypes[i], igenericTypes));
     }
     auto it = find(genericTypes.begin(), genericTypes.end(), type->baseClass);
 
@@ -100,29 +101,13 @@ TypeAST *ClassAST::getRealType(TypeAST *              type,
         int index = it - genericTypes.begin();
         return igenericTypes[index];
     } else {
-        return type;
+        return realType;
     }
 }
 
-TypeAST *ClassAST::getRealType(TypeAST *type)
+TypeAST *ClassAST::getRealType(const TypeAST *type)
 {
-    std::vector<TypeAST *> igenericTypes = this->igenericTypes;
-    if (type->pointee != nullptr) {
-        type->pointee = getRealType(type->pointee, igenericTypes);
-    }
-    for (unsigned int i = 0; i < type->genericTypes.size(); i++) {
-        type->genericTypes[i] =
-            getRealType(type->genericTypes[i], igenericTypes);
-    }
-    auto it = find(genericTypes.begin(), genericTypes.end(), type->baseClass);
-
-    if (it != genericTypes.end()) {
-        //泛型
-        int index = it - genericTypes.begin();
-        return igenericTypes[index];
-    } else {
-        return type;
-    }
+    return getRealType(type, this->igenericTypes);
 }
 
 std::string ClassAST::getRealName(std::vector<TypeAST *> igenericTypes)

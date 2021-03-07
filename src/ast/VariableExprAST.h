@@ -19,9 +19,6 @@ class VariableExprAST : public ExprAST
     std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
     std::string                idName;
     CodeBlockAST *             codeblock;
-
-  private:
-    llvm::Value *alloca;
 };
 
 #endif /* COMPILER_AST_VARIABLEEXPRAST_H_ */

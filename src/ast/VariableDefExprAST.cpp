@@ -41,7 +41,8 @@ static llvm::AllocaInst *CreateEntryBlockAlloca(CompileUnit *      unit,
 {
     llvm::IRBuilder<> builder(&function->getEntryBlock(),
                               function->getEntryBlock().begin());
-    return builder.CreateAlloca(typeAST->Codegen(), 0, VarName.c_str());
+    llvm::Type *      varType = typeAST->Codegen();
+    return builder.CreateAlloca(varType, 0, VarName.c_str());
 }
 
 std::vector<llvm::Value *>

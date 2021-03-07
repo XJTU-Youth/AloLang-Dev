@@ -142,8 +142,8 @@ llvm::Function *PrototypeAST::Codegen(std::vector<TypeAST *> igenericTypes)
     }
 
     std::vector<llvm::Type *> llvmArgs;
-    for (int i = 0; i < args.size(); i++) {
-        llvmArgs.push_back(args[i].first->Codegen());
+    for (int i = 0; i < argStr.size(); i++) {
+        llvmArgs.push_back(argStr[i]->Codegen());
     }
     llvm::Type *returnType;
     if (returnDirectly) {

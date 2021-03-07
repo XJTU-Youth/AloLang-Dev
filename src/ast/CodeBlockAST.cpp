@@ -72,6 +72,7 @@ CodeBlockAST::ParseCodeBlock(CompileUnit *unit, std::string name,
 
 llvm::BasicBlock *CodeBlockAST::Codegen(llvm::Function *function)
 {
+    namedValues.clear();
     llvm::BasicBlock *bb =
         llvm::BasicBlock::Create(*unit->context, name, function);
     endBB = bb;

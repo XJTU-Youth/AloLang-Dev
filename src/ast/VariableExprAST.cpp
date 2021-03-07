@@ -19,7 +19,6 @@ VariableExprAST::VariableExprAST(CompileUnit *unit, CodeBlockAST *codeblock,
 {
     this->idName    = idName;
     this->codeblock = codeblock;
-    this->alloca    = nullptr;
 }
 
 VariableExprAST::~VariableExprAST()
@@ -29,10 +28,6 @@ VariableExprAST::~VariableExprAST()
 
 llvm::Value *VariableExprAST::getAlloca(llvm::IRBuilder<> *builder)
 {
-
-    if (alloca != nullptr) {
-        return alloca;
-    }
     type.clear();
     //找局部变量
     CodeBlockAST *curCodeBlock = codeblock;
@@ -41,7 +36,7 @@ llvm::Value *VariableExprAST::getAlloca(llvm::IRBuilder<> *builder)
         if (varAST == curCodeBlock->namedValues.end()) {
             curCodeBlock = curCodeBlock->parent;
         } else {
-            alloca = varAST->second.second;
+            llvm::Value *alloca = varAST->second.second;
             type.push_back(varAST->second.first);
             return alloca;
         }
@@ -53,8 +48,7 @@ llvm::Value *VariableExprAST::getAlloca(llvm::IRBuilder<> *builder)
         throw e;
     } else {
         type.push_back(gVar->second.first);
-        alloca = gVar->second.second;
-        return alloca;
+        return gVar->second.second;
     }
 }
 

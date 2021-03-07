@@ -177,7 +177,7 @@ void scanToken(CompileUnit *unit)
             }
 
             // Debug token dump
-            // std::cout << token.dump() << std::endl;
+            // std::cout << tokenmbn.dump() << std::endl;
             if (token.type == tok_eof)
                 break;
             unit->tokenList.push_back(token);

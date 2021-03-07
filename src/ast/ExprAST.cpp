@@ -7,6 +7,7 @@
 #include "CodeBlockAST.h"
 #include "DoubleExprAST.h"
 #include "EmptyExprAST.h"
+#include "FunctionAST.h"
 #include "IfExprAST.h"
 #include "IntExprAST.h"
 #include "MemberExprAST.h"
@@ -175,7 +176,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
             //函数调用
             token         = unit->next_tok();
             ExprAST *args = ExprAST::ParseExpression(unit, codeblock, false);
-            result        = new CallExprAST(unit, idName, args);
+            result        = new CallExprAST(unit, idName, args, nullptr);
         } else {
             //变量或变量定义
             int i = 1, ci = 1;
@@ -213,7 +214,8 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
     case tok_key_sizeof: {
         unit->next_tok(); // sizeof
         unit->next_tok(); //(
-        TypeAST *type = TypeAST::ParseType(unit);
+        TypeAST *type =
+            TypeAST::ParseType(unit, codeblock->baseFunction->parentClass);
         unit->next_tok(); //)
         result = new SizeofExprAST(unit, type);
         break;
@@ -300,13 +302,7 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
                                   bool root)
 {
     ExprAST *result = ParsePrimary(unit, codeblock, root);
-
-    /*while (unit->icurTok->type == tok_syntax &&
-           unit->icurTok->tokenValue == ".") {
-        LHS = MemberExprAST::ParseMemberExprAST(unit, codeblock, LHS);
-    }*/
-
-    result = ParseBinOpRHS(unit, codeblock, 0, result);
+    result          = ParseBinOpRHS(unit, codeblock, 0, result);
 
     if (IfExprAST *v = dynamic_cast<IfExprAST *>(result)) {
         return result; //跳过分号

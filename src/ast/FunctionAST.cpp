@@ -60,7 +60,7 @@ FunctionAST *FunctionAST::ParseFunction(CompileUnit *unit,
             protoType->args.begin(),
             std::pair<TypeAST *, std::string>(
                 new TypeAST(unit, new TypeAST(unit, parentClass->className,
-                                              genericTypes)),
+                                              genericTypes, parentClass)),
                 "this"));
     }
     std::cout << std::left << std::setw(35)
