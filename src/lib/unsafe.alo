@@ -1,3 +1,5 @@
+extern func __cfree(int addr);
+extern func __cmalloc(int size)->int;
 class UnsafePointer<A>
 {
 	int addr;
@@ -16,15 +18,19 @@ class UnsafePointer<A>
 	{
 		return this->__alolang_inner_load();
 	}
-	func set(A data)
-	{
-		//__alolang_inner_set(data);
-		return;
-	}
 	func toObj(A* pointer)
 	{
 		this->__alolang_inner_toObj(pointer);
 		return;
 	}
+	func malloc(int count)
+	{
+		this->addr=__cmalloc(count*sizeof(A));
+		return;
+	}
+	func free()
+	{
+		__cfree(this->addr);
+		return;
+	}
 }
-

@@ -244,7 +244,7 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
     while (1) {
         Token token = *unit->icurTok;
         int   TokPrec;
-        if (LHS == nullptr) {
+        if (EmptyExprAST *v = dynamic_cast<EmptyExprAST *>(LHS)) {
             TokPrec = GetLUnaryTokPrecedence(token);
         } else {
             TokPrec = GetBinTokPrecedence(token);
