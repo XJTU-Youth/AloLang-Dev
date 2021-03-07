@@ -21,6 +21,7 @@ SizeofExprAST::~SizeofExprAST()
 
 std::vector<llvm::Value *> SizeofExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
+    this->type.clear();
     std::vector<llvm::Value *> result;
     this->type.push_back(new TypeAST(unit, "int"));
     llvm::DataLayout *TD   = new llvm::DataLayout(unit->module);
