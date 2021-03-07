@@ -31,6 +31,73 @@ FunctionAST::~FunctionAST()
     // TODO Auto-generated destructor stub
 }
 
+void FunctionAST::processInnerFunction(llvm::Function *func)
+{
+    llvm::IRBuilder<> *builder = new llvm::IRBuilder<>(*unit->context);
+    llvm::BasicBlock * bb =
+        llvm::BasicBlock::Create(*unit->context, "entry", func);
+    builder->SetInsertPoint(bb);
+    std::vector<llvm::Value *> returnValue = std::vector<llvm::Value *>();
+    llvm::IRBuilder<>          sBuilder(&func->getEntryBlock(),
+                               func->getEntryBlock().begin());
+
+    llvm::StructType *sType  = (llvm::StructType *)func->getReturnType();
+    llvm::AllocaInst *alloca = sBuilder.CreateAlloca(sType);
+
+    if (proto->name == "__alolang_inner_load") {
+        llvm::IntegerType *itype = llvm::IntegerType::get(*unit->context, 32);
+        llvm::Type *       classType =
+            ((llvm::PointerType *)func->getArg(0)->getType())->getElementType();
+        llvm::Type * realType  = parentClass->igenericTypes[0]->Codegen();
+        llvm::Value *thisValue = func->getArg(0);
+        llvm::Value *pointer   = builder->CreateGEP(
+            classType, thisValue,
+            std::vector<llvm::Value *>{llvm::ConstantInt::get(itype, 0, true),
+                                       llvm::ConstantInt::get(itype, 0, true)});
+        pointer = builder->CreateLoad(pointer);
+        pointer = builder->CreateIntToPtr(pointer,
+                                          llvm::PointerType::get(realType, 0));
+        returnValue.push_back(pointer);
+    } else if (proto->name == "__alolang_inner_toObj") {
+        llvm::IntegerType *itype = llvm::IntegerType::get(*unit->context, 32);
+        llvm::Type *       classType =
+            ((llvm::PointerType *)func->getArg(0)->getType())->getElementType();
+
+        llvm::Type * realType = parentClass->igenericTypes[0]->Codegen();
+        llvm::Value *pointer  = builder->CreateGEP(
+            classType, func->getArg(0),
+            std::vector<llvm::Value *>{llvm::ConstantInt::get(itype, 0, true),
+                                       llvm::ConstantInt::get(itype, 0, true)});
+        llvm::Value *addr = builder->CreatePtrToInt(
+            func->getArg(1), llvm::IntegerType::get(*unit->context, 64));
+        builder->CreateStore(addr, pointer);
+
+    } else {
+        CompileError e("No inner function:" + proto->name);
+        throw e;
+    }
+    for (int i = 0; i < returnValue.size(); i++) {
+        llvm::IntegerType *type = llvm::IntegerType::get(*unit->context, 32);
+        llvm::ConstantInt *res  = llvm::ConstantInt::get(type, i, true);
+
+        llvm::Value *member_ptr = builder->CreateGEP(
+            sType, alloca, {llvm::ConstantInt::get(type, 0, true), res});
+        builder->CreateStore(returnValue[i], member_ptr);
+        // builder->CreateLoad(member_ptr);
+    }
+
+    for (int i = 0; i < returnValue.size(); i++) {
+        llvm::IntegerType *type = llvm::IntegerType::get(*unit->context, 32);
+        llvm::ConstantInt *res  = llvm::ConstantInt::get(type, i, true);
+
+        llvm::Value *member_ptr = builder->CreateGEP(
+            sType, alloca, {llvm::ConstantInt::get(type, 0, true), res});
+        builder->CreateStore(returnValue[i], member_ptr);
+        // builder->CreateLoad(member_ptr);
+    }
+    builder->CreateRet(builder->CreateLoad(alloca));
+}
+
 llvm::Function *FunctionAST::Codegen(std::vector<TypeAST *> igenericTypes)
 {
     this->igenericTypes  = igenericTypes;
@@ -39,8 +106,11 @@ llvm::Function *FunctionAST::Codegen(std::vector<TypeAST *> igenericTypes)
         std::pair<std::string, std::pair<PrototypeAST *, llvm::Function *>>(
             func->getName(),
             std::pair<PrototypeAST *, llvm::Function *>(proto, func)));
-
-    llvm::BasicBlock *bb = body->Codegen(func);
+    if (proto->name.substr(0, 16) == "__alolang_inner_") {
+        processInnerFunction(func);
+    } else {
+        llvm::BasicBlock *bb = body->Codegen(func);
+    }
     // func->getBasicBlockList().push_back(bb);
 
     return func;

@@ -48,6 +48,7 @@ llvm::Value *UnaryExprAST::getAlloca(llvm::IRBuilder<> *builder)
 
 std::vector<llvm::Value *> UnaryExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
+    type.clear();
     std::vector<llvm::Value *> result;
     if (op == "&") {
         llvm::Value *pointer = operand->getAlloca(builder);
@@ -55,6 +56,7 @@ std::vector<llvm::Value *> UnaryExprAST::Codegen(llvm::IRBuilder<> *builder)
             CompileError e("No memory allocaed");
             throw e;
         }
+        type.push_back(new TypeAST(unit, operand->type[0]));
         result.push_back(pointer);
     } else {
         //值操作

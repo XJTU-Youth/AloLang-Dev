@@ -38,7 +38,12 @@ std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
     std::vector<TypeAST *>     argStr;
     std::vector<llvm::Value *> argsV = args->CodegenChain(builder);
     if (LHS != nullptr) {
-        llvm::Value *thisV = LHS->getAlloca(builder);
+        llvm::Value *thisV = nullptr;
+        if (Lpointer) {
+            thisV = LHS->Codegen(builder)[0];
+        } else {
+            thisV = LHS->getAlloca(builder);
+        }
         if (thisV == nullptr) {
             CompileError e("No memory allocaed");
             throw e;
@@ -48,21 +53,34 @@ std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
             CompileError e("Multi/void value detected");
             throw e;
         }
-        argStr.push_back(new TypeAST(unit, LHS->type[0]));
+        if (Lpointer) {
+            argStr.push_back(new TypeAST(unit, LHS->type[0]->pointee));
+        } else {
+            argStr.push_back(new TypeAST(unit, LHS->type[0]));
+        }
     }
     for (TypeAST *ast : args->type) {
         argStr.push_back(ast);
     }
-    std::string  dname;
-    llvm::Value *LHSv; //新构造
+    std::string dname;
     if (LHS == nullptr) {
         dname = demangle(callee, argStr);
     } else {
-        LHSv                  = LHS->Codegen(builder)[0];
-        ClassAST *  baseClass = unit->classes[LHS->type[0]->baseClass];
-        std::string typeMangledName =
-            baseClass->getRealNameForMangle(LHS->type[0]->genericTypes);
-        dname = demangle(callee, argStr, typeMangledName);
+        if (Lpointer) {
+            ClassAST *baseClass =
+                unit->classes[LHS->type[0]->pointee->baseClass];
+            std::string typeMangledName =
+                baseClass->getRealNameForMangle(LHS->type[0]->genericTypes);
+
+            dname = demangle(callee, argStr, typeMangledName);
+
+        } else {
+            ClassAST *  baseClass = unit->classes[LHS->type[0]->baseClass];
+            std::string typeMangledName =
+                baseClass->getRealNameForMangle(LHS->type[0]->genericTypes);
+
+            dname = demangle(callee, argStr, typeMangledName);
+        }
     }
     if (callee == "main") {
         dname = "main";

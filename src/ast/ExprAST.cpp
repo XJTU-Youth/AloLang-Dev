@@ -280,8 +280,12 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
         } else if (token.tokenValue == "->") {
             if (VariableExprAST *v = dynamic_cast<VariableExprAST *>(RHS)) {
                 LHS = new MemberExprAST(unit, LHS, v->idName, true);
+            } else if (CallExprAST *v = dynamic_cast<CallExprAST *>(RHS)) {
+                v->LHS      = LHS;
+                v->Lpointer = true;
+                LHS         = v;
             } else {
-                CompileError e("成员方法调用未实现");
+                CompileError e("未知的操作");
                 throw e;
             }
         } else if (dynamic_cast<EmptyExprAST *>(LHS) != nullptr &&

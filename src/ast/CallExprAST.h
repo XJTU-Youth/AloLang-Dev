@@ -19,6 +19,7 @@ class CallExprAST : public ExprAST
     std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
 
     std::string callee;
+    bool        Lpointer = false;
     ExprAST *   args;
     ExprAST *   LHS;
 };

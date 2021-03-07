@@ -22,6 +22,8 @@ class FunctionAST : public BaseAST
     virtual ~FunctionAST();
     llvm::Function *
     Codegen(std::vector<TypeAST *> igenericTypes = std::vector<TypeAST *>());
+    void processInnerFunction(llvm::Function *func);
+
     PrototypeAST *proto;
     ClassAST *    parentClass;
 
