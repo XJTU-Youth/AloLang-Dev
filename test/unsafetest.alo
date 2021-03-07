@@ -1,0 +1,46 @@
+%import ../src/lib/testio.alo
+%import ../src/lib/unsafe.alo
+
+class node<A> {
+    UnsafePointer<node<A>> pred;
+    UnsafePointer<node<A>> succ;
+    A data;
+}
+
+func main() {
+    int i = 0;
+    UnsafePointer<node<int>> init;
+    init.malloc(1);
+    init.load()->data = 0;
+    UnsafePointer<node<int>> curs;
+    curs = init;
+    while (i < 20){
+        i = i + 1;
+        UnsafePointer<node<int>> next;
+        next.malloc(1);
+        next.load()->data = i;
+        curs.load()->succ = next;
+        next.load()->pred = curs;
+        curs = next;
+    }
+
+    curs = init;
+    i = 0;
+    while (i < 20){
+        testPrintInt(*(curs.load()).data);
+        curs = *(curs.load()).succ;
+        i = i + 1;
+    }
+
+    while (i > 0){
+        testPrintInt(*(curs.load()).data);
+        curs = *(curs.load()).pred;
+        i = i - 1;
+    }
+
+    curs = *(init.load()).succ;
+    i = 0;
+
+    while (i < 19)
+        *(curs.load()).pred.free();
+}
