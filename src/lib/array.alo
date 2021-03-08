@@ -1,0 +1,36 @@
+%import unsafe.alo
+
+class array<A>
+{
+    UnsafePointer<A> ptr;
+    int sz;                 // current size
+    int cap;                // current capacity
+    func _Desired_size_to_capacity()
+    {
+        // this->cap = (int(this->sz / 16) + 1) * 16;
+        this->cap = this->sz;
+    }
+    func init(int _sz)
+    {
+        this->ptr.malloc(_sz);
+        this->sz = _sz;
+        this->_Desired_size_to_capacity();
+    }
+    func destroy()
+    {
+        this->ptr.free();
+        this->sz = this->cap = 0;
+    }
+    func size() -> int
+    {
+        return this->sz;
+    }
+    func capacity() -> int
+    {
+        return this->cap;
+    }
+    func data() -> A*
+    {
+        return this->ptr.load();
+    }
+}
