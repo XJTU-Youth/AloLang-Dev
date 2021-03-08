@@ -111,6 +111,11 @@ void initInnerOperations(CompileUnit *unit)
 
     unit->binOperators.insert(std::pair<std::array<std::string, 3>,
                                         std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "%"}, std::pair<llvm::Function *, TypeAST *>(
+                                       nullptr, new TypeAST(unit, "double"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
         {"double", "double", ">"}, std::pair<llvm::Function *, TypeAST *>(
                                        nullptr, new TypeAST(unit, "bool"))));
 

@@ -68,6 +68,8 @@ BinaryExprAST::processInnerBinaryOperator(llvm::Value *L, llvm::Value *R,
             return builder->CreateFMul(L, R);
         } else if (binOP == "/") {
             return builder->CreateFDiv(L, R);
+        } else if (binOP == "%") {
+            return builder->CreateFRem(L, R);
         } else if (binOP == "==") {
             return builder->CreateFCmpOEQ(L, R);
         } else if (binOP == "!=") {

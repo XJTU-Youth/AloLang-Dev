@@ -33,7 +33,7 @@ IfExprAST *IfExprAST::ParseIfExpr(CompileUnit *unit, CodeBlockAST *parent)
         CodeBlockAST::ParseCodeBlock(unit, "", parent->baseFunction, parent);
     CodeBlockAST *elseBlock = nullptr;
 
-    if ((unit->icurTok + 1)->type == tok_key_else) {
+    if (unit->icurTok->type == tok_key_else) {
         unit->next_tok();
         elseBlock = CodeBlockAST::ParseCodeBlock(unit, "", parent->baseFunction,
                                                  parent);

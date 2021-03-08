@@ -1,0 +1,14 @@
+extern "S" func _cdouble2int(double v)->int;
+
+//返回一个小于传入参数的最大整数
+func floor(double v)->int{
+	double v1=0.0;
+	if(v % 1.0 >= 0.0)
+	{
+		v1=v%1.0;
+	}else{
+		v1=1.0 + v % 1.0;
+	}	
+	double t=v - v1;
+	return _cdouble2int(t);
+}
