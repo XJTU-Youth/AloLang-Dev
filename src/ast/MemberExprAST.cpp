@@ -106,7 +106,11 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
         MemberExprAST *v         = dynamic_cast<MemberExprAST *>(chain[i]);
         std::string    member    = v->member;
         ClassAST *     baseClass = unit->classes[curType];
-        auto           memberAST = baseClass->members.find(member);
+        if (baseClass == nullptr) {
+            CompileError e("Class " + curType + " not found.");
+            throw e;
+        }
+        auto memberAST = baseClass->members.find(member);
         if (memberAST == baseClass->members.end()) {
             CompileError e("Member" + member + " not found.");
             throw e;
