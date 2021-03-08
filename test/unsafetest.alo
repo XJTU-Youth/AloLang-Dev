@@ -41,6 +41,10 @@ func main() {
     curs = init.load()->succ;
     i = 0;
 
-    while (i < 19)
+    while (i < 20){
+        testPrintInt(i);
         curs.load()->pred.free();
+        curs = curs.load()->succ;
+        i = i + 1;
+    }
 }
