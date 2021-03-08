@@ -95,12 +95,12 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
             throw e;
         }
     }
-    std::string curType, startType;
+    TypeAST *curType, *startType;
     if (pointerFlag) {
         ExprAST *start = chain[chain.size() - 1];
         pointer        = start->Codegen(builder)[0];
-        curType        = start->type[0]->pointee->baseClass;
-        startType      = start->type[0]->pointee->getName();
+        curType        = start->type[0]->pointee;
+        startType      = start->type[0]->pointee;
     } else {
         VariableExprAST *start =
             dynamic_cast<VariableExprAST *>(chain[chain.size() - 1]);
@@ -109,16 +109,16 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
             CompileError e("No memory allocaed");
             throw e;
         }
-        curType   = start->type[0]->baseClass;
-        startType = start->type[0]->getName();
+        curType   = start->type[0];
+        startType = start->type[0];
     }
     std::vector<unsigned int> idx;
     for (int i = chain.size() - 2; i >= 0; i--) {
         MemberExprAST *v         = dynamic_cast<MemberExprAST *>(chain[i]);
         std::string    member    = v->member;
-        ClassAST *     baseClass = unit->classes[curType];
+        ClassAST *     baseClass = unit->classes[curType->baseClass];
         if (baseClass == nullptr) {
-            CompileError e("Class " + curType + " not found.");
+            CompileError e("Class " + curType->baseClass + " not found.");
             throw e;
         }
         auto memberAST = baseClass->members.find(member);
@@ -129,7 +129,8 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
         unsigned int index =
             std::distance(std::begin(baseClass->members), memberAST);
         idx.push_back(index);
-        curType = baseClass->members[member]->variableType->getName();
+        curType = baseClass->members[member]->variableType;
+        curType = baseClass->getRealType(curType);
     }
     std::vector<llvm::Value *> idxl;
     llvm::IntegerType *itype = llvm::IntegerType::get(*unit->context, 32);
@@ -139,11 +140,11 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
         idxl.push_back(llvm::ConstantInt::get(itype, pid, true));
     }
     if (idx.size() != 0) {
-        auto typeAST = unit->types.find(startType);
+        auto typeAST = unit->types.find(startType->getName());
 
         pointer = builder->CreateGEP(typeAST->second, pointer, idxl);
     }
-    type.push_back(new TypeAST(unit, curType));
+    type.push_back(curType);
 
     return pointer;
 }

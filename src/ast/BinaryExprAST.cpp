@@ -86,6 +86,7 @@ BinaryExprAST::processInnerBinaryOperator(llvm::Value *L, llvm::Value *R,
 }
 std::vector<llvm::Value *> BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
+    type.clear();
     std::vector<llvm::Value *> result;
 
     if (binOP == "=") {
