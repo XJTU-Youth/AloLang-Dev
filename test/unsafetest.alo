@@ -27,20 +27,20 @@ func main() {
     curs = init;
     i = 0;
     while (i < 20){
-        testPrintInt(*(curs.load()).data);
-        curs = *(curs.load()).succ;
+        testPrintInt(curs.load()->data);
+        curs = curs.load()->succ;
         i = i + 1;
     }
 
     while (i > 0){
-        testPrintInt(*(curs.load()).data);
-        curs = *(curs.load()).pred;
+        testPrintInt(curs.load()->data);
+        curs = curs.load()->pred;
         i = i - 1;
     }
 
-    curs = *(init.load()).succ;
+    curs = init.load()->succ;
     i = 0;
 
     while (i < 19)
-        *(curs.load()).pred.free();
+        curs.load()->pred.free();
 }
