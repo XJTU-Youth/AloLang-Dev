@@ -176,7 +176,8 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
             //函数调用
             token         = unit->next_tok();
             ExprAST *args = ExprAST::ParseExpression(unit, codeblock, false);
-            result        = new CallExprAST(unit, idName, args, nullptr);
+            result = new CallExprAST(unit, codeblock->baseFunction, idName,
+                                     args, nullptr);
         } else {
             //变量或变量定义
             int i = 1, ci = 1;

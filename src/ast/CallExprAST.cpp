@@ -16,13 +16,14 @@
 
 #include "../utils.h"
 
-CallExprAST::CallExprAST(CompileUnit *unit, const std::string &callee,
-                         ExprAST *args, ExprAST *LHS)
+CallExprAST::CallExprAST(CompileUnit *unit, FunctionAST *parentFunction,
+                         const std::string &callee, ExprAST *args, ExprAST *LHS)
     : ExprAST(unit)
 {
-    this->callee = callee;
-    this->args   = args;
-    this->LHS    = LHS;
+    this->callee         = callee;
+    this->args           = args;
+    this->LHS            = LHS;
+    this->parentFunction = parentFunction;
     std::cout << std::left << std::setw(35)
               << "Function call found:" << this->callee << std::endl;
 }
@@ -34,6 +35,7 @@ CallExprAST::~CallExprAST()
 
 std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
+    type.clear();
     std::vector<llvm::Value *> result;
     std::vector<TypeAST *>     argStr;
     std::vector<llvm::Value *> argsV = args->CodegenChain(builder);
@@ -54,13 +56,28 @@ std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
             throw e;
         }
         if (Lpointer) {
-            argStr.push_back(new TypeAST(unit, LHS->type[0]->pointee));
+            if (parentFunction->parentClass == nullptr) {
+                argStr.push_back(new TypeAST(unit, LHS->type[0]->pointee));
+            } else {
+                argStr.push_back(parentFunction->parentClass->getRealType(
+                    new TypeAST(unit, LHS->type[0]->pointee)));
+            }
+
         } else {
-            argStr.push_back(new TypeAST(unit, LHS->type[0]));
+            if (parentFunction->parentClass == nullptr) {
+                argStr.push_back(new TypeAST(unit, LHS->type[0]));
+            } else {
+                argStr.push_back(parentFunction->parentClass->getRealType(
+                    new TypeAST(unit, LHS->type[0])));
+            }
         }
     }
     for (TypeAST *ast : args->type) {
-        argStr.push_back(ast);
+        if (parentFunction->parentClass == nullptr) {
+            argStr.push_back(ast);
+        } else {
+            argStr.push_back(parentFunction->parentClass->getRealType(ast));
+        }
     }
     std::string dname;
     if (LHS == nullptr) {
@@ -96,7 +113,19 @@ std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
         CompileError e("Function " + dname + " not found.");
         throw e;
     }
-    type = proto->returnTypes;
+    for (TypeAST *tAST : proto->returnTypes) {
+        if (LHS == nullptr) {
+            type.push_back(tAST);
+        } else {
+            ClassAST *baseClass;
+            if (Lpointer) {
+                baseClass = unit->classes[LHS->type[0]->pointee->baseClass];
+            } else {
+                baseClass = unit->classes[LHS->type[0]->baseClass];
+            }
+            type.push_back(baseClass->getRealType(tAST));
+        }
+    }
 
     llvm::Function *CalleeF = unit->module->getFunction(dname);
     if (CalleeF == 0) {

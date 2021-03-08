@@ -9,6 +9,7 @@
 #include "../CompileError.hpp"
 #include "ClassAST.h"
 #include "TypeAST.h"
+#include "UnaryExprAST.h"
 #include "VariableExprAST.h"
 
 MemberExprAST::MemberExprAST(CompileUnit *unit, ExprAST *LHS,
@@ -78,6 +79,16 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
         } else if (VariableExprAST *v =
                        dynamic_cast<VariableExprAST *>(curAST)) {
             pointerFlag = false;
+            break;
+        } else if (UnaryExprAST *v = dynamic_cast<UnaryExprAST *>(curAST)) {
+            if (v->op == "*") {
+                pointerFlag = true;
+                chain.push_back(v->operand);
+                break;
+            } else {
+                CompileError e("Unknown AST.");
+                throw e;
+            }
             break;
         } else {
             CompileError e("Unknown AST.");
