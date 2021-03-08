@@ -8,29 +8,21 @@
 #include "PrototypeAST.h"
 #include "../CompileError.hpp"
 #include "../utils.h"
+#include "ClassAST.h"
 #include "TypeAST.h"
-
 #include <iostream>
 
 PrototypeAST::PrototypeAST(
     CompileUnit *unit, const std::string &name,
     const std::vector<std::pair<TypeAST *, std::string>> &args,
-    const std::vector<TypeAST *> &                        returnTypes)
+    const std::vector<TypeAST *> &returnTypes, ClassAST *parentClass)
     : BaseAST(unit)
 {
     this->name           = name;
     this->args           = args;
     this->returnDirectly = false;
     this->returnTypes    = returnTypes;
-    std::vector<TypeAST *> argStr;
-    for (std::pair<TypeAST *, std::string> pair : args) {
-        argStr.push_back(pair.first);
-    }
-    if (name != "main") {
-        this->demangledName = demangle(name, argStr);
-    } else {
-        this->demangledName = "main";
-    }
+    this->parentClass    = parentClass;
 }
 
 PrototypeAST::~PrototypeAST()
@@ -38,7 +30,8 @@ PrototypeAST::~PrototypeAST()
     // TODO Auto-generated destructor stub
 }
 
-PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
+PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody,
+                                           ClassAST *parentClass)
 {
     std::vector<std::pair<TypeAST *, std::string>> args;
     Token                                          token = unit->next_tok();
@@ -69,8 +62,9 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
         token                                  = *unit->icurTok;
         std::string                       name = token.tokenValue;
         std::pair<TypeAST *, std::string> pair;
-        pair.first  = type;
-        pair.second = name;
+        type->inClass = parentClass;
+        pair.first    = type;
+        pair.second   = name;
         args.push_back(pair);
     }
     if (token.type != tok_syntax || token.tokenValue != ")") {
@@ -80,7 +74,7 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
 
     token = *(unit->icurTok); // -> or ; or {
     std::vector<TypeAST *> returnTypes;
-    if (token.type == tok_return_type) {
+    if (token.type == tok_syntax && token.tokenValue == "->") {
         unit->next_tok();
         int bc = 0;
         while (true) {
@@ -102,30 +96,54 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody)
                     break;
                 }
             }
-            returnTypes.push_back(TypeAST::ParseType(unit));
+            TypeAST *returnType = TypeAST::ParseType(unit);
+            returnType->inClass = parentClass;
+            returnTypes.push_back(returnType);
         }
     } else {
         if (token.tokenValue == "{") {
             if (!hasBody) {
-                CompileError e("Unexpected function body");
+                CompileError e("Unexpected function body", token.file,
+                               token.lineno);
                 throw e;
             }
         }
         if (token.tokenValue == ";") {
             if (hasBody) {
-                CompileError e("Unexpected ;");
+                CompileError e("Unexpected ;", token.file, token.lineno);
                 throw e;
             }
         }
     }
-    return new PrototypeAST(unit, FnName, args, returnTypes);
+    return new PrototypeAST(unit, FnName, args, returnTypes, parentClass);
 }
 
-llvm::Function *PrototypeAST::Codegen()
+llvm::Function *PrototypeAST::Codegen(std::vector<TypeAST *> igenericTypes)
 {
+    std::vector<TypeAST *> argStr;
+    for (std::pair<TypeAST *, std::string> pair : args) {
+        if (parentClass == nullptr) {
+            argStr.push_back(pair.first);
+        } else {
+            argStr.push_back(
+                parentClass->getRealType(pair.first, igenericTypes));
+        }
+    }
+    std::string demangledName;
+    if (name != "main") {
+        if (parentClass == nullptr) {
+            demangledName = demangle(name, argStr);
+        } else {
+            demangledName = demangle(
+                name, argStr, parentClass->getRealNameForMangle(igenericTypes));
+        }
+    } else {
+        demangledName = "main";
+    }
+
     std::vector<llvm::Type *> llvmArgs;
-    for (int i = 0; i < args.size(); i++) {
-        llvmArgs.push_back(args[i].first->Codegen());
+    for (int i = 0; i < argStr.size(); i++) {
+        llvmArgs.push_back(argStr[i]->Codegen());
     }
     llvm::Type *returnType;
     if (returnDirectly) {
@@ -177,17 +195,5 @@ llvm::Function *PrototypeAST::Codegen()
      return 0;
      }
      }*/
-    // todo:参数处理
-    // Set names for all arguments.
-
-    unsigned Idx = 0;
-    for (llvm::Function::arg_iterator AI = F->arg_begin(); Idx != args.size();
-         ++AI, ++Idx) {
-        AI->setName(args[Idx].second);
-
-        // Add arguments to variable symbol table.
-        // NamedValues[args[Idx]] = AI;
-    }
-
     return F;
 }

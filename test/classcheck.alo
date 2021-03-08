@@ -1,0 +1,24 @@
+extern func testPrintInt(int i);
+
+class foo {
+    int a;
+    int b;
+}
+
+class bar {
+    foo F;
+}
+
+func main(){
+    foo A;
+    bar B;
+    A.a = 3;
+    A.b = 4;
+    B.F = A;
+    testPrintInt(B.F.a);
+    testPrintInt(A.b);
+    A.a = 4;
+    A.b = 5;
+    // A.c = 999;
+    // testPrintInt(A.c);
+}   

@@ -1,19 +1,29 @@
-extern func testPrintInt(int i);
-extern "S" func testGetInt() -> int;
+extern func testPrintDouble(double i);
+extern "S" func testGetDouble() -> double;
 
 func main()
 {
-    int a = 2;
-    int b;
-    int c;
+    double a = 2.0;
+    double b;
+    double c;
 
-    b = 9;
+    b = 9.0;
 
     c = a + b;
-    testPrintInt(c);
+    testPrintDouble(c);
 
-    a = testGetInt();
-    b = testGetInt();
+    a = testGetDouble();
+    b = testGetDouble();
+    testPrintDouble(a);
+    testPrintDouble(b);
+    // c = a & b;
+    // testPrintInt(c);
+    // c = a | b;
+    // testPrintInt(c);
     c = a + b;
-    testPrintInt(c);
+    testPrintDouble(c);
+    c = a - b;
+    testPrintDouble(c);
+    c = a * b;
+    testPrintDouble(c);
 }

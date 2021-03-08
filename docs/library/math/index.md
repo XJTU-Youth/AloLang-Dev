@@ -1,4 +1,4 @@
-# alolang库:math
+# math
 
 #### **abs(x)**
 

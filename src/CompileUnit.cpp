@@ -21,6 +21,7 @@
 #include "ast/TypeAST.h"
 #include "ast/VariableDefExprAST.h"
 #include "utils.h"
+#include <array>
 #include <fstream>
 #include <iostream>
 
@@ -34,51 +35,166 @@ void initInnerType(CompileUnit *unit)
         "bool", llvm::Type::getInt1Ty(*unit->context)));
 }
 
+void initInnerOperations(CompileUnit *unit)
+{
+    // binOP
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "+"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "int"))));
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "-"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "int"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "*"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "int"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "/"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "double"))));
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "%"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "int"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", ">"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "<"}, std::pair<llvm::Function *, TypeAST *>(
+                                 nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", ">="}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "<="}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "bool"))));
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "!="}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "=="}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "bool"))));
+    // double
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "+"}, std::pair<llvm::Function *, TypeAST *>(
+                                       nullptr, new TypeAST(unit, "double"))));
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "-"}, std::pair<llvm::Function *, TypeAST *>(
+                                       nullptr, new TypeAST(unit, "double"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "*"}, std::pair<llvm::Function *, TypeAST *>(
+                                       nullptr, new TypeAST(unit, "double"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "/"}, std::pair<llvm::Function *, TypeAST *>(
+                                       nullptr, new TypeAST(unit, "double"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", ">"}, std::pair<llvm::Function *, TypeAST *>(
+                                       nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "<"}, std::pair<llvm::Function *, TypeAST *>(
+                                       nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", ">="}, std::pair<llvm::Function *, TypeAST *>(
+                                        nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "<="}, std::pair<llvm::Function *, TypeAST *>(
+                                        nullptr, new TypeAST(unit, "bool"))));
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "!="}, std::pair<llvm::Function *, TypeAST *>(
+                                        nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "=="}, std::pair<llvm::Function *, TypeAST *>(
+                                        nullptr, new TypeAST(unit, "bool"))));
+}
+
 void scanToken(CompileUnit *unit)
 {
-    Token token;
-    do {
-        int tokenid      = unit->lexer->yylex();
-        token.type       = TokenType(tokenid);
-        token.lineno     = unit->lexer->lineno();
-        token.tokenValue = unit->lexer->YYText();
-        // Deal with numbers
-        if (token.type == tok_number) {
-            int numTypeFlag = 10; //进制数
-            if (token.tokenValue.substr(0, 2) == "0x" ||
-                token.tokenValue.substr(0, 2) == "0X")
-                numTypeFlag = 16;
-            else if (token.tokenValue.substr(0, 2) == "0b" ||
-                     token.tokenValue.substr(0, 2) == "0B")
-                numTypeFlag = 2;
-            else if (token.tokenValue.substr(0, 1) == "0")
-                numTypeFlag = 8;
-            char tmp[256];
-            sprintf(tmp, "%ld",
-                    strtol(token.tokenValue.c_str(), NULL, numTypeFlag));
-            token.tokenValue = tmp;
-        } else if (token.type == tok_str) {
-            std::string str  = token.tokenValue;
-            token.tokenValue = str.substr(1, str.length() - 2);
+    for (Tline line : unit->srclines) {
+        std::istringstream is(line.second);
+        FlexLexer *        lexer = new yyFlexLexer(is, std::cerr);
+        Token              token;
+
+        while (1) {
+            int tokenid      = lexer->yylex();
+            token.type       = TokenType(tokenid);
+            token.file       = line.first.first;
+            token.lineno     = line.first.second;
+            token.tokenValue = lexer->YYText();
+            // Deal with numbers
+            if (token.type == tok_number) {
+                int numTypeFlag = 10; //进制数
+                if (token.tokenValue.substr(0, 2) == "0x" ||
+                    token.tokenValue.substr(0, 2) == "0X")
+                    numTypeFlag = 16;
+                else if (token.tokenValue.substr(0, 2) == "0b" ||
+                         token.tokenValue.substr(0, 2) == "0B")
+                    numTypeFlag = 2;
+                else if (token.tokenValue.substr(0, 1) == "0")
+                    numTypeFlag = 8;
+                char tmp[256];
+                if (token.tokenValue.find(".") != std::string::npos)
+                    sprintf(tmp, "%f", strtod(token.tokenValue.c_str(), NULL));
+                else
+                    sprintf(
+                        tmp, "%ld",
+                        strtol(token.tokenValue.c_str(), NULL, numTypeFlag));
+                token.tokenValue = tmp;
+            } else if (token.type == tok_str) {
+                std::string str  = token.tokenValue;
+                token.tokenValue = str.substr(1, str.length() - 2);
+            }
+
+            // Debug token dump
+            // std::cout << tokenmbn.dump() << std::endl;
+            if (token.type == tok_eof)
+                break;
+            unit->tokenList.push_back(token);
         }
-
-        // Debug token dump
-        // std::cout << token.dump() << std::endl;
-
-        unit->tokenList.push_back(token);
-    } while (token.type != tok_eof);
-
+    }
+    Token TEOF;
+    TEOF.type = tok_eof;
+    unit->tokenList.push_back(TEOF);
     unit->icurTok = unit->tokenList.begin();
 }
 
-CompileUnit::CompileUnit(std::string name, std::string source)
+CompileUnit::CompileUnit(std::string Iname, std::vector<Tline> lines)
 {
-    this->name   = name;
-    this->source = source;
-    this->sis    = std::istringstream(source);
-    this->lexer  = new yyFlexLexer(sis, std::cerr);
-    context      = new llvm::LLVMContext();
-    module       = new llvm::Module(name, *context);
+    name     = Iname;
+    srclines = lines;
+    context  = new llvm::LLVMContext();
+    module   = new llvm::Module(name, *context);
 }
 
 CompileUnit::~CompileUnit() {}
@@ -95,18 +211,19 @@ void CompileUnit::compile()
 {
     std::cout << "Start compiling:" << name << std::endl;
     initInnerType(this);
+    initInnerOperations(this);
     scanToken(this);
     while (icurTok->type != tok_eof) {
         switch (icurTok->type) {
         case tok_fun: {
             FunctionAST *func_ast = FunctionAST::ParseFunction(this);
-            functions.insert(std::pair<std::string, FunctionAST *>(
-                func_ast->getDemangledName(), func_ast));
+            functions.push_back(func_ast);
             // llvm::Function *func = func_ast->Codegen();
             /*llvm::Type*
              type=llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
              false);
-             module->getOrInsertGlobal(func_ast->proto->name, func->getType());
+             module->getOrInsertGlobal(func_ast->proto->name,
+             func->getType());
 
              llvm::GlobalVariable
              *gVar=module->getNamedGlobal(func_ast->proto->name);
@@ -116,8 +233,7 @@ void CompileUnit::compile()
         }
         case tok_extern: {
             ExternAST *externast = ExternAST::ParseExtern(this);
-            externs.insert(std::pair<std::string, ExternAST *>(
-                externast->getDemangledName(), externast));
+            externs.push_back(externast);
             break;
         }
         case tok_identifier: {
@@ -125,8 +241,7 @@ void CompileUnit::compile()
             VariableDefExprAST *var =
                 VariableDefExprAST::ParseVar(this, nullptr);
             Token token = next_tok();
-            globalVariables.insert(
-                std::pair<std::string, VariableDefExprAST *>(var->idName, var));
+            globalVariables.push_back(var);
             break;
         }
         case tok_key_class: {
@@ -142,28 +257,23 @@ void CompileUnit::compile()
         }
     }
     std::cout << "Start codegen:" << name << std::endl;
-    std::map<std::string, ClassAST *>::iterator class_iter;
-    for (class_iter = classes.begin(); class_iter != classes.end();
-         class_iter++) {
-        llvm::Type *classType = class_iter->second->Codegen();
-        types.insert(
-            std::pair<std::string, llvm::Type *>(class_iter->first, classType));
-    }
+    /*for (ClassAST *classAST : classesO) {
+        llvm::Type *classType = classAST->Codegen();
+    }*/
 
-    std::map<std::string, VariableDefExprAST *>::iterator gVar_iter;
-    for (gVar_iter = globalVariables.begin();
-         gVar_iter != globalVariables.end(); gVar_iter++) {
-        gVar_iter->second->Codegen(nullptr);
+    for (VariableDefExprAST *v : globalVariables) {
+        v->Codegen(nullptr); //自动插入globalVariablesValue
     }
     std::map<std::string, ExternAST *>::iterator extern_iter;
-    for (extern_iter = externs.begin(); extern_iter != externs.end();
-         extern_iter++) {
-        extern_iter->second->Codegen();
+    for (ExternAST *v : externs) {
+        llvm::Function *f = v->Codegen();
+        globalFunctions.insert(
+            std::pair<std::string, std::pair<PrototypeAST *, llvm::Function *>>(
+                f->getName(),
+                std::pair<PrototypeAST *, llvm::Function *>(v->proto, f)));
     }
-    std::map<std::string, FunctionAST *>::iterator function_iter;
-    for (function_iter = functions.begin(); function_iter != functions.end();
-         function_iter++) {
-        function_iter->second->Codegen();
+    for (FunctionAST *v : functions) {
+        llvm::Function *f = v->Codegen(); //自动插入globalFunctions
     }
 
     build();

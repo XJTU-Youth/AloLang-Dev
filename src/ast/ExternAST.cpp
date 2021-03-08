@@ -30,7 +30,8 @@ ExternAST *ExternAST::ParseExtern(CompileUnit *unit)
         } else if (flag.tokenValue == "C") {
             C = true;
         } else {
-            CompileError e("Unknown flag:" + flag.tokenValue);
+            CompileError e("Unknown flag:" + flag.tokenValue, flag.file,
+                           flag.lineno);
             throw e;
         }
     }
@@ -44,7 +45,8 @@ ExternAST *ExternAST::ParseExtern(CompileUnit *unit)
               << "Function extern found:" << proto->name << std::endl;
     Token token = *(unit->icurTok);
     if (token.type != tok_syntax || token.tokenValue != ";") {
-        CompileError e("丟失分号: \"" + token.dump() + "\" 前");
+        CompileError e("丟失分号: \"" + token.dump() + "\" 前", token.file,
+                       token.lineno);
         throw e;
     }
     token = unit->next_tok();
@@ -52,10 +54,4 @@ ExternAST *ExternAST::ParseExtern(CompileUnit *unit)
     return new ExternAST(unit, proto);
 }
 
-std::string ExternAST::getDemangledName() { return proto->demangledName; }
-
-llvm::Function *ExternAST::Codegen()
-{
-    proto->Codegen();
-    return 0;
-}
+llvm::Function *ExternAST::Codegen() { return proto->Codegen(); }

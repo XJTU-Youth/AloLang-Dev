@@ -13,7 +13,8 @@
 #include <vector>
 
 std::string demangle(const std::string &           fnName,
-                     const std::vector<TypeAST *> &argTypes);
+                     const std::vector<TypeAST *> &argTypes,
+                     const std::string &           className = "");
 
 bool isSyntax(char c);
 void skipSpace(const std::vector<std::string> &words, long unsigned int &i);

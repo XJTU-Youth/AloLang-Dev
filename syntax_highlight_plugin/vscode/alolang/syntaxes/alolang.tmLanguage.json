@@ -203,6 +203,10 @@
 				{
 					"name": "keyword.const.alolang",
 					"match": "\\bconst\\b"
+				},
+				{
+					"name": "keyword.class.alolang",
+					"match": "\\bclass\\b"
 				}
 			]
 		},

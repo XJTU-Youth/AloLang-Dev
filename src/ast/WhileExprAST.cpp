@@ -57,6 +57,7 @@ WhileExprAST *WhileExprAST::ParseWhileExpr(CompileUnit * unit,
 {
     unit->next_tok();
     ExprAST *     condition = ExprAST::ParseExpression(unit, parent, false);
-    CodeBlockAST *body      = CodeBlockAST::ParseCodeBlock(unit, "", parent);
+    CodeBlockAST *body =
+        CodeBlockAST::ParseCodeBlock(unit, "", parent->baseFunction, parent);
     return new WhileExprAST(unit, parent, condition, body);
 }

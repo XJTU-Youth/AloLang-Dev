@@ -9,6 +9,7 @@
 #define COMPILER_COMPILEUNIT_H_
 
 #include "Token.h"
+#include "preprocessor.h"
 #include <FlexLexer.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
@@ -20,31 +21,34 @@ class FunctionAST;
 class ExternAST;
 class VariableDefExprAST;
 class ClassAST;
+class PrototypeAST;
 class CompileUnit
 {
   public:
-    CompileUnit(std::string name, std::string source);
+    CompileUnit(std::string name, std::vector<Tline> lines);
     virtual ~CompileUnit();
     void  compile();
     Token next_tok();
     void  build();
 
-    FlexLexer *                                 lexer;
-    std::string                                 name;
-    std::string                                 source;
-    std::istringstream                          sis;
-    llvm::LLVMContext *                         context;
-    llvm::Module *                              module;
-    std::vector<Token>                          tokenList;
-    std::vector<Token>::iterator                icurTok;
-    std::map<std::string, ClassAST *>           classes;
-    std::map<std::string, VariableDefExprAST *> globalVariables;
-    std::map<std::string, FunctionAST *>        functions;
-    std::map<std::string, ExternAST *>          externs;
-    std::map<std::string, llvm::Type *>         types; // Codgen用
+    std::string                       name;
+    std::vector<Tline>                srclines;
+    llvm::LLVMContext *               context;
+    llvm::Module *                    module;
+    std::vector<Token>                tokenList;
+    std::vector<Token>::iterator      icurTok;
+    std::map<std::string, ClassAST *> classes;
+    std::vector<VariableDefExprAST *> globalVariables;
+    std::vector<FunctionAST *>        functions;
+    std::vector<ExternAST *>          externs;
+
+    std::map<std::array<std::string, 3>, std::pair<llvm::Function *, TypeAST *>>
+                                        binOperators; // LHS type,RHS type,binOP
+    std::map<std::string, llvm::Type *> types;        // Codgen用
     std::map<std::string, std::pair<TypeAST *, llvm::Value *>>
         globalVariablesValue; // Codgen用
-    // std::map<std::string, >
+    std::map<std::string, std::pair<PrototypeAST *, llvm::Function *>>
+        globalFunctions; // Codegen用
 };
 
 #endif /* COMPILER_COMPILEUNIT_H_ */

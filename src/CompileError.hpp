@@ -20,7 +20,7 @@ class CompileError : public std::exception
         error   = whatError;
         file    = whatFile;
         line    = whatLine;
-        message = file + ": " + std::to_string(line) + ": " + error;
+        message = file + ":" + std::to_string(line) + ": " + error;
     }
     CompileError(const std::string &whatError, std::string whatFile = "",
                  uint64_t whatLine = 0)
@@ -28,7 +28,7 @@ class CompileError : public std::exception
         error   = whatError;
         file    = whatFile;
         line    = whatLine;
-        message = file + ": " + std::to_string(line) + ": " + error;
+        message = file + ":" + std::to_string(line) + ": " + error;
     }
 };
 #endif

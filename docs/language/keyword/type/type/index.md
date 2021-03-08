@@ -1,4 +1,4 @@
-# alolang关键字:type
+# type
 
 * 类型别名标识符
 

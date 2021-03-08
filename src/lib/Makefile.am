@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 lib_LIBRARIES = libalolangcore.a
-libalolangcore_a_SOURCES = testPuts.c
+libalolangcore_a_SOURCES = unsafe.c testPuts.c
 
 alolanglibdir=$(libdir)
 alolanglib_PROGRAMS = libalolangcore.so

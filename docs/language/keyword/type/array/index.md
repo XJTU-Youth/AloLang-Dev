@@ -1,4 +1,4 @@
-# alolang关键字:array
+# array
 
 用于对数组的声明，使用方法为array(元素类型，长度)。
 

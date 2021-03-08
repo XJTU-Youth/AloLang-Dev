@@ -1,4 +1,4 @@
-# alolang关键字:EOF
+# EOF
 
 * 文件尾标识符
 

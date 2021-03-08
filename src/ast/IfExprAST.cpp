@@ -29,12 +29,14 @@ IfExprAST *IfExprAST::ParseIfExpr(CompileUnit *unit, CodeBlockAST *parent)
 {
     unit->next_tok();
     ExprAST *     condition = ExprAST::ParseExpression(unit, parent, false);
-    CodeBlockAST *thenBlock = CodeBlockAST::ParseCodeBlock(unit, "", parent);
+    CodeBlockAST *thenBlock =
+        CodeBlockAST::ParseCodeBlock(unit, "", parent->baseFunction, parent);
     CodeBlockAST *elseBlock = nullptr;
 
     if ((unit->icurTok + 1)->type == tok_key_else) {
         unit->next_tok();
-        elseBlock = CodeBlockAST::ParseCodeBlock(unit, "", parent);
+        elseBlock = CodeBlockAST::ParseCodeBlock(unit, "", parent->baseFunction,
+                                                 parent);
     }
     return new IfExprAST(unit, parent, condition, thenBlock, elseBlock);
 }
