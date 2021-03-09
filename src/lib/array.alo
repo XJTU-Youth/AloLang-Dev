@@ -81,4 +81,30 @@ class array<A>
         _ptr.addr = _ptr.addr + _Index * sizeof(int);
         return _ptr.load();
     }
+    func pop_back() -> A
+    {
+        // TODO:
+        // if(this->sz < 1) throw some error;
+        UnsafePointer<A> p;
+        p.addr = this->ptr.addr;
+        p.addr = p.addr + this->sz * sizeof(A) - sizeof(A);
+        this->sz = this->sz - 1;
+        return *(p.load());
+    }
+    func erase_back(int _Size_to_erase)
+    {
+        // array = [0, 1, 2, 3, 4, 5, 6]
+        // array.erase_back(3)
+        // array = [0, 1, 2, 3]
+        this->sz = this->sz - _Size_to_erase;
+        return;
+    }
+    func back() -> A
+    {
+        // if(this->sz < 1) throw some error;
+        UnsafePointer<A> p;
+        p.addr = this->ptr.addr;
+        p.addr = p.addr + this->sz * sizeof(A) - sizeof(A);
+        return *(p.load());
+    }
 }
