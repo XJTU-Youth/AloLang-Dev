@@ -5,17 +5,17 @@ class array<A>
     UnsafePointer<A> ptr;
     int sz;                 // current size
     int cap;                // current capacity
-    func _Desired_size_to_capacity()
+    func _Desired_size_to_capacity(int _size) -> int
     {
-        // this->cap = (int(this->sz / 16) + 1) * 16;
-        this->cap = this->sz;
-        return;
+        // return (int(_size / 16) + 1) * 16;
+        // return (_size >> 4) + 1 << 4;
+        return _size;
     }
     func init(int _sz)
     {
-        this->ptr.malloc(_sz);
         this->sz = _sz;
-        this->_Desired_size_to_capacity();
+        this->cap = this->_Desired_size_to_capacity(_sz);
+        this->ptr.malloc(this->cap);
         return;
     }
     func destroy()
@@ -36,5 +36,28 @@ class array<A>
     func data() -> A*
     {
         return this->ptr.load();
+    }
+    func _Reallocate(int _Newsz)
+    {
+        this->cap = this->_Desired_size_to_capacity(_Newsz);
+        UnsafePointer<A> newptr;
+        newptr.malloc(this->cap);
+        memcpy(this->ptr.load(), newptr.load(), this->sz * sizeof(A));
+        this->ptr.free();
+        this->ptr = newptr;
+        return;
+    }
+    func concat(A* _ptr, int _sz)
+    {
+        int newsz = this->sz + _sz;
+        if(newsz > this->cap) this->_Reallocate(newsz);
+        memcpy(_ptr, this->ptr.load() + /*this->sz * */sizeof(A), _sz * sizeof(A));
+        this->sz = newsz;
+        return;
+    }
+    func append(A obj)
+    {
+        this->concat(&obj, 1);
+        return;
     }
 }
