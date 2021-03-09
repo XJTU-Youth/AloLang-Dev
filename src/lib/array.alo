@@ -42,7 +42,7 @@ class array<A>
         this->cap = this->_Desired_size_to_capacity(_Newsz);
         UnsafePointer<A> newptr;
         newptr.malloc(this->cap);
-        memcpy(this->ptr.load(), newptr.load(), this->sz * sizeof(A));
+        memcpy(this->ptr.addr, newptr.addr, this->sz * sizeof(A));
         this->ptr.free();
         this->ptr = newptr;
         return;
@@ -51,7 +51,7 @@ class array<A>
     {
         int newsz = this->sz + _sz;
         if(newsz > this->cap) this->_Reallocate(newsz);
-        memcpy(_ptr, this->ptr.load() + /*this->sz * */sizeof(A), _sz * sizeof(A));
+        memcpy(_ptr.addr, this->ptr.addr + this->sz * sizeof(A), _sz * sizeof(A));
         this->sz = newsz;
         return;
     }
