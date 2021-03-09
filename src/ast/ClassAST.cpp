@@ -12,7 +12,7 @@
 
 ClassAST::ClassAST(CompileUnit *unit, const std::string &className,
                    std::map<std::string, VariableDefExprAST *> members,
-                   std::map<std::string, FunctionAST *>        functions,
+                   std::vector<FunctionAST *>                  functions,
                    std::vector<std::string>                    genericTypes)
     : BaseAST(unit)
 {
@@ -57,7 +57,7 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
 
     ClassAST *classAST = new ClassAST(
         unit, className, std::map<std::string, VariableDefExprAST *>(),
-        std::map<std::string, FunctionAST *>(), genericTypes);
+        std::vector<FunctionAST *>(), genericTypes);
     unit->next_tok();
     while (true) {
         //解析成员方法，成员变量
@@ -67,8 +67,7 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
         }
         if (token.type == tok_fun) {
             FunctionAST *funDef = FunctionAST::ParseFunction(unit, classAST);
-            classAST->functions.insert(std::pair<std::string, FunctionAST *>(
-                funDef->proto->name, funDef));
+            classAST->functions.push_back(funDef);
 
         } else {
             VariableDefExprAST *memberDef =
@@ -159,9 +158,8 @@ llvm::Type *ClassAST::Codegen(std::vector<TypeAST *> igenericTypes)
     }
     llvm_S->setBody(sMembers);
     std::map<std::string, FunctionAST *>::iterator function_iter;
-    for (function_iter = functions.begin(); function_iter != functions.end();
-         function_iter++) {
-        function_iter->second->Codegen(igenericTypes);
+    for (FunctionAST *function : functions) {
+        function->Codegen(igenericTypes);
     }
 
     return llvm_S;

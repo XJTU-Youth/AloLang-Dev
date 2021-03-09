@@ -16,7 +16,7 @@ class ClassAST : public BaseAST
   public:
     ClassAST(CompileUnit *unit, const std::string &className,
              std::map<std::string, VariableDefExprAST *> members,
-             std::map<std::string, FunctionAST *>        functions,
+             std::vector<FunctionAST *>                  functions,
              std::vector<std::string>                    genericTypes);
     virtual ~ClassAST();
     llvm::Type *Codegen(std::vector<TypeAST *> genericTypes);
@@ -29,7 +29,7 @@ class ClassAST : public BaseAST
 
     static ClassAST *                           ParseClass(CompileUnit *unit);
     std::map<std::string, VariableDefExprAST *> members;
-    std::map<std::string, FunctionAST *>        functions;
+    std::vector<FunctionAST *>                  functions;
     std::vector<std::string>                    genericTypes;
     std::string                                 className;
     std::vector<TypeAST *> igenericTypes; // todo:注意多线程的情形
