@@ -56,9 +56,9 @@ class array<A>
         this->sz = newsz;
         return;
     }
-    func append(A obj)
+    /*func append(A obj)
     {
         this->concat(&obj, 1);
         return;
-    }
+    }*/
 }

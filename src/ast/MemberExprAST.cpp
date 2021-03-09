@@ -127,13 +127,18 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
             CompileError e("Class " + curType->baseClass + " not found.");
             throw e;
         }
-        auto memberAST = baseClass->members.find(member);
-        if (memberAST == baseClass->members.end()) {
-            CompileError e("Member" + member + " not found.");
+        unsigned int index     = 0;
+        bool         foundFlag = false;
+        for (; index < baseClass->omembers.size(); index++) {
+            if (baseClass->omembers[index]->idName == this->member) {
+                foundFlag = true;
+                break;
+            }
+        }
+        if (!foundFlag) {
+            CompileError e("Member " + this->member + " not found.");
             throw e;
         }
-        unsigned int index =
-            std::distance(std::begin(baseClass->members), memberAST);
         idx.push_back(index);
         curType = baseClass->members[member]->variableType;
         curType = baseClass->getRealType(curType);
