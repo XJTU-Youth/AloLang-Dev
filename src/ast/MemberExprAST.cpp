@@ -45,13 +45,19 @@ std::vector<llvm::Value *> MemberExprAST::Codegen(llvm::IRBuilder<> *builder)
         base         = builder->CreateLoad(base);
         genericTypes = LHS->type[0]->pointee->genericTypes;
     }
-    auto memberAST = baseClass->members.find(member);
-    if (memberAST == baseClass->members.end()) {
-        CompileError e("Member " + member + " not found.");
+    //查找变量位置
+    unsigned int index     = 0;
+    bool         foundFlag = false;
+    for (; index < baseClass->omembers.size(); index++) {
+        if (baseClass->omembers[index]->idName == this->member) {
+            foundFlag = true;
+            break;
+        }
+    }
+    if (!foundFlag) {
+        CompileError e("Member " + this->member + " not found.");
         throw e;
     }
-    unsigned int index =
-        std::distance(std::begin(baseClass->members), memberAST);
 
     type.push_back(baseClass->getRealType(
         baseClass->members[member]->variableType, genericTypes));

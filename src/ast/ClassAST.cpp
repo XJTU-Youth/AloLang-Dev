@@ -11,15 +11,19 @@
 #include "TypeAST.h"
 
 ClassAST::ClassAST(CompileUnit *unit, const std::string &className,
-                   std::map<std::string, VariableDefExprAST *> members,
-                   std::vector<FunctionAST *>                  functions,
-                   std::vector<std::string>                    genericTypes)
+                   std::vector<VariableDefExprAST *> members,
+                   std::vector<FunctionAST *>        functions,
+                   std::vector<std::string>          genericTypes)
     : BaseAST(unit)
 {
     this->className    = className;
-    this->members      = members;
+    this->omembers     = members;
     this->functions    = functions;
     this->genericTypes = genericTypes;
+    for (VariableDefExprAST *member : members) {
+        this->members.insert(std::pair<std::string, VariableDefExprAST *>(
+            member->idName, member));
+    }
 }
 
 ClassAST::~ClassAST()
@@ -55,9 +59,9 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
         throw e;
     }
 
-    ClassAST *classAST = new ClassAST(
-        unit, className, std::map<std::string, VariableDefExprAST *>(),
-        std::vector<FunctionAST *>(), genericTypes);
+    ClassAST *classAST =
+        new ClassAST(unit, className, std::vector<VariableDefExprAST *>(),
+                     std::vector<FunctionAST *>(), genericTypes);
     unit->next_tok();
     while (true) {
         //解析成员方法，成员变量
@@ -72,12 +76,15 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
         } else {
             VariableDefExprAST *memberDef =
                 VariableDefExprAST::ParseVar(unit, nullptr);
+            classAST->omembers.push_back(memberDef);
             classAST->members.insert(
                 std::pair<std::string, VariableDefExprAST *>(memberDef->idName,
                                                              memberDef));
+
             unit->next_tok();
         }
     }
+
     token = unit->next_tok();
     return classAST;
 }
@@ -147,17 +154,12 @@ llvm::Type *ClassAST::Codegen(std::vector<TypeAST *> igenericTypes)
     llvm::StructType *llvm_S =
         llvm::StructType::create(*unit->context, className);
     unit->types.insert(std::pair<std::string, llvm::Type *>(name, llvm_S));
-    std::vector<llvm::Type *>                             sMembers;
-    std::map<std::string, VariableDefExprAST *>::iterator member_iter;
-    for (member_iter = members.begin(); member_iter != members.end();
-         member_iter++) {
-        VariableDefExprAST *memberVariable = member_iter->second;
-        TypeAST *           mType =
-            getRealType(memberVariable->variableType, igenericTypes);
+    std::vector<llvm::Type *> sMembers;
+    for (VariableDefExprAST *member : this->omembers) {
+        TypeAST *mType = getRealType(member->variableType, igenericTypes);
         sMembers.push_back(mType->Codegen());
     }
     llvm_S->setBody(sMembers);
-    std::map<std::string, FunctionAST *>::iterator function_iter;
     for (FunctionAST *function : functions) {
         function->Codegen(igenericTypes);
     }
