@@ -329,9 +329,10 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
 
 std::vector<llvm::Value *> ExprAST::CodegenChain(llvm::IRBuilder<> *builder)
 {
+    type.clear();
     std::vector<llvm::Value *> result = this->Codegen(builder);
     if (subExpr != nullptr) {
-        std::vector<llvm::Value *> subResult = subExpr->Codegen(builder);
+        std::vector<llvm::Value *> subResult = subExpr->CodegenChain(builder);
         std::vector<TypeAST *>     subType   = subExpr->type;
         result.insert(result.end(), subResult.begin(), subResult.end());
         type.insert(type.end(), subType.begin(), subType.end());
