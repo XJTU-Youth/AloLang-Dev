@@ -7,9 +7,10 @@ class array<A>
     int cap;                // current capacity
     func _Desired_size_to_capacity(int _size) -> int
     {
-        // return (int(_size / 16) + 1) * 16;
+        return (floor(_size / 16.0) + 1) * 16;
+        // This is to be replcaced by the code below
+        // since the binary operators are implemented:
         // return (_size >> 4) + 1 << 4;
-        return _size;
     }
     func init(int _sz)
     {
@@ -37,6 +38,10 @@ class array<A>
     {
         return this->ptr.load();
     }
+    func udata() -> UnsafePointer<A>
+    {
+        return this->ptr;
+    }
     func _Reallocate(int _Newsz)
     {
         this->cap = this->_Desired_size_to_capacity(_Newsz);
@@ -51,14 +56,27 @@ class array<A>
     {
         int newsz = this->sz + _sz;
         if(newsz > this->cap) this->_Reallocate(newsz);
-        UnsafePointer<A> _ptr_wrapper = _ptr;
+        UnsafePointer<A> _ptr_wrapper;
+        _ptr_wrapper.toObj(_ptr);
         memcpy(_ptr_wrapper.addr, this->ptr.addr + this->sz * sizeof(A), _sz * sizeof(A));
         this->sz = newsz;
         return;
     }
-    /*func append(A obj)
+    func append(A obj)
     {
         this->concat(&obj, 1);
         return;
-    }*/
+    }
+    func push_back(A obj)
+    {
+        this->concat(&obj, 1);
+        return;
+    }
+    func get(int _Index) -> A*
+    {
+        UnsafePointer<A> _ptr;
+        _ptr.toObj(this->ptr.load());
+        _ptr.addr = _ptr.addr + _Index * sizeof(int);
+        return _ptr.load();
+    }
 }
