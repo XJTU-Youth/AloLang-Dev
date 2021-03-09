@@ -21,6 +21,13 @@ class array<A>
         this->ptr.malloc(this->cap);
         return;
     }
+    func init()
+    {
+        this->sz = 0;
+        this->cap = 16;
+        this->ptr.malloc(this->cap);
+        return;
+    }
     func destroy()
     {
         this->ptr.free();
