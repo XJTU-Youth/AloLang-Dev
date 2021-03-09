@@ -9,17 +9,21 @@ class array<A>
     {
         // this->cap = (int(this->sz / 16) + 1) * 16;
         this->cap = this->sz;
+        return;
     }
     func init(int _sz)
     {
         this->ptr.malloc(_sz);
         this->sz = _sz;
         this->_Desired_size_to_capacity();
+        return;
     }
     func destroy()
     {
         this->ptr.free();
-        this->sz = this->cap = 0;
+        this->sz = 0;
+        this->cap = 0;
+        return;
     }
     func size() -> int
     {

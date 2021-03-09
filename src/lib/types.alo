@@ -9,6 +9,6 @@ func floor(double v)->int{
 	}else{
 		v1=1.0 + v % 1.0;
 	}	
-	double t=v - v1;
+	double t= v - v1;
 	return _cdouble2int(t);
 }

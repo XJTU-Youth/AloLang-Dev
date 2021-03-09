@@ -233,7 +233,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
 void ExprAST::appendSubExpr(ExprAST *expr)
 {
     ExprAST *curAST = this;
-    while (curAST->subExpr == nullptr) {
+    while (curAST->subExpr != nullptr) {
         curAST = curAST->subExpr;
     }
     curAST->subExpr = expr;

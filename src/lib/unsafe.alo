@@ -1,5 +1,13 @@
 extern func __cfree(int addr);
 extern func __cmalloc(int size)->int;
+extern func __cmemcpy(int src,int dst,int size);
+
+func memcpy(int src,int dst,int size)
+{
+	__cmemcpy(src,dst,size);
+	return;
+}
+
 class UnsafePointer<A>
 {
 	int addr;
