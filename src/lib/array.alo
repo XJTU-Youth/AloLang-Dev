@@ -3,7 +3,7 @@
 
 class array<A>
 {
-    UnsafePointer<A> ptr;
+    UnsafePointer<A> ptr;   // start
     int sz;                 // current size
     int cap;                // current capacity
     func _Desired_size_to_capacity(int _size) -> int
@@ -83,10 +83,9 @@ class array<A>
     }
     func get(int _Index) -> A*
     {
-        UnsafePointer<A> _ptr;
-        _ptr.toObj(this->ptr.load());
-        _ptr.addr = _ptr.addr + _Index * sizeof(int);
-        return _ptr.load();
+        UnsafePointer<A> cur;
+    	cur.addr=this->ptr.addr+_Index * sizeof(int);
+        return cur.load();
     }
     func pop_back() -> A
     {
