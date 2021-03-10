@@ -49,6 +49,7 @@ return                                  token = tok_return;         return token
 
 ->                                      token = tok_syntax;         return token;
 >>                                      token = tok_syntax;         return token;
+<<                                      token = tok_syntax;         return token;
 ==                                      token = tok_syntax;         return token;
 !=                                      token = tok_syntax;         return token;
 \>=                                     token = tok_syntax;         return token;
