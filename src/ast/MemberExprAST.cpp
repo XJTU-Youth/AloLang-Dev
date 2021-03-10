@@ -33,7 +33,7 @@ std::vector<llvm::Value *> MemberExprAST::Codegen(llvm::IRBuilder<> *builder)
     std::vector<llvm::Value *> result;
     std::vector<llvm::Value *> bases = LHS->Codegen(builder);
     if (bases.size() != 1) {
-        CompileError e("Multi/Void type found.");
+        CompileError e("Multi/Void type found.", source);
         throw e;
     }
 
@@ -55,7 +55,7 @@ std::vector<llvm::Value *> MemberExprAST::Codegen(llvm::IRBuilder<> *builder)
         }
     }
     if (!foundFlag) {
-        CompileError e("Member " + this->member + " not found.");
+        CompileError e("Member " + this->member + " not found.", source);
         throw e;
     }
 
@@ -92,12 +92,12 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
                 chain.push_back(v->operand);
                 break;
             } else {
-                CompileError e("Unknown AST.");
+                CompileError e("Unknown AST.", source);
                 throw e;
             }
             break;
         } else {
-            CompileError e("Unknown AST.");
+            CompileError e("Unknown AST.", source);
             throw e;
         }
     }
@@ -112,7 +112,7 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
             dynamic_cast<VariableExprAST *>(chain[chain.size() - 1]);
         pointer = start->getAlloca(builder);
         if (pointer == nullptr) {
-            CompileError e("No memory allocaed");
+            CompileError e("No memory allocaed", source);
             throw e;
         }
         curType   = start->type[0];
@@ -124,7 +124,8 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
         std::string    cmember   = v->member;
         ClassAST *     baseClass = unit->classes[curType->baseClass];
         if (baseClass == nullptr) {
-            CompileError e("Class " + curType->baseClass + " not found.");
+            CompileError e("Class " + curType->baseClass + " not found.",
+                           source);
             throw e;
         }
         unsigned int index     = 0;
@@ -136,7 +137,7 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
             }
         }
         if (!foundFlag) {
-            CompileError e("Member " + cmember + " not found.");
+            CompileError e("Member " + cmember + " not found.", source);
             throw e;
         }
         idx.push_back(index);

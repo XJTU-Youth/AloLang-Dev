@@ -272,12 +272,14 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
             LHS->appendSubExpr(RHS);
         } else if (token.tokenValue == ".") {
             if (VariableExprAST *v = dynamic_cast<VariableExprAST *>(RHS)) {
-                LHS = new MemberExprAST(unit, LHS, v->idName, false);
+                LHS         = new MemberExprAST(unit, LHS, v->idName, false);
+                LHS->source = token.source;
             } else if (CallExprAST *v = dynamic_cast<CallExprAST *>(RHS)) {
-                v->LHS = LHS;
-                LHS    = v;
+                v->LHS      = LHS;
+                LHS         = v;
+                LHS->source = token.source;
             } else {
-                CompileError e("未知的操作");
+                CompileError e("未知的操作", token.source);
                 throw e;
             }
         } else if (token.tokenValue == "->") {
