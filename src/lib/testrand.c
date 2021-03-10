@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-extern long long _alolang_10testRanInte(void) { return rand(); }
+extern long long _alolang_8testRand(void) { return rand(); }
 
-extern long long _alolang_8testTimee(void)
+extern long long _alolang_8testTime(void)
 {
     struct timespec spec;
     clock_gettime(0, &spec);
