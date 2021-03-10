@@ -8,6 +8,7 @@
 #ifndef COMPILER_TOKEN_H_
 #define COMPILER_TOKEN_H_
 
+#include "TokenSource.h"
 #include <string>
 
 enum TokenType {
@@ -45,8 +46,7 @@ class Token
     std::string dump();
     TokenType   type;
     std::string tokenValue;
-    uint64_t    lineno;
-    std::string file;
+    TokenSource source;
 };
 
 #endif /* COMPILER_TOKEN_H_ */

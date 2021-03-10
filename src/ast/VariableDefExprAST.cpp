@@ -120,8 +120,7 @@ VariableDefExprAST *VariableDefExprAST::ParseVar(CompileUnit * unit,
             unit->next_tok();
             initValue = ExprAST::ParseExpression(unit, codeblock, false);
         } else {
-            CompileError e("Unknown token:" + nexToken.dump(), nexToken.file,
-                           nexToken.lineno);
+            CompileError e("Unknown token:" + nexToken.dump(), nexToken.source);
             throw e;
         }
     }

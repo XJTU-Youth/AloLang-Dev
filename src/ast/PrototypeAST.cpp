@@ -103,19 +103,20 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody,
     } else {
         if (token.tokenValue == "{") {
             if (!hasBody) {
-                CompileError e("Unexpected function body", token.file,
-                               token.lineno);
+                CompileError e("Unexpected function body", token.source);
                 throw e;
             }
         }
         if (token.tokenValue == ";") {
             if (hasBody) {
-                CompileError e("Unexpected ;", token.file, token.lineno);
+                CompileError e("Unexpected ;", token.source);
                 throw e;
             }
         }
     }
-    return new PrototypeAST(unit, FnName, args, returnTypes, parentClass);
+    PrototypeAST *retV =
+        new PrototypeAST(unit, FnName, args, returnTypes, parentClass);
+    return retV;
 }
 
 llvm::Function *PrototypeAST::Codegen(std::vector<TypeAST *> igenericTypes)

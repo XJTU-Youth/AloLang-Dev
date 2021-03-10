@@ -223,8 +223,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
         break;
     }
     default: {
-        CompileError e("不期待的token：" + token.dump(), token.file,
-                       token.lineno);
+        CompileError e("不期待的token：" + token.dump(), token.source);
         throw e;
     }
     }
@@ -319,8 +318,8 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
     Token token = *(unit->icurTok);
     if (root) {
         if (token.type != tok_syntax || token.tokenValue != ";") {
-            CompileError e("丟失分号: \"" + token.dump() + "\" 前", token.file,
-                           token.lineno);
+            CompileError e("丟失分号: \"" + token.dump() + "\" 前",
+                           token.source);
             throw e;
         }
         unit->next_tok();

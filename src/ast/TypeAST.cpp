@@ -63,8 +63,7 @@ TypeAST *TypeAST::ParseType(CompileUnit *unit, ClassAST *inClass)
 {
     Token token = *unit->icurTok;
     if (token.type != tok_identifier) {
-        CompileError e("Expected type but got " + token.dump(), token.file,
-                       token.lineno);
+        CompileError e("Expected type but got " + token.dump(), token.source);
         throw e;
     }
     std::string            baseClass = token.tokenValue;
@@ -83,8 +82,8 @@ TypeAST *TypeAST::ParseType(CompileUnit *unit, ClassAST *inClass)
                 } else if (token.tokenValue == ">") {
                     break;
                 } else {
-                    CompileError e("Unknown token " + token.dump(), token.file,
-                                   token.lineno);
+                    CompileError e("Unknown token " + token.dump(),
+                                   token.source);
                     throw e;
                 }
             }

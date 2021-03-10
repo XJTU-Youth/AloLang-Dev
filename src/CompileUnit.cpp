@@ -165,8 +165,7 @@ void scanToken(CompileUnit *unit)
         while (1) {
             int tokenid      = lexer->yylex();
             token.type       = TokenType(tokenid);
-            token.file       = line.first.first;
-            token.lineno     = line.first.second;
+            token.source     = line.first;
             token.tokenValue = lexer->YYText();
             // Deal with numbers
             if (token.type == tok_number) {

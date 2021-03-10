@@ -74,8 +74,7 @@ std::vector<Tline> processPreInstruction(const std::string &line, int cnt,
             data = instruction.second.substr(i + 1, len - i - 1);
         }
         variable[var] = data;
-        return std::vector<Tline>{
-            Tline(std::pair<std::string, int>("", lineno), "")};
+        return std::vector<Tline>{Tline(TokenSource("", lineno), "")};
     } else if (instruction.first == "rmdef") {
         if (instruction.second.length() == 0) {
             CompileError e("no second instruction");
@@ -87,8 +86,7 @@ std::vector<Tline> processPreInstruction(const std::string &line, int cnt,
             throw e;
             //找不到宏定义
         }
-        return std::vector<Tline>{
-            Tline(std::pair<std::string, int>("", lineno), "")};
+        return std::vector<Tline>{Tline(TokenSource("", lineno), "")};
     } else if (instruction.first == "ifdef") {
         if (instruction.second.length() == 0) {
             CompileError e("no second instruction");
@@ -101,8 +99,7 @@ std::vector<Tline> processPreInstruction(const std::string &line, int cnt,
             closeifstack++;
         }
         currentifstack++;
-        return std::vector<Tline>{
-            Tline(std::pair<std::string, int>("", lineno), "")};
+        return std::vector<Tline>{Tline(TokenSource("", lineno), "")};
     } else if (instruction.first == "ifndef") {
         if (instruction.second.length() == 0) {
             CompileError e("no second instruction");
@@ -115,8 +112,7 @@ std::vector<Tline> processPreInstruction(const std::string &line, int cnt,
             closeifstack++;
         }
         currentifstack++;
-        return std::vector<Tline>{
-            Tline(std::pair<std::string, int>("", lineno), "")};
+        return std::vector<Tline>{Tline(TokenSource("", lineno), "")};
     } else if (instruction.first == "endif") {
         if (currentifstack == 0) {
             CompileError e("no second instruction");
@@ -126,8 +122,7 @@ std::vector<Tline> processPreInstruction(const std::string &line, int cnt,
             closeifstack--;
         }
         currentifstack--;
-        return std::vector<Tline>{
-            Tline(std::pair<std::string, int>("", lineno), "")};
+        return std::vector<Tline>{Tline(TokenSource("", lineno), "")};
     } else {
         CompileError e("Unrecognized preprocessor command");
         throw e;
@@ -233,7 +228,7 @@ std::vector<Tline> preProcess(const std::string &code, int cnt, std::string FN)
             int plen = result.length();
             if (plen > 0) {
                 processedLines.push_back(
-                    Tline(std::pair<std::string, int>(FN, lineno), result));
+                    Tline(TokenSource(FN, lineno), result));
             }
         }
         temp.erase();
