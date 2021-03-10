@@ -33,9 +33,10 @@ ClassAST::~ClassAST()
 
 ClassAST *ClassAST::ParseClass(CompileUnit *unit)
 {
-    Token token = unit->next_tok();
+    Token       token  = unit->next_tok();
+    TokenSource source = token.source;
     if (token.type != tok_identifier) {
-        CompileError e("Expected identifier", token.source);
+        CompileError e("Expected identifier", source);
         throw e;
     }
     std::string              className = token.tokenValue;
@@ -55,13 +56,14 @@ ClassAST *ClassAST::ParseClass(CompileUnit *unit)
         token = unit->next_tok();
     }
     if (token.type != tok_syntax || token.tokenValue != "{") {
-        CompileError e("Expected {", token.source);
+        CompileError e("Expected {", source);
         throw e;
     }
 
     ClassAST *classAST =
         new ClassAST(unit, className, std::vector<VariableDefExprAST *>(),
                      std::vector<FunctionAST *>(), genericTypes);
+    classAST->source = source;
     unit->next_tok();
     while (true) {
         //解析成员方法，成员变量
@@ -146,7 +148,7 @@ std::string ClassAST::getRealNameForMangle(std::vector<TypeAST *> igenericTypes)
 llvm::Type *ClassAST::Codegen(std::vector<TypeAST *> igenericTypes)
 {
     if (igenericTypes.size() != genericTypes.size()) {
-        CompileError e("generic isn't equal");
+        CompileError e("generic isn't equal", source);
         throw e;
     }
     this->igenericTypes    = igenericTypes;
