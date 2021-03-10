@@ -123,7 +123,8 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
 {
     ExprAST *result;
     // todo:除了函数调用之外的语句解析
-    Token token = *unit->icurTok;
+    Token       token  = *unit->icurTok;
+    TokenSource source = token.source;
     switch (token.type) {
     case tok_number: {
         unit->next_tok();
@@ -159,7 +160,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
             result = ParseExpression(unit, codeblock, false);
             token  = *unit->icurTok;
             if (token.type != tok_syntax || token.tokenValue != ")") {
-                CompileError e("missing ')'");
+                CompileError e("missing ')'", source);
                 throw e;
             }
             unit->next_tok();
@@ -223,10 +224,11 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
         break;
     }
     default: {
-        CompileError e("不期待的token：" + token.dump(), token.source);
+        CompileError e("不期待的token：" + token.dump(), source);
         throw e;
     }
     }
+    result->source = source;
     return result;
 }
 

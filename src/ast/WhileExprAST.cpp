@@ -39,7 +39,7 @@ std::vector<llvm::Value *> WhileExprAST::Codegen(llvm::IRBuilder<> *builder)
     std::vector<llvm::Value *> conditionValues =
         condition->CodegenChain(builder);
     if (conditionValues.size() != 1) {
-        CompileError e("Multi/Void type in condition found.");
+        CompileError e("Multi/Void type in condition found.", source);
         throw e;
     }
     builder->CreateCondBr(conditionValues[0], bodyBB, MergeBB);
