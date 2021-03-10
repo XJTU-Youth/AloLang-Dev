@@ -4,14 +4,13 @@
 #include <fstream>
 #include <iostream>
 #include <map>
-#include <vector>
-#include <tuple>
 #include <sstream>
 #include <string>
+#include <tuple>
+#include <vector>
 
-typedef std::pair<std::pair<std::string,int>,std::string> Tline;
+typedef std::pair<std::pair<std::string, int>, std::string> Tline;
 
 std::vector<Tline> preProcess(const std::string &code, int cnt, std::string FN);
-
 
 #endif
