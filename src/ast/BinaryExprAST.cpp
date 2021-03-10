@@ -104,7 +104,7 @@ std::vector<llvm::Value *> BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
             curExpr = curExpr->subExpr;
         }
         if (RHSV.size() != LHS.size()) {
-            CompileError e("the length of expression isn't equal.");
+            CompileError e("the length of expression isn't equal.", source);
             throw e;
         }
         for (unsigned int i = 0; i < LHS.size(); i++) {
@@ -116,7 +116,7 @@ std::vector<llvm::Value *> BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
         std::vector<llvm::Value *> L = LHS->CodegenChain(builder);
         std::vector<llvm::Value *> R = RHS->CodegenChain(builder);
         if (L.size() != 1 || R.size() != 1) {
-            CompileError e("Bin Expr length != 1");
+            CompileError e("Bin Expr length != 1", source);
             throw e;
         }
         std::string LHStype = LHS->type[0]->getName();
@@ -124,7 +124,8 @@ std::vector<llvm::Value *> BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
         auto operate = unit->binOperators.find({LHStype, RHStype, binOP});
         if (operate == unit->binOperators.end()) {
             CompileError e("Unknown operator " + binOP + "with type " +
-                           LHStype + " and " + RHStype);
+                               LHStype + " and " + RHStype,
+                           source);
             throw e;
         }
         this->type.push_back(operate->second.second);
@@ -133,7 +134,7 @@ std::vector<llvm::Value *> BinaryExprAST::Codegen(llvm::IRBuilder<> *builder)
             result.push_back(processInnerBinaryOperator(L[0], R[0], builder));
         } else {
             //用户定义运算符
-            CompileError e("User-def operator not implemented");
+            CompileError e("User-def operator not implemented", source);
             throw e;
         }
     }

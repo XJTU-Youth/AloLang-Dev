@@ -41,7 +41,8 @@ llvm::Value *UnaryExprAST::getAlloca(llvm::IRBuilder<> *builder)
         type.push_back(operand->type[0]->pointee);
         return ret;
     } else {
-        CompileError e("Operator " + op + " can not be used as assignment");
+        CompileError e("Operator " + op + " can not be used as assignment",
+                       source);
         throw e;
     }
 }
@@ -53,7 +54,7 @@ std::vector<llvm::Value *> UnaryExprAST::Codegen(llvm::IRBuilder<> *builder)
     if (op == "&") {
         llvm::Value *pointer = operand->getAlloca(builder);
         if (pointer == nullptr) {
-            CompileError e("No memory allocaed");
+            CompileError e("No memory allocaed", source);
             throw e;
         }
         type.push_back(new TypeAST(unit, operand->type[0]));
@@ -62,7 +63,7 @@ std::vector<llvm::Value *> UnaryExprAST::Codegen(llvm::IRBuilder<> *builder)
         //值操作
         std::vector<llvm::Value *> Rs = operand->CodegenChain(builder);
         if (Rs.size() != 1) {
-            CompileError e("Unary Expr length != 1");
+            CompileError e("Unary Expr length != 1", source);
             throw e;
         }
 
@@ -71,13 +72,13 @@ std::vector<llvm::Value *> UnaryExprAST::Codegen(llvm::IRBuilder<> *builder)
             result.push_back(builder->CreateXor(Rs[0], 1));
         } else if (op == "*") {
             if (operand->type[0]->pointee == nullptr) {
-                CompileError e("operator * must be used on pointer");
+                CompileError e("operator * must be used on pointer", source);
                 throw e;
             }
             this->type.push_back(operand->type[0]->pointee);
             result.push_back(builder->CreateLoad(Rs[0]));
         } else {
-            CompileError e("一元运算符:" + op + "未实现");
+            CompileError e("一元运算符:" + op + "未实现", source);
             throw e;
         }
     }

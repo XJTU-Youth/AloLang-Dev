@@ -272,12 +272,10 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
             LHS->appendSubExpr(RHS);
         } else if (token.tokenValue == ".") {
             if (VariableExprAST *v = dynamic_cast<VariableExprAST *>(RHS)) {
-                LHS         = new MemberExprAST(unit, LHS, v->idName, false);
-                LHS->source = token.source;
+                LHS = new MemberExprAST(unit, LHS, v->idName, false);
             } else if (CallExprAST *v = dynamic_cast<CallExprAST *>(RHS)) {
-                v->LHS      = LHS;
-                LHS         = v;
-                LHS->source = token.source;
+                v->LHS = LHS;
+                LHS    = v;
             } else {
                 CompileError e("未知的操作", token.source);
                 throw e;
@@ -290,7 +288,7 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
                 v->Lpointer = true;
                 LHS         = v;
             } else {
-                CompileError e("未知的操作");
+                CompileError e("未知的操作", token.source);
                 throw e;
             }
         } else if (dynamic_cast<EmptyExprAST *>(LHS) != nullptr &&
@@ -301,9 +299,11 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
                    GetRUnaryTokPrecedence(token) != -1) {
             //右一元运算符
             LHS = new UnaryExprAST(unit, token.tokenValue, LHS, false);
+
         } else {
             LHS = new BinaryExprAST(unit, token.tokenValue, LHS, RHS);
         }
+        LHS->source = token.source;
     }
 }
 
