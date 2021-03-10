@@ -1,2 +1,2 @@
-extern "S" func testRanInt() -> int;
+extern "S" func testTime() -> int;
 extern "S" func testRand() -> int;
