@@ -16,7 +16,7 @@ extern void _alolang_13testPrintBool4boole(int a)
 extern long long _alolang_10testGetInte()
 {
     long long a;
-    scanf("%d", &a);
+    scanf("%lld", &a);
     return a;
 }
 
