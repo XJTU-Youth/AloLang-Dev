@@ -1,0 +1,2 @@
+extern "S" func testRanInt() -> int;
+extern "S" func testRand() -> int;
