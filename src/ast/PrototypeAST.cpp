@@ -34,7 +34,8 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody,
                                            ClassAST *parentClass)
 {
     std::vector<std::pair<TypeAST *, std::string>> args;
-    Token                                          token = unit->next_tok();
+    Token                                          token  = unit->next_tok();
+    TokenSource                                    source = token.source;
     if (token.type != tok_identifier) {
         std::cerr << "error1" << std::endl;
         // TODO:异常处理
@@ -116,6 +117,7 @@ PrototypeAST *PrototypeAST::ParsePrototype(CompileUnit *unit, bool hasBody,
     }
     PrototypeAST *retV =
         new PrototypeAST(unit, FnName, args, returnTypes, parentClass);
+    retV->source = source;
     return retV;
 }
 
@@ -149,7 +151,9 @@ llvm::Function *PrototypeAST::Codegen(std::vector<TypeAST *> igenericTypes)
     llvm::Type *returnType;
     if (returnDirectly) {
         if (returnTypes.size() > 1) {
-            CompileError e("return more than one type:");
+            CompileError e(
+                "Prototype with \"S\" flag returned more than one values.",
+                source);
             throw e;
         } else if (returnTypes.size() == 0) {
             returnType = llvm::Type::getVoidTy(*unit->context);
