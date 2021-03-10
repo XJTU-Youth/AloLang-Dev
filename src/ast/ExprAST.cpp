@@ -209,7 +209,8 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
         break;
     }
     case tok_return: {
-        result = ReturnExprAST::ParseReturnExprAST(unit, codeblock);
+        result            = ReturnExprAST::ParseReturnExprAST(unit, codeblock);
+        codeblock->jumped = true;
         break;
     }
     case tok_key_sizeof: {

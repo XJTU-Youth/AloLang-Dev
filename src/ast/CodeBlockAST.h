@@ -22,8 +22,8 @@ class CodeBlockAST : public BaseAST
                  CodeBlockAST *parent = nullptr);
     virtual ~CodeBlockAST();
     static CodeBlockAST *
-                      ParseCodeBlock(CompileUnit *unit, std::string name,FunctionAST *baseFunction,
-                                     CodeBlockAST *                          parent = nullptr,
+                      ParseCodeBlock(CompileUnit *unit, std::string name,
+                                     FunctionAST *baseFunction, CodeBlockAST *parent = nullptr,
                                      const std::vector<VariableDefExprAST *> args =
                                          std::vector<VariableDefExprAST *>());
     llvm::BasicBlock *Codegen(llvm::Function *function);
@@ -36,6 +36,7 @@ class CodeBlockAST : public BaseAST
     CodeBlockAST *    parent;
     llvm::BasicBlock *endBB;
     FunctionAST *     baseFunction;
+    bool              jumped = false; //是否有跳出语句
 };
 
 #endif /* COMPILER_AST_CODEBLOCKAST_H_ */

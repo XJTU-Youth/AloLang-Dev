@@ -56,13 +56,17 @@ std::vector<llvm::Value *> IfExprAST::Codegen(llvm::IRBuilder<> *builder)
     if (elseBlock != nullptr) {
         llvm::BasicBlock *elseBB = elseBlock->Codegen(function);
         builder->CreateCondBr(conditionValue, thenBB, elseBB);
-        builder->SetInsertPoint(elseBlock->endBB);
-        builder->CreateBr(MergeBB);
+        if (!elseBlock->jumped) {
+            builder->SetInsertPoint(elseBlock->endBB);
+            builder->CreateBr(MergeBB);
+        }
     } else {
         builder->CreateCondBr(conditionValue, thenBB, MergeBB);
     }
-    builder->SetInsertPoint(thenBlock->endBB);
-    builder->CreateBr(MergeBB);
+    if (!thenBlock->jumped) {
+        builder->SetInsertPoint(thenBlock->endBB);
+        builder->CreateBr(MergeBB);
+    }
     builder->SetInsertPoint(MergeBB);
     parent->endBB = MergeBB;
     return std::vector<llvm::Value *>();
