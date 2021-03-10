@@ -43,7 +43,8 @@ llvm::Type *TypeAST::Codegen()
             //没有找到实例化过的泛型
             auto classAST = unit->classes.find(realType->baseClass);
             if (classAST == unit->classes.end()) {
-                CompileError e("can't find class:" + realType->baseClass);
+                CompileError e("can't find class:" + realType->baseClass,
+                               source);
                 throw e;
             } else {
                 llvm::Type *classType =
@@ -61,7 +62,8 @@ llvm::Type *TypeAST::Codegen()
 
 TypeAST *TypeAST::ParseType(CompileUnit *unit, ClassAST *inClass)
 {
-    Token token = *unit->icurTok;
+    Token       token  = *unit->icurTok;
+    TokenSource source = token.source;
     if (token.type != tok_identifier) {
         CompileError e("Expected type but got " + token.dump(), token.source);
         throw e;
@@ -91,6 +93,7 @@ TypeAST *TypeAST::ParseType(CompileUnit *unit, ClassAST *inClass)
         token = unit->next_tok();
     }
     TypeAST *result = new TypeAST(unit, baseClass, genericTypes, inClass);
+    result->source  = source;
     while (token.type == tok_syntax && token.tokenValue == "*") {
         result = new TypeAST(unit, result);
         token  = unit->next_tok();
