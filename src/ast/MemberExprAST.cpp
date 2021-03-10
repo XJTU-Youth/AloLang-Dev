@@ -121,7 +121,7 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
     std::vector<unsigned int> idx;
     for (int i = chain.size() - 2; i >= 0; i--) {
         MemberExprAST *v         = dynamic_cast<MemberExprAST *>(chain[i]);
-        std::string    member    = v->member;
+        std::string    cmember   = v->member;
         ClassAST *     baseClass = unit->classes[curType->baseClass];
         if (baseClass == nullptr) {
             CompileError e("Class " + curType->baseClass + " not found.");
@@ -130,17 +130,17 @@ llvm::Value *MemberExprAST::getAlloca(llvm::IRBuilder<> *builder)
         unsigned int index     = 0;
         bool         foundFlag = false;
         for (; index < baseClass->omembers.size(); index++) {
-            if (baseClass->omembers[index]->idName == this->member) {
+            if (baseClass->omembers[index]->idName == cmember) {
                 foundFlag = true;
                 break;
             }
         }
         if (!foundFlag) {
-            CompileError e("Member " + this->member + " not found.");
+            CompileError e("Member " + cmember + " not found.");
             throw e;
         }
         idx.push_back(index);
-        curType = baseClass->members[member]->variableType;
+        curType = baseClass->members[cmember]->variableType;
         curType = baseClass->getRealType(curType);
     }
     std::vector<llvm::Value *> idxl;
