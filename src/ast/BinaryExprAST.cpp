@@ -57,6 +57,10 @@ BinaryExprAST::processInnerBinaryOperator(llvm::Value *L, llvm::Value *R,
             return builder->CreateICmpSGE(L, R);
         } else if (binOP == "<=") {
             return builder->CreateICmpSLE(L, R);
+        } else if (binOP == "<<") {
+            return builder->CreateShl(L, R);
+        } else if (binOP == ">>") {
+            return builder->CreateLShr(L, R);
         }
     } else if (LHS->type[0]->getName() == "double" &&
                RHS->type[0]->getName() == "double") {

@@ -89,6 +89,17 @@ void initInnerOperations(CompileUnit *unit)
                                         std::pair<llvm::Function *, TypeAST *>>(
         {"int", "int", "=="}, std::pair<llvm::Function *, TypeAST *>(
                                   nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", ">>"}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "int"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "<<"}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "int"))));
+
     // double
     unit->binOperators.insert(std::pair<std::array<std::string, 3>,
                                         std::pair<llvm::Function *, TypeAST *>>(
