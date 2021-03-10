@@ -83,10 +83,9 @@ class array<A>
     }
     func get(int _Index) -> A*
     {
-        /*UnsafePointer<A> cur;
+        UnsafePointer<A> cur;
     	cur.addr=this->ptr.addr+_Index * sizeof(int);
-        return cur.load();*/
-        return this->ptr.load();
+        return cur.load();
     }
     func pop_back() -> A
     {
