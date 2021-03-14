@@ -33,6 +33,8 @@ void initInnerType(CompileUnit *unit)
         "double", llvm::Type::getDoubleTy(*unit->context)));
     unit->types.insert(std::pair<std::string, llvm::Type *>(
         "bool", llvm::Type::getInt1Ty(*unit->context)));
+    unit->types.insert(std::pair<std::string, llvm::Type *>(
+        "char", llvm::Type::getInt32Ty(*unit->context)));
 }
 
 void initInnerOperations(CompileUnit *unit)
