@@ -13,6 +13,7 @@
 #include "MemberExprAST.h"
 #include "ReturnExprAST.h"
 #include "SizeofExprAST.h"
+#include "StringExprAST.h"
 #include "UnaryExprAST.h"
 #include "VariableDefExprAST.h"
 #include "VariableExprAST.h"
@@ -221,6 +222,13 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
             TypeAST::ParseType(unit, codeblock->baseFunction->parentClass);
         unit->next_tok(); //)
         result = new SizeofExprAST(unit, type);
+        break;
+    }
+    case tok_str: {
+        //字符串字面值
+        result         = new StringExprAST(unit, token.tokenValue);
+        result->source = token.source;
+        unit->next_tok();
         break;
     }
     default: {
