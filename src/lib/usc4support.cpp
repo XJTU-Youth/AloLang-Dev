@@ -95,3 +95,5 @@ void UCS4ToUTF8(const mfstring &src, std::string &dest)
                 dest.push_back(c8);
     }
 }
+
+//TODO: Support for other chatsets
