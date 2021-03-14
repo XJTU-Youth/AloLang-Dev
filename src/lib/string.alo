@@ -1,0 +1,8 @@
+%import array.alo
+
+class string
+{
+    //private:
+    array<char> data;
+};
+
