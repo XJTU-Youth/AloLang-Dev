@@ -2,6 +2,7 @@
 
 class string
 {
+    //private:
     array<char> data;
 };
 

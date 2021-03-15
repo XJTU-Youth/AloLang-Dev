@@ -8,5 +8,5 @@ message msg
         int id=1;
         bytes dat=2;
     }
-    optional Data data=4;
+    repeated Data data=4;
 }

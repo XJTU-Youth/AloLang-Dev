@@ -268,7 +268,8 @@ void CompileUnit::compile()
             break;
         }
         default: {
-            CompileError e("unexpected token:" + icurTok->dump());
+            CompileError e("unexpected token:" + icurTok->dump(),
+                           icurTok->source);
             throw e;
         }
         }
