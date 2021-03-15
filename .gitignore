@@ -134,3 +134,5 @@ Makefile
 *.bc
 *.s
 src/yacc_stuff/tokenizer.cpp
+config.guess~
+config.sub~
