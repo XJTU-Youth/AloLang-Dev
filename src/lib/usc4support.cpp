@@ -4,15 +4,16 @@
 #include <string>
 #include <string_view>
 
-typedef char32_t mfchar_t; // 无符号的4字节，用于容纳UCS-4的一个字符
+typedef int mfchar_t; // 无符号的4字节，用于容纳UCS-4的一个字符
 typedef std::basic_string<mfchar_t> mfstring; // 自定义的UCS-4字符串
 
 // 把utf-8编码的字符串转换成UCS-4编码的字符串
-void UTF8ToUCS4(const std::string &src, mfstring &dest)
+unsigned int UTF8ToUCS4(const std::string &src, mfchar_t *dest)
 {
-    mfchar_t w     = 0;
-    mfchar_t err   = '?'; // 表转码错误
-    int      bytes = 0;   // 表剩余要处理的字节数
+    mfchar_t     w        = 0;
+    mfchar_t     err      = '?'; // 表转码错误
+    int          bytes    = 0;   // 表剩余要处理的字节数
+    unsigned int curIndex = 0;
 
     for (size_t i = 0; i < src.length(); i++) {
         unsigned char c = (unsigned char)src[i];
@@ -21,12 +22,12 @@ void UTF8ToUCS4(const std::string &src, mfstring &dest)
         {
             // 若bytes不为0，说明出错，因为ascii码的utf-8编码只占一个字节
             if (bytes) {
-                dest.push_back(err);
-                bytes = 0;
+                dest[curIndex++] = err;
+                bytes            = 0;
             }
 
             // 将字符压入队列
-            dest.push_back((mfchar_t)c);
+            dest[curIndex++] = c;
         } else if (c <= 0xbf) // <= 0x1011
                               // 1111，说明是多字节的utf-8编码的第2,3,4,5,6字节
         {
@@ -40,10 +41,10 @@ void UTF8ToUCS4(const std::string &src, mfstring &dest)
 
                 // 若后面没有字节数了，说明字节数融合完毕，成为一个完整的ucs-4的字符了，压入队列
                 if (bytes == 0) {
-                    dest.push_back(w);
+                    dest[curIndex++] = w;
                 }
             } else {
-                dest.push_back(err); // 出错
+                dest[curIndex++] = err; // 出错
             }
         } else if (c <=
                    0xdf) // <= 0x1101 1111，说明是2字节的utf-8编码的第一个字节
@@ -74,14 +75,15 @@ void UTF8ToUCS4(const std::string &src, mfstring &dest)
             w     = c & 0x01; // 取出后1位
         } else // > 0x1111 1101的是出错，因utf-8最多6个字节
         {
-            dest.push_back(err);
-            bytes = 0;
+            dest[curIndex++] = err;
+            bytes            = 0;
         }
     }
 
     if (bytes) {
-        dest.push_back(err);
+        dest[curIndex++] = err;
     }
+    return curIndex;
 }
 
 void UCS4ToUTF8(const mfstring &src, std::string &dest)
@@ -96,4 +98,4 @@ void UCS4ToUTF8(const mfstring &src, std::string &dest)
     }
 }
 
-//TODO: Support for other chatsets
+// TODO: Support for other chatsets
