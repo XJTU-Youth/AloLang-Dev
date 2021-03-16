@@ -4,10 +4,8 @@ class string
 {
     //private:
     array<char> data;
-}
-
-//要重构成+
-func strcat(string str1,string str2) ->string
-{
-//   string 
+	func length()->int
+	{
+		return this->data.size();
+	}
 }
