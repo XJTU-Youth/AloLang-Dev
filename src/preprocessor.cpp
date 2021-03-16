@@ -45,7 +45,8 @@ std::vector<Tline> processPreInstruction(const std::string &line, int cnt,
             curFile.parent_path().string() + "/" + instruction.second;
         t_fin__.open(realPath);
         if (!t_fin__.is_open()) {
-            CompileError e("import file " + realPath + " not found");
+            CompileError e("import file " + realPath + " not found",
+                           TokenSource(FN, lineno));
             throw e;
         }
         std::string importFileContent;
