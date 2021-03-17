@@ -125,7 +125,8 @@ std::vector<Tline> processPreInstruction(const std::string &line, int cnt,
         currentifstack--;
         return std::vector<Tline>{Tline(TokenSource("", lineno), "")};
     } else {
-        CompileError e("Unrecognized preprocessor command");
+        CompileError e("Unrecognized preprocessor command " +
+                       instruction.first);
         throw e;
     }
 }

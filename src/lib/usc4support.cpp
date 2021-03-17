@@ -87,21 +87,35 @@ unsigned int UTF8ToUCS4(const std::string &src, mfchar_t *dest)
     return curIndex;
 }
 
-void UCS4ToUTF8(const mfstring &src, std::string &dest)
+std::string UCS4ToUTF8(const mfstring &src)
 {
+    std::string    result;
     char           out[MB_LEN_MAX];
     std::mbstate_t state{};
     for (char32_t c : src) {
         std::size_t rc = std::c32rtomb(out, c, &state);
         if (rc != (std::size_t)-1)
             for (char c8 : std::string_view{out, rc})
-                dest.push_back(c8);
+                result.push_back(c8);
     }
+    return result;
 }
 
 // TODO: Support for other chatsets
 
 // for alolang
+
+extern "C" const char *string2char(int *data, long long length)
+{
+    mfstring src;
+    for (long long i = 0; i < length; i++) {
+        src.push_back(data[i]);
+        printf("%lld\n", data[i]);
+    }
+    /*std::string result = UCS4ToUTF8(src);
+    return result.c_str();*/
+    return "";
+}
 
 extern "C" long long __alolang_inner_load_string(char *str, long long addr)
 {

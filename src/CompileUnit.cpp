@@ -250,7 +250,7 @@ void CompileUnit::compile()
         }
         case tok_extern: {
             ExternAST *externast = ExternAST::ParseExtern(this);
-            externs.push_back(externast);
+            functions.push_back(externast);
             break;
         }
         case tok_identifier: {
@@ -283,15 +283,22 @@ void CompileUnit::compile()
         v->Codegen(nullptr); //自动插入globalVariablesValue
     }
     std::map<std::string, ExternAST *>::iterator extern_iter;
-    for (ExternAST *v : externs) {
-        llvm::Function *f = v->Codegen();
-        globalFunctions.insert(
-            std::pair<std::string, std::pair<PrototypeAST *, llvm::Function *>>(
-                f->getName(),
-                std::pair<PrototypeAST *, llvm::Function *>(v->proto, f)));
-    }
-    for (FunctionAST *v : functions) {
-        llvm::Function *f = v->Codegen(); //自动插入globalFunctions
+    for (BaseAST *func : functions) {
+        if (ExternAST *v = dynamic_cast<ExternAST *>(func)) {
+            llvm::Function *f = v->Codegen();
+            globalFunctions.insert(
+                std::pair<std::string,
+                          std::pair<PrototypeAST *, llvm::Function *>>(
+                    f->getName(),
+                    std::pair<PrototypeAST *, llvm::Function *>(v->proto, f)));
+
+        } else if (FunctionAST *v = dynamic_cast<FunctionAST *>(func)) {
+            llvm::Function *f = v->Codegen(); //自动插入globalFunctions
+
+        } else {
+            CompileError e("Unknown internal error.");
+            throw e;
+        }
     }
 
     build();

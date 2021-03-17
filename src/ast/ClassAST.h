@@ -11,6 +11,7 @@
 #include "BaseAST.h"
 #include "VariableDefExprAST.h"
 
+class FunctionAST;
 class ClassAST : public BaseAST
 {
   public:

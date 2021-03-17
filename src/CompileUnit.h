@@ -17,8 +17,7 @@
 #include <string>
 
 class TypeAST;
-class FunctionAST;
-class ExternAST;
+class BaseAST;
 class VariableDefExprAST;
 class ClassAST;
 class PrototypeAST;
@@ -39,8 +38,7 @@ class CompileUnit
     std::vector<Token>::iterator      icurTok;
     std::map<std::string, ClassAST *> classes;
     std::vector<VariableDefExprAST *> globalVariables;
-    std::vector<FunctionAST *>        functions;
-    std::vector<ExternAST *>          externs;
+    std::vector<BaseAST *> functions; //泛指function（包括extern）
 
     std::map<std::array<std::string, 3>, std::pair<llvm::Function *, TypeAST *>>
                                         binOperators; // LHS type,RHS type,binOP

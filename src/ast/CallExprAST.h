@@ -10,6 +10,7 @@
 
 #include "ExprAST.h"
 
+class FunctionAST;
 class CallExprAST : public ExprAST
 {
   public:

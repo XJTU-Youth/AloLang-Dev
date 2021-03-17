@@ -14,6 +14,7 @@
 #include <map>
 
 class VariableDefExprAST;
+class FunctionAST;
 class CodeBlockAST : public BaseAST
 {
   public:

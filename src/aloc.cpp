@@ -107,7 +107,9 @@ int main(int argc, char *argv[])
                 // buff = header + buff;
                 try {
                     preProcessed = preProcess(buff, 0, input_file_name);
-                    // cout << preProcessed;
+                    for (Tline line : preProcessed) {
+                        std::cout << line.second << std::endl;
+                    }
                     // todo:这行代码写的极不规范，尽快修改
                     CompileUnit(input_file_name, preProcessed).compile();
                     system(("llc ./" + input_file_name +

@@ -110,7 +110,7 @@ std::vector<llvm::Value *> CallExprAST::Codegen(llvm::IRBuilder<> *builder)
     }
 
     if (proto == nullptr) {
-        CompileError e("Function " + dname + " not found.");
+        CompileError e("Function " + dname + " not found.", source);
         throw e;
     }
     for (TypeAST *tAST : proto->returnTypes) {

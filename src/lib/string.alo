@@ -8,4 +8,8 @@ class string
 	{
 		return this->data.size();
 	}
+	func charAt(int index)->char
+	{
+		return *this->data.get(index);
+	}
 }

@@ -1,3 +1,6 @@
+%ifndef _TYPES_
+%def _TYPES_
+
 extern "S" func _cdouble2int(double v)->int;
 
 //返回一个小于传入参数的最大整数
@@ -12,3 +15,5 @@ func floor(double v)->int{
 	double t= v - v1;
 	return _cdouble2int(t);
 }
+
+%endif
