@@ -3,7 +3,7 @@ syntax = "proto3";
 message msg
 {
     int64 version=1;
-    int64 length=2;
+    int64 length=2; 
     int64 command=3;
     message Data
     {
