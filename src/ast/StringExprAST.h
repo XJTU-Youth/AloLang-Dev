@@ -16,6 +16,7 @@ class StringExprAST : public ExprAST
     StringExprAST(CompileUnit *unit, const std::string &str);
     virtual ~StringExprAST();
     std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
+    std::string                str;
 };
 
 #endif /* SRC_AST_STRINGEXPRAST_H_ */
