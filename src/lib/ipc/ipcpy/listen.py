@@ -1,12 +1,6 @@
 import os
 import time
 
-def close(rd):
-    try:
-        os.close(rd)
-    except:
-        print("不存在指定管道")
-
 def listen(pipename):
     try:
         rd = os.open(pipename, os.O_RDONLY)
@@ -23,7 +17,8 @@ def listen(pipename):
             else:
                 fl == 0
                 a += s
-            if (fl == 3)
+            if (fl == 3):
+                os.close(rd)
                 return a
                 
             
