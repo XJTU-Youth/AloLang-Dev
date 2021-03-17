@@ -25,19 +25,24 @@ StringExprAST::~StringExprAST()
 std::vector<llvm::Value *> StringExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
     type.clear();
-    this->type.push_back(new TypeAST(unit, "string"));
-    std::vector<llvm::Value *> result;
-    llvm::Constant *           const_array_4 =
-        llvm::ConstantDataArray::getString(unit->module->getContext(), str);
+
+    /*llvm::Constant *           strArray =
+        llvm::ConstantDataArray::getString(unit->module->getContext(), str);*/
+    llvm::Value *strArray = builder->CreateGlobalString(str);
+
     llvm::Function *function = builder->GetInsertBlock()->getParent();
 
     llvm::IRBuilder<> sBuilder(&function->getEntryBlock(),
                                function->getEntryBlock().begin());
 
     llvm::StructType *sType =
-        (llvm::StructType *)(new TypeAST(unit, "array<char>"))->Codegen();
-    llvm::AllocaInst *alloca = sBuilder.CreateAlloca(sType);
-    std::string       dname =
+        (llvm::StructType *)TypeAST(
+            unit, "array", std::vector<TypeAST *>{new TypeAST(unit, "char")})
+            .Codegen();
+    llvm::AllocaInst *array_alloca = sBuilder.CreateAlloca(sType);
+    llvm::AllocaInst *result_alloca =
+        sBuilder.CreateAlloca(TypeAST(unit, "string").Codegen());
+    std::string dname =
         "_alolang_C5arrayE4initP5array4chare3inte"; // todo:硬编码
     llvm::Function *CalleeF = unit->module->getFunction(dname);
     if (CalleeF == 0) {
@@ -46,22 +51,61 @@ std::vector<llvm::Value *> StringExprAST::Codegen(llvm::IRBuilder<> *builder)
         throw e;
     }
     std::vector<llvm::Value *> args;
-    args.push_back(alloca);
+    args.push_back(array_alloca);
     args.push_back((new IntExprAST(unit, str.length()))->Codegen(builder)[0]);
     builder->CreateCall(CalleeF, args);
+    llvm::IntegerType *itype   = llvm::IntegerType::get(*unit->context, 32);
+    llvm::IntegerType *itype64 = llvm::IntegerType::get(*unit->context, 64);
 
-    dname   = "_alolang_C5arrayE4initP5array4chare3inte"; // todo:硬编码
-    CalleeF = unit->module->getFunction(dname);
-    if (CalleeF == 0) {
-        CompileError e("Function " + dname +
-                       " not found in LLVM IR when building string");
-        throw e;
+    std::vector<TypeAST *> genericTypes = std::vector<TypeAST *>();
+    genericTypes.push_back(new TypeAST(unit, "char"));
+    llvm::Value *startPointer = builder->CreateLoad(builder->CreateGEP(
+        sType, array_alloca,
+        std::vector<llvm::Value *>{llvm::ConstantInt::get(itype, 0, true),
+                                   llvm::ConstantInt::get(itype, 0, true),
+                                   llvm::ConstantInt::get(itype, 0, true)}));
+    llvm::Value *strValue     = builder->CreateGEP(
+        llvm::ArrayType::get(llvm::IntegerType::get(*unit->context, 8),
+                             str.length() + 1),
+        strArray,
+        std::vector<llvm::Value *>{llvm::ConstantInt::get(itype64, 0, true),
+                                   llvm::ConstantInt::get(itype64, 0, true)});
+    // llvm::Value *strValue    = builder->CreateGlobalString(str);
+    dname                    = "__alolang_inner_load_string"; // todo:硬编码
+    llvm::Function *CalleeF2 = unit->module->getFunction(dname);
+    if (CalleeF2 == nullptr) {
+        llvm::FunctionType *FT = llvm::FunctionType::get(
+            TypeAST(unit, "int").Codegen(),
+            std::vector<llvm::Type *>{
+                llvm::PointerType::get(
+                    llvm::IntegerType::get(*unit->context, 8), 0),
+                llvm::IntegerType::get(*unit->context, 64)},
+            false);
+        CalleeF2 =
+            llvm::Function::Create(FT, llvm::GlobalValue::ExternalLinkage,
+                                   "__alolang_inner_load_string", unit->module);
     }
-    args.clear();
-    args.push_back(alloca);
-    args.push_back((new IntExprAST(unit, str.length()))->Codegen(builder)[0]);
-    llvm::Value *ret = builder->CreateCall(CalleeF, args);
-    CompileError e("字符串字面值未实现");
-    throw e;
+    std::vector<llvm::Value *> args2;
+    args2.push_back(strValue);
+    // args2.push_back(llvm::ConstantInt::get(itype64, 0, true));
+    args2.push_back(startPointer);
+    llvm::Value *ret = builder->CreateCall(CalleeF2, args2);
+    builder->CreateStore(
+        ret, builder->CreateGEP(sType, array_alloca,
+                                std::vector<llvm::Value *>{
+                                    llvm::ConstantInt::get(itype, 0, true),
+                                    llvm::ConstantInt::get(itype, 1, true)}));
+    //制作结果
+    this->type.push_back(new TypeAST(unit, "string"));
+    // todo:待优化
+    std::vector<llvm::Value *> result;
+    builder->CreateStore(
+        builder->CreateLoad(array_alloca),
+        builder->CreateGEP(TypeAST(unit, "string").Codegen(), result_alloca,
+                           std::vector<llvm::Value *>{
+                               llvm::ConstantInt::get(itype, 0, true),
+                               llvm::ConstantInt::get(itype, 0, true)}));
+    llvm::Value *resultValue = builder->CreateLoad(result_alloca);
+    result.push_back(resultValue);
     return result;
 }

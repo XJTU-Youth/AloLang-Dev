@@ -1,4 +1,5 @@
 #include <climits>
+#include <cstring>
 #include <cuchar>
 #include <iomanip>
 #include <string>
@@ -99,3 +100,11 @@ void UCS4ToUTF8(const mfstring &src, std::string &dest)
 }
 
 // TODO: Support for other chatsets
+
+// for alolang
+
+extern "C" long long __alolang_inner_load_string(char *str, long long addr)
+{
+    long long length = UTF8ToUCS4(std::string(str), (int *)addr);
+    return length;
+}
