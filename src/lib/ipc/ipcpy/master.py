@@ -1,6 +1,7 @@
 import os
 import time
 import ipc_pb2
+import client
 
 def listen(pipename):
     try:
@@ -13,7 +14,9 @@ def listen(pipename):
             totallenRecv = struct.unpack('>I', totallen)[0]
             messagelen = totallenRecv - 4 
             message = os.read(rd, messagelen)
-            makedict(message)
+            dict=makedict(message)
+            client.alolang_run(dict)
+            
 
 def makedict(pbstr):
     dict = {}

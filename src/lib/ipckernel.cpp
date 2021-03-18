@@ -23,6 +23,8 @@ extern "C" void __alolang__inner_ipckernel_compile(alostring str)
     if (!client_file.is_open()) {
         std::cout << "未成功打开文件" << std::endl;
     }
+
+    client_file << "def alolang_run(alolang_var):" << std::endl;
     client_file << buff;
     client_file.close();
     system("cp src/lib/ipc/ipcpy/ipc_pb2.py ./ipc_pb2.py");
