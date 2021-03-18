@@ -1,7 +1,6 @@
 %ifndef _ARRAY_
 %def _ARRAY_
 
-
 %import unsafe.alo
 %import types.alo
 

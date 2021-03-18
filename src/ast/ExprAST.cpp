@@ -10,6 +10,7 @@
 #include "FunctionAST.h"
 #include "IfExprAST.h"
 #include "IntExprAST.h"
+#include "KernelCompileExprAST.h"
 #include "MemberExprAST.h"
 #include "ReturnExprAST.h"
 #include "SizeofExprAST.h"
@@ -229,6 +230,18 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
         result         = new StringExprAST(unit, token.tokenValue);
         result->source = token.source;
         unit->next_tok();
+        break;
+    }
+    case tok_kernel_comp: {
+        unit->next_tok();
+        unit->next_tok();
+        ExprAST *args = ExprAST::ParseExpression(unit, codeblock, false);
+        unit->next_tok();
+        if (args->subExpr == nullptr || args->subExpr->subExpr != nullptr) {
+            CompileError e("期待两个参数");
+            throw e;
+        }
+        result = new KernelCompileExprAST(unit, codeblock, args, args->subExpr);
         break;
     }
     default: {
