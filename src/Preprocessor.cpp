@@ -15,7 +15,6 @@
 
 std::pair<std::string, std::string> genFactor(const std::string &line)
 {
-    // std::pair<std::string,std::string> result;//分别为指令和参数
     int len = line.length();
     if (len < 2) {
         CompileError e("empty % indicator");
@@ -203,17 +202,33 @@ std::vector<Tline> Preprocessor::preProcess(const std::string &code, int cnt,
         throw e;
     }
     std::istringstream buft_fin__(code);
-    // std::stringstream  preprocessoroutput;
     std::vector<Tline> processedLines;
     std::string        temp;
-    bool               isCommented = false;
-    int                lineno      = 0;
+    bool               isCommented    = false;
+    int                lineno         = 0;
+    bool               raw_string     = false;
+    std::string        tmp_raw_string = "";
     while (std::getline(buft_fin__, temp)) {
         lineno++;
+        if (raw_string) {
+            long unsigned int position = temp.find("\"\"\"\"");
+            if (position != temp.npos) {
+                tmp_raw_string += tmp_raw_string.substr(0, position);
+                temp       = temp.substr(position + 4);
+                raw_string = false;
+                processedLines.push_back(Tline(TokenSource(FN, lineno),
+                                               "\"" + tmp_raw_string + "\""));
+                tmp_raw_string = "";
+            } else {
+                tmp_raw_string = tmp_raw_string + temp + "\\n";
+                continue;
+            }
+        }
         if (closeifstack > 0 && temp.substr(0, 6) != "%endif" &&
             temp.substr(0, 7) != "%ifndef" && temp.substr(0, 6) != "%ifdef") {
             continue;
         }
+
         if (temp[0] == '%') {
             auto processedPreInstruction =
                 processPreInstruction(temp, cnt, lineno, FN);
@@ -256,6 +271,13 @@ std::vector<Tline> Preprocessor::preProcess(const std::string &code, int cnt,
             }
             if (isCommented) {
                 result = "";
+            }
+
+            position = result.find("\"\"\"\"");
+            if (position != temp.npos) {
+                tmp_raw_string = result.substr(position + 4);
+                result         = result.substr(0, position);
+                raw_string     = true;
             }
             int plen = result.length();
             if (plen > 0) {

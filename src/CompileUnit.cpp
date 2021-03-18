@@ -191,6 +191,7 @@ void CompileUnit::ScanToken(std::vector<Tline> srclines)
             } else if (token.type == tok_str) {
                 std::string str  = token.tokenValue;
                 token.tokenValue = str.substr(1, str.length() - 2);
+                token.tokenValue = ReplaceAll(token.tokenValue, "\\n", "\n");
             }
 
             // Debug token dump
@@ -228,6 +229,10 @@ void CompileUnit::compile()
 {
     std::cout << "Start preproccessing and lexer:" << name << std::endl;
     std::vector<Tline> srclines = preprocessor->process();
+    for (Tline line : srclines) {
+        std::cout << line.second << std::endl;
+    }
+
     ScanToken(srclines);
     std::cout << "Start compiling:" << name << std::endl;
 
