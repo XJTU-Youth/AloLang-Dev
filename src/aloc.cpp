@@ -109,7 +109,8 @@ int main(int argc, char *argv[])
             std::string cmdline = "g++ -O0" + objs +
                                   (vm.count("static") ? "-static " : "") +
                                   " -fPIE -L " + alolanglibdir +
-                                  " -l m -l stdc++ -l alolangcore -std=c++17" +
+                                  " -lalolangcore -Bdynamic -l m -l protobuf"
+                                  " -l stdc++ -std=c++17" +
                                   " -o " + output_file_name;
             std::cout << "debug info:" << cmdline << std::endl;
             system(cmdline.c_str());

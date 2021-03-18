@@ -4,6 +4,7 @@
  *  Created on: Mar 18, 2021
  *      Author: zbc
  */
+#include "ipc/ipccxx/ipc.pb.h"
 #include "types/alostring.h"
 #include <sys/stat.h>
 #include <unistd.h>
@@ -12,6 +13,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string>
+
+int pipeid;
 
 extern "C" void string2char(int *data, long long length, char *dst);
 
@@ -46,11 +49,37 @@ extern "C" void __alolang__inner_ipckernel_compile(alostring str)
                 << "test_pipe"
                 << "\")" << std::endl;
     master_file.close();
-    const char *fifo_name = "test_pipe";
-    mkfifo(fifo_name, 0666);
+    mkfifo("test_pipe_out", 0666);
+    mkfifo("test_pipe_in", 0666);
     if (0 == fork()) {
         execl("/bin/sh", "sh", "-c", "python ./master.py", (char *)0);
         _exit(127);
     } else {
     }
+}
+
+extern "C" void __alolang__inner_ipckernel_call()
+{
+
+    msg new_msg;
+    new_msg.set_version(1);
+    new_msg.set_command(1);
+
+    std::fstream output("test_pipe_out",
+                        std::ios::out | std::ios::trunc | std::ios::binary);
+    std::fstream input("test_pipe_in", std::ios::in | std::ios::binary);
+
+    std::string result = new_msg.SerializeAsString();
+    int         len    = result.length();
+    output.write(reinterpret_cast<const char *>(&len), sizeof(len));
+    output << result;
+    output.flush();
+    input.read((char *)&len, sizeof(len));
+    char buff[512];
+    input.read(buff, len);
+    /*if (!new_msg.ParseFromIstream(&input)) {
+        std::cerr << "Failed to parse pipe." << std::endl;
+    }*/
+    new_msg.ParseFromString(buff);
+    // google::protobuf::ShutdownProtobufLibrary();
 }

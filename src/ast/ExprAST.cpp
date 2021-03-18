@@ -10,6 +10,7 @@
 #include "FunctionAST.h"
 #include "IfExprAST.h"
 #include "IntExprAST.h"
+#include "KernelCallExprAST.h"
 #include "KernelCompileExprAST.h"
 #include "MemberExprAST.h"
 #include "ReturnExprAST.h"
@@ -242,6 +243,18 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
             throw e;
         }
         result = new KernelCompileExprAST(unit, codeblock, args, args->subExpr);
+        break;
+    }
+    case tok_kernel_call: {
+        unit->next_tok();
+        unit->next_tok();
+        ExprAST *args = ExprAST::ParseExpression(unit, codeblock, false);
+        unit->next_tok();
+        if (args->subExpr != nullptr) {
+            CompileError e("期待一个参数");
+            throw e;
+        }
+        result = new KernelCallExprAST(unit, args);
         break;
     }
     default: {

@@ -180,32 +180,32 @@ class msg_Data PROTOBUF_FINAL :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kDatFieldNumber = 2,
     kIdFieldNumber = 1,
+    kDatFieldNumber = 2,
   };
-  // bytes dat = 2;
-  void clear_dat();
-  const std::string& dat() const;
-  void set_dat(const std::string& value);
-  void set_dat(std::string&& value);
-  void set_dat(const char* value);
-  void set_dat(const void* value, size_t size);
-  std::string* mutable_dat();
-  std::string* release_dat();
-  void set_allocated_dat(std::string* dat);
+  // string id = 1;
+  void clear_id();
+  const std::string& id() const;
+  void set_id(const std::string& value);
+  void set_id(std::string&& value);
+  void set_id(const char* value);
+  void set_id(const char* value, size_t size);
+  std::string* mutable_id();
+  std::string* release_id();
+  void set_allocated_id(std::string* id);
   private:
-  const std::string& _internal_dat() const;
-  void _internal_set_dat(const std::string& value);
-  std::string* _internal_mutable_dat();
+  const std::string& _internal_id() const;
+  void _internal_set_id(const std::string& value);
+  std::string* _internal_mutable_id();
   public:
 
-  // int64 id = 1;
-  void clear_id();
-  ::PROTOBUF_NAMESPACE_ID::int64 id() const;
-  void set_id(::PROTOBUF_NAMESPACE_ID::int64 value);
+  // int64 dat = 2;
+  void clear_dat();
+  ::PROTOBUF_NAMESPACE_ID::int64 dat() const;
+  void set_dat(::PROTOBUF_NAMESPACE_ID::int64 value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::int64 _internal_id() const;
-  void _internal_set_id(::PROTOBUF_NAMESPACE_ID::int64 value);
+  ::PROTOBUF_NAMESPACE_ID::int64 _internal_dat() const;
+  void _internal_set_dat(::PROTOBUF_NAMESPACE_ID::int64 value);
   public:
 
   // @@protoc_insertion_point(class_scope:msg.Data)
@@ -215,8 +215,8 @@ class msg_Data PROTOBUF_FINAL :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr dat_;
-  ::PROTOBUF_NAMESPACE_ID::int64 id_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr id_;
+  ::PROTOBUF_NAMESPACE_ID::int64 dat_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ipc_2eproto;
 };
@@ -412,85 +412,85 @@ class msg PROTOBUF_FINAL :
 #endif  // __GNUC__
 // msg_Data
 
-// int64 id = 1;
+// string id = 1;
 inline void msg_Data::clear_id() {
-  id_ = PROTOBUF_LONGLONG(0);
+  id_.ClearToEmpty();
 }
-inline ::PROTOBUF_NAMESPACE_ID::int64 msg_Data::_internal_id() const {
-  return id_;
-}
-inline ::PROTOBUF_NAMESPACE_ID::int64 msg_Data::id() const {
+inline const std::string& msg_Data::id() const {
   // @@protoc_insertion_point(field_get:msg.Data.id)
   return _internal_id();
 }
-inline void msg_Data::_internal_set_id(::PROTOBUF_NAMESPACE_ID::int64 value) {
-  
-  id_ = value;
-}
-inline void msg_Data::set_id(::PROTOBUF_NAMESPACE_ID::int64 value) {
+inline void msg_Data::set_id(const std::string& value) {
   _internal_set_id(value);
   // @@protoc_insertion_point(field_set:msg.Data.id)
 }
-
-// bytes dat = 2;
-inline void msg_Data::clear_dat() {
-  dat_.ClearToEmpty();
+inline std::string* msg_Data::mutable_id() {
+  // @@protoc_insertion_point(field_mutable:msg.Data.id)
+  return _internal_mutable_id();
 }
-inline const std::string& msg_Data::dat() const {
-  // @@protoc_insertion_point(field_get:msg.Data.dat)
-  return _internal_dat();
+inline const std::string& msg_Data::_internal_id() const {
+  return id_.Get();
 }
-inline void msg_Data::set_dat(const std::string& value) {
-  _internal_set_dat(value);
-  // @@protoc_insertion_point(field_set:msg.Data.dat)
-}
-inline std::string* msg_Data::mutable_dat() {
-  // @@protoc_insertion_point(field_mutable:msg.Data.dat)
-  return _internal_mutable_dat();
-}
-inline const std::string& msg_Data::_internal_dat() const {
-  return dat_.Get();
-}
-inline void msg_Data::_internal_set_dat(const std::string& value) {
+inline void msg_Data::_internal_set_id(const std::string& value) {
   
-  dat_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
+  id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
-inline void msg_Data::set_dat(std::string&& value) {
+inline void msg_Data::set_id(std::string&& value) {
   
-  dat_.Set(
+  id_.Set(
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
-  // @@protoc_insertion_point(field_set_rvalue:msg.Data.dat)
+  // @@protoc_insertion_point(field_set_rvalue:msg.Data.id)
 }
-inline void msg_Data::set_dat(const char* value) {
+inline void msg_Data::set_id(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
-  dat_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
-  // @@protoc_insertion_point(field_set_char:msg.Data.dat)
+  id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
+  // @@protoc_insertion_point(field_set_char:msg.Data.id)
 }
-inline void msg_Data::set_dat(const void* value,
+inline void msg_Data::set_id(const char* value,
     size_t size) {
   
-  dat_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+  id_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
       reinterpret_cast<const char*>(value), size), GetArena());
-  // @@protoc_insertion_point(field_set_pointer:msg.Data.dat)
+  // @@protoc_insertion_point(field_set_pointer:msg.Data.id)
 }
-inline std::string* msg_Data::_internal_mutable_dat() {
+inline std::string* msg_Data::_internal_mutable_id() {
   
-  return dat_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
+  return id_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
-inline std::string* msg_Data::release_dat() {
-  // @@protoc_insertion_point(field_release:msg.Data.dat)
-  return dat_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+inline std::string* msg_Data::release_id() {
+  // @@protoc_insertion_point(field_release:msg.Data.id)
+  return id_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline void msg_Data::set_allocated_dat(std::string* dat) {
-  if (dat != nullptr) {
+inline void msg_Data::set_allocated_id(std::string* id) {
+  if (id != nullptr) {
     
   } else {
     
   }
-  dat_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), dat,
+  id_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), id,
       GetArena());
-  // @@protoc_insertion_point(field_set_allocated:msg.Data.dat)
+  // @@protoc_insertion_point(field_set_allocated:msg.Data.id)
+}
+
+// int64 dat = 2;
+inline void msg_Data::clear_dat() {
+  dat_ = PROTOBUF_LONGLONG(0);
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 msg_Data::_internal_dat() const {
+  return dat_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int64 msg_Data::dat() const {
+  // @@protoc_insertion_point(field_get:msg.Data.dat)
+  return _internal_dat();
+}
+inline void msg_Data::_internal_set_dat(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  
+  dat_ = value;
+}
+inline void msg_Data::set_dat(::PROTOBUF_NAMESPACE_ID::int64 value) {
+  _internal_set_dat(value);
+  // @@protoc_insertion_point(field_set:msg.Data.dat)
 }
 
 // -------------------------------------------------------------------

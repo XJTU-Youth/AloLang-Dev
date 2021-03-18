@@ -3,12 +3,11 @@ syntax = "proto3";
 message msg
 {
     int64 version = 1;
-    int64 length = 2;
-    int64 command = 3;
+    int64 command = 2;
     message Data
     {
         string id = 1;
         int64 dat = 2;
     }
-    repeated Data data = 4;
+    repeated Data data = 3;
 }
