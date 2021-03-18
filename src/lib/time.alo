@@ -2,5 +2,6 @@
 %def _TIME_
 
 extern "S" func time() -> int;
+extern func sleep(int time);
 
 %endif

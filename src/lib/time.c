@@ -9,6 +9,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 int64_t currentTimeMillis()
 {
@@ -20,3 +21,4 @@ int64_t currentTimeMillis()
 }
 
 extern long long _alolang_4time(void) { return currentTimeMillis(); }
+extern void      _alolang_5sleep3inte(long long time) { sleep(time); }

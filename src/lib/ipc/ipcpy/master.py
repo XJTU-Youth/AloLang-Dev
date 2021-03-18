@@ -8,16 +8,12 @@ def listen(pipename):
     except IOError:
         print("不存在指定管道")
     else:
-        a = ''
-        r=''
         while True:
-            s = os.read(rd, 256)
-            a += s
-            tmp=r+s
-            if 'end_package_from_alolang2py' in tmp:
-                os.close(rd)
-                return a
-            r=s
+            totallen = os.read(rd, 4)
+            totallenRecv = struct.unpack('>I', totallen)[0]
+            messagelen = totallenRecv - 4 
+            message = os.read(rd, messagelen)
+            makedict(message)
 
 def makedict(pbstr):
     dict = {}
