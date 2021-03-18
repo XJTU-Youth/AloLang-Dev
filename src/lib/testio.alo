@@ -5,6 +5,7 @@ extern func testPrintInt(int i);
 extern func testPrintDouble(double f);
 extern func testPrintBool(bool b);
 extern func testPrintString(string s);
+extern func testPrintChar(char c);
 extern "S" func testGetInt() -> int;
 extern "S" func testGetDouble() -> double;
 

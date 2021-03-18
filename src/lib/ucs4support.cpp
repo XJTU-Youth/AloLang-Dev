@@ -104,7 +104,6 @@ extern "C" void string2char(int *data, long long length, char *dst)
     std::u32string src;
     for (long long i = 0; i < length; i++) {
         src.push_back(data[i]);
-        printf("%lld\n", data[i]);
     }
     std::string result = UCS4ToUTF8(src);
     std::strncpy(dst, result.c_str(), result.length() + 1);

@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-char *string2char(int *data, long long length);
+extern void string2char(int *data, long long length, char *dst);
 
 extern void _alolang_8testPuts(void) { puts("AloLang Test Function"); }
 
@@ -19,8 +19,9 @@ struct alostring {
 
 extern void _alolang_15testPrintString6stringe(struct alostring str)
 {
-    char *rstr = string2char((int *)str.data.pointer.addr, str.data.size);
-    printf("%s\n", rstr);
+    char buff[str.data.size * 4 + 1];
+    string2char((int *)str.data.pointer.addr, str.data.size, buff);
+    printf("%s\n", buff);
 };
 
 extern void _alolang_13testPrintBool4boole(int a)
@@ -34,9 +35,9 @@ extern void _alolang_13testPrintBool4boole(int a)
 
 extern void _alolang_13testPrintChar4chare(int alochar)
 {
-    char *a;
-    char *p=string2char(&alochar, 1);
-    printf("%s", p);
+    char a[5];
+    string2char(&alochar, 1, a);
+    printf("%s\n", a);
 }
 
 extern long long _alolang_10testGetInte()
