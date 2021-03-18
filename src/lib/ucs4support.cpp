@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 #include <codecvt>
-// #include <iostream>
+#include <iostream>
 
 typedef int mfchar_t; // 无符号的4字节，用于容纳UCS-4的一个字符
 typedef std::u32string mfstring; // 自定义的UCS-4字符串
@@ -99,7 +99,7 @@ std::string UCS4ToUTF8(const std::u32string &s)
 
 // for alolang
 
-extern "C" const char *string2char(int *data, long long length)
+extern "C" void string2char(int *data, long long length, char *dst)
 {
     std::u32string src;
     for (long long i = 0; i < length; i++) {
@@ -107,8 +107,9 @@ extern "C" const char *string2char(int *data, long long length)
         printf("%lld\n", data[i]);
     }
     std::string result = UCS4ToUTF8(src);
-    // std::cout << result << std::endl;
-    return result.c_str();
+    std::cout << result << std::endl;
+    // return result.c_str();
+    std::strncpy(dst,result.c_str(),result.length());
     // return "";
 }
 
