@@ -107,10 +107,7 @@ extern "C" void string2char(int *data, long long length, char *dst)
         printf("%lld\n", data[i]);
     }
     std::string result = UCS4ToUTF8(src);
-    // std::cout << result << std::endl;
-    // return result.c_str();
     std::strncpy(dst, result.c_str(), result.length() + 1);
-    // return "";
 }
 
 extern "C" long long __alolang_inner_load_string(char *str, long long addr)
