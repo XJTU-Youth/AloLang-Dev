@@ -1,0 +1,8 @@
+%ifndef _IPCKERNEL_
+%def _IPCKERNEL_
+
+%import string.alo
+
+class ipckernel{
+}
+%endif
