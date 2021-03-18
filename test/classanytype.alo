@@ -27,6 +27,10 @@ func main() {
     testPrintInt((*(test1.pred)).data);
     testPrintInt(*testint1);
 
+    node<node<int>> test4;
+    test4.data = test1;
+    testPrintInt(test4.data.data);
+
     if (true) 
         testPrintInt(114514);
 

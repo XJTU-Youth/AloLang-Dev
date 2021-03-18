@@ -29,12 +29,14 @@ IfExprAST *IfExprAST::ParseIfExpr(CompileUnit *unit, CodeBlockAST *parent)
 {
     unit->next_tok();
     ExprAST *     condition = ExprAST::ParseExpression(unit, parent, false);
-    CodeBlockAST *thenBlock = CodeBlockAST::ParseCodeBlock(unit, "", parent);
+    CodeBlockAST *thenBlock =
+        CodeBlockAST::ParseCodeBlock(unit, "", parent->baseFunction, parent);
     CodeBlockAST *elseBlock = nullptr;
 
-    if ((unit->icurTok + 1)->type == tok_key_else) {
+    if (unit->icurTok->type == tok_key_else) {
         unit->next_tok();
-        elseBlock = CodeBlockAST::ParseCodeBlock(unit, "", parent);
+        elseBlock = CodeBlockAST::ParseCodeBlock(unit, "", parent->baseFunction,
+                                                 parent);
     }
     return new IfExprAST(unit, parent, condition, thenBlock, elseBlock);
 }
@@ -54,13 +56,17 @@ std::vector<llvm::Value *> IfExprAST::Codegen(llvm::IRBuilder<> *builder)
     if (elseBlock != nullptr) {
         llvm::BasicBlock *elseBB = elseBlock->Codegen(function);
         builder->CreateCondBr(conditionValue, thenBB, elseBB);
-        builder->SetInsertPoint(elseBlock->endBB);
-        builder->CreateBr(MergeBB);
+        if (!elseBlock->jumped) {
+            builder->SetInsertPoint(elseBlock->endBB);
+            builder->CreateBr(MergeBB);
+        }
     } else {
         builder->CreateCondBr(conditionValue, thenBB, MergeBB);
     }
-    builder->SetInsertPoint(thenBlock->endBB);
-    builder->CreateBr(MergeBB);
+    if (!thenBlock->jumped) {
+        builder->SetInsertPoint(thenBlock->endBB);
+        builder->CreateBr(MergeBB);
+    }
     builder->SetInsertPoint(MergeBB);
     parent->endBB = MergeBB;
     return std::vector<llvm::Value *>();

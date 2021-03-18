@@ -1,0 +1,6 @@
+%ifndef _TIME_
+%def _TIME_
+
+extern "S" func time() -> int;
+
+%endif

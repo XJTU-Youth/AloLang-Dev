@@ -15,6 +15,7 @@ class BaseAST
     BaseAST(CompileUnit *unit);
     virtual ~BaseAST();
     CompileUnit *unit;
+    TokenSource  source;
 };
 
 #endif /* COMPILER_AST_ASTBASE_H_ */

@@ -107,7 +107,9 @@ int main(int argc, char *argv[])
                 // buff = header + buff;
                 try {
                     preProcessed = preProcess(buff, 0, input_file_name);
-                    // cout << preProcessed;
+                    for (Tline line : preProcessed) {
+                        std::cout << line.second << std::endl;
+                    }
                     // todo:这行代码写的极不规范，尽快修改
                     CompileUnit(input_file_name, preProcessed).compile();
                     system(("llc ./" + input_file_name +
@@ -126,10 +128,11 @@ int main(int argc, char *argv[])
             for (std::string input_file_name : input_file_names) {
                 objs += "./" + input_file_name + ".s ";
             }
-            std::string cmdline = "gcc -O0" + objs +
+            std::string cmdline = "g++ -O0" + objs +
                                   (vm.count("static") ? "-static " : "") +
                                   " -fPIE -L " + alolanglibdir +
-                                  " -l alolangcore" + " -o " + output_file_name;
+                                  " -l m -l stdc++ -l alolangcore -std=c++17" +
+                                  " -o " + output_file_name;
             std::cout << "debug info:" << cmdline << std::endl;
             system(cmdline.c_str());
             return 0;

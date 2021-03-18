@@ -17,10 +17,10 @@
 #include <string>
 
 class TypeAST;
-class FunctionAST;
-class ExternAST;
+class BaseAST;
 class VariableDefExprAST;
 class ClassAST;
+class PrototypeAST;
 class CompileUnit
 {
   public:
@@ -30,23 +30,23 @@ class CompileUnit
     Token next_tok();
     void  build();
 
-    std::string                                 name;
-    std::vector<Tline>                          srclines;
-    llvm::LLVMContext *                         context;
-    llvm::Module *                              module;
-    std::vector<Token>                          tokenList;
-    std::vector<Token>::iterator                icurTok;
-    std::map<std::string, ClassAST *>           classes;
-    std::vector<ClassAST *>                     classesO;
-    std::map<std::string, VariableDefExprAST *> globalVariables;
-    std::vector<VariableDefExprAST *>           globalVariablesO;
-    std::map<std::string, FunctionAST *>        functions;
-    std::map<std::string, ExternAST *>          externs;
+    std::string                       name;
+    std::vector<Tline>                srclines;
+    llvm::LLVMContext *               context;
+    llvm::Module *                    module;
+    std::vector<Token>                tokenList;
+    std::vector<Token>::iterator      icurTok;
+    std::map<std::string, ClassAST *> classes;
+    std::vector<VariableDefExprAST *> globalVariables;
+    std::vector<BaseAST *> functions; //泛指function（包括extern）
+
     std::map<std::array<std::string, 3>, std::pair<llvm::Function *, TypeAST *>>
                                         binOperators; // LHS type,RHS type,binOP
     std::map<std::string, llvm::Type *> types;        // Codgen用
     std::map<std::string, std::pair<TypeAST *, llvm::Value *>>
         globalVariablesValue; // Codgen用
+    std::map<std::string, std::pair<PrototypeAST *, llvm::Function *>>
+        globalFunctions; // Codegen用
 };
 
 #endif /* COMPILER_COMPILEUNIT_H_ */

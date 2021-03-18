@@ -1,0 +1,6 @@
+%ifndef _RAND_
+%def _RAND_
+
+extern "S" func rand() -> int;
+
+%endif

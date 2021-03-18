@@ -33,6 +33,8 @@ void initInnerType(CompileUnit *unit)
         "double", llvm::Type::getDoubleTy(*unit->context)));
     unit->types.insert(std::pair<std::string, llvm::Type *>(
         "bool", llvm::Type::getInt1Ty(*unit->context)));
+    unit->types.insert(std::pair<std::string, llvm::Type *>(
+        "char", llvm::Type::getInt32Ty(*unit->context)));
 }
 
 void initInnerOperations(CompileUnit *unit)
@@ -89,6 +91,17 @@ void initInnerOperations(CompileUnit *unit)
                                         std::pair<llvm::Function *, TypeAST *>>(
         {"int", "int", "=="}, std::pair<llvm::Function *, TypeAST *>(
                                   nullptr, new TypeAST(unit, "bool"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", ">>"}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "int"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"int", "int", "<<"}, std::pair<llvm::Function *, TypeAST *>(
+                                  nullptr, new TypeAST(unit, "int"))));
+
     // double
     unit->binOperators.insert(std::pair<std::array<std::string, 3>,
                                         std::pair<llvm::Function *, TypeAST *>>(
@@ -107,6 +120,11 @@ void initInnerOperations(CompileUnit *unit)
     unit->binOperators.insert(std::pair<std::array<std::string, 3>,
                                         std::pair<llvm::Function *, TypeAST *>>(
         {"double", "double", "/"}, std::pair<llvm::Function *, TypeAST *>(
+                                       nullptr, new TypeAST(unit, "double"))));
+
+    unit->binOperators.insert(std::pair<std::array<std::string, 3>,
+                                        std::pair<llvm::Function *, TypeAST *>>(
+        {"double", "double", "%"}, std::pair<llvm::Function *, TypeAST *>(
                                        nullptr, new TypeAST(unit, "double"))));
 
     unit->binOperators.insert(std::pair<std::array<std::string, 3>,
@@ -149,8 +167,7 @@ void scanToken(CompileUnit *unit)
         while (1) {
             int tokenid      = lexer->yylex();
             token.type       = TokenType(tokenid);
-            token.file       = line.first.first;
-            token.lineno     = line.first.second;
+            token.source     = line.first;
             token.tokenValue = lexer->YYText();
             // Deal with numbers
             if (token.type == tok_number) {
@@ -217,8 +234,7 @@ void CompileUnit::compile()
         switch (icurTok->type) {
         case tok_fun: {
             FunctionAST *func_ast = FunctionAST::ParseFunction(this);
-            functions.insert(std::pair<std::string, FunctionAST *>(
-                func_ast->getDemangledName(), func_ast));
+            functions.push_back(func_ast);
             // llvm::Function *func = func_ast->Codegen();
             /*llvm::Type*
              type=llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
@@ -234,8 +250,7 @@ void CompileUnit::compile()
         }
         case tok_extern: {
             ExternAST *externast = ExternAST::ParseExtern(this);
-            externs.insert(std::pair<std::string, ExternAST *>(
-                externast->getDemangledName(), externast));
+            functions.push_back(externast);
             break;
         }
         case tok_identifier: {
@@ -243,19 +258,18 @@ void CompileUnit::compile()
             VariableDefExprAST *var =
                 VariableDefExprAST::ParseVar(this, nullptr);
             Token token = next_tok();
-            globalVariables.insert(
-                std::pair<std::string, VariableDefExprAST *>(var->idName, var));
+            globalVariables.push_back(var);
             break;
         }
         case tok_key_class: {
             ClassAST *classAST = ClassAST::ParseClass(this);
             classes.insert(std::pair<std::string, ClassAST *>(
                 classAST->className, classAST));
-            classesO.push_back(classAST);
             break;
         }
         default: {
-            CompileError e("unexpected token:" + icurTok->dump());
+            CompileError e("unexpected token:" + icurTok->dump(),
+                           icurTok->source);
             throw e;
         }
         }
@@ -265,20 +279,26 @@ void CompileUnit::compile()
         llvm::Type *classType = classAST->Codegen();
     }*/
 
-    std::map<std::string, VariableDefExprAST *>::iterator gVar_iter;
-    for (gVar_iter = globalVariables.begin();
-         gVar_iter != globalVariables.end(); gVar_iter++) {
-        gVar_iter->second->Codegen(nullptr);
+    for (VariableDefExprAST *v : globalVariables) {
+        v->Codegen(nullptr); //自动插入globalVariablesValue
     }
     std::map<std::string, ExternAST *>::iterator extern_iter;
-    for (extern_iter = externs.begin(); extern_iter != externs.end();
-         extern_iter++) {
-        extern_iter->second->Codegen();
-    }
-    std::map<std::string, FunctionAST *>::iterator function_iter;
-    for (function_iter = functions.begin(); function_iter != functions.end();
-         function_iter++) {
-        function_iter->second->Codegen();
+    for (BaseAST *func : functions) {
+        if (ExternAST *v = dynamic_cast<ExternAST *>(func)) {
+            llvm::Function *f = v->Codegen();
+            globalFunctions.insert(
+                std::pair<std::string,
+                          std::pair<PrototypeAST *, llvm::Function *>>(
+                    f->getName(),
+                    std::pair<PrototypeAST *, llvm::Function *>(v->proto, f)));
+
+        } else if (FunctionAST *v = dynamic_cast<FunctionAST *>(func)) {
+            llvm::Function *f = v->Codegen(); //自动插入globalFunctions
+
+        } else {
+            CompileError e("Unknown internal error.");
+            throw e;
+        }
     }
 
     build();

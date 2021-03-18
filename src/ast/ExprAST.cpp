@@ -7,10 +7,13 @@
 #include "CodeBlockAST.h"
 #include "DoubleExprAST.h"
 #include "EmptyExprAST.h"
+#include "FunctionAST.h"
 #include "IfExprAST.h"
 #include "IntExprAST.h"
 #include "MemberExprAST.h"
 #include "ReturnExprAST.h"
+#include "SizeofExprAST.h"
+#include "StringExprAST.h"
 #include "UnaryExprAST.h"
 #include "VariableDefExprAST.h"
 #include "VariableExprAST.h"
@@ -114,12 +117,15 @@ ExprAST::~ExprAST()
     // TODO Auto-generated destructor stub
 }
 
+llvm::Value *ExprAST::getAlloca(llvm::IRBuilder<> *builder) { return nullptr; }
+
 ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
                                bool root)
 {
     ExprAST *result;
     // todo:除了函数调用之外的语句解析
-    Token token = *unit->icurTok;
+    Token       token  = *unit->icurTok;
+    TokenSource source = token.source;
     switch (token.type) {
     case tok_number: {
         unit->next_tok();
@@ -155,7 +161,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
             result = ParseExpression(unit, codeblock, false);
             token  = *unit->icurTok;
             if (token.type != tok_syntax || token.tokenValue != ")") {
-                CompileError e("missing ')'");
+                CompileError e("missing ')'", source);
                 throw e;
             }
             unit->next_tok();
@@ -172,7 +178,8 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
             //函数调用
             token         = unit->next_tok();
             ExprAST *args = ExprAST::ParseExpression(unit, codeblock, false);
-            result        = new CallExprAST(unit, idName, args);
+            result = new CallExprAST(unit, codeblock->baseFunction, idName,
+                                     args, nullptr);
         } else {
             //变量或变量定义
             int i = 1, ci = 1;
@@ -184,11 +191,11 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
                         ci++;
                         continue;
                     }
-                    if (token.tokenValue != "<") {
+                    if (token.tokenValue != "<" || !root) {
                         //变量
                         unit->next_tok();
                         result = new VariableExprAST(unit, codeblock, idName);
-                    } else if (token.tokenValue == "<") {
+                    } else if (token.tokenValue == "<" && root) {
                         //变量定义
                         result = VariableDefExprAST::ParseVar(unit, codeblock);
                     }
@@ -204,33 +211,51 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
         break;
     }
     case tok_return: {
-        return ReturnExprAST::ParseReturnExprAST(unit, codeblock);
+        result            = ReturnExprAST::ParseReturnExprAST(unit, codeblock);
+        codeblock->jumped = true;
+        break;
+    }
+    case tok_key_sizeof: {
+        unit->next_tok(); // sizeof
+        unit->next_tok(); //(
+        TypeAST *type =
+            TypeAST::ParseType(unit, codeblock->baseFunction->parentClass);
+        unit->next_tok(); //)
+        result = new SizeofExprAST(unit, type);
+        break;
+    }
+    case tok_str: {
+        //字符串字面值
+        result         = new StringExprAST(unit, token.tokenValue);
+        result->source = token.source;
+        unit->next_tok();
+        break;
     }
     default: {
-        CompileError e("不期待的token：" + token.dump(), token.file,
-                       token.lineno);
+        CompileError e("不期待的token：" + token.dump(), source);
         throw e;
     }
     }
-    /*if (token.type == tok_syntax && token.tokenValue == ",") {
-        unit->next_tok();
-        ExprAST *subExpr = ParseBinOpRHS(unit, codeblock, 200, result);
-        if (BinaryExprAST *v = dynamic_cast<BinaryExprAST *>(subExpr)) {
-            subExpr = v->RHS;
-        }
-        result->subExpr = subExpr;
-    }*/
+    result->source = source;
     return result;
+}
+
+void ExprAST::appendSubExpr(ExprAST *expr)
+{
+    ExprAST *curAST = this;
+    while (curAST->subExpr != nullptr) {
+        curAST = curAST->subExpr;
+    }
+    curAST->subExpr = expr;
 }
 
 static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
                               int ExprPrec, ExprAST *LHS)
 {
-    ExprAST *cExpr = LHS;
     while (1) {
         Token token = *unit->icurTok;
         int   TokPrec;
-        if (LHS == nullptr) {
+        if (EmptyExprAST *v = dynamic_cast<EmptyExprAST *>(LHS)) {
             TokPrec = GetLUnaryTokPrecedence(token);
         } else {
             TokPrec = GetBinTokPrecedence(token);
@@ -252,20 +277,26 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
             }
         }
         if (token.tokenValue == ",") {
-            cExpr->subExpr = RHS;
-            cExpr          = RHS;
+            LHS->appendSubExpr(RHS);
         } else if (token.tokenValue == ".") {
             if (VariableExprAST *v = dynamic_cast<VariableExprAST *>(RHS)) {
                 LHS = new MemberExprAST(unit, LHS, v->idName, false);
+            } else if (CallExprAST *v = dynamic_cast<CallExprAST *>(RHS)) {
+                v->LHS = LHS;
+                LHS    = v;
             } else {
-                CompileError e("成员方法调用未实现");
+                CompileError e("未知的操作", token.source);
                 throw e;
             }
         } else if (token.tokenValue == "->") {
             if (VariableExprAST *v = dynamic_cast<VariableExprAST *>(RHS)) {
                 LHS = new MemberExprAST(unit, LHS, v->idName, true);
+            } else if (CallExprAST *v = dynamic_cast<CallExprAST *>(RHS)) {
+                v->LHS      = LHS;
+                v->Lpointer = true;
+                LHS         = v;
             } else {
-                CompileError e("成员方法调用未实现");
+                CompileError e("未知的操作", token.source);
                 throw e;
             }
         } else if (dynamic_cast<EmptyExprAST *>(LHS) != nullptr &&
@@ -276,9 +307,11 @@ static ExprAST *ParseBinOpRHS(CompileUnit *unit, CodeBlockAST *codeblock,
                    GetRUnaryTokPrecedence(token) != -1) {
             //右一元运算符
             LHS = new UnaryExprAST(unit, token.tokenValue, LHS, false);
+
         } else {
             LHS = new BinaryExprAST(unit, token.tokenValue, LHS, RHS);
         }
+        LHS->source = token.source;
     }
 }
 
@@ -286,13 +319,7 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
                                   bool root)
 {
     ExprAST *result = ParsePrimary(unit, codeblock, root);
-
-    /*while (unit->icurTok->type == tok_syntax &&
-           unit->icurTok->tokenValue == ".") {
-        LHS = MemberExprAST::ParseMemberExprAST(unit, codeblock, LHS);
-    }*/
-
-    result = ParseBinOpRHS(unit, codeblock, 0, result);
+    result          = ParseBinOpRHS(unit, codeblock, 0, result);
 
     if (IfExprAST *v = dynamic_cast<IfExprAST *>(result)) {
         return result; //跳过分号
@@ -303,8 +330,8 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
     Token token = *(unit->icurTok);
     if (root) {
         if (token.type != tok_syntax || token.tokenValue != ";") {
-            CompileError e("丟失分号: \"" + token.dump() + "\" 前", token.file,
-                           token.lineno);
+            CompileError e("丟失分号: \"" + token.dump() + "\" 前",
+                           token.source);
             throw e;
         }
         unit->next_tok();
@@ -314,9 +341,10 @@ ExprAST *ExprAST::ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
 
 std::vector<llvm::Value *> ExprAST::CodegenChain(llvm::IRBuilder<> *builder)
 {
+    type.clear();
     std::vector<llvm::Value *> result = this->Codegen(builder);
     if (subExpr != nullptr) {
-        std::vector<llvm::Value *> subResult = subExpr->Codegen(builder);
+        std::vector<llvm::Value *> subResult = subExpr->CodegenChain(builder);
         std::vector<TypeAST *>     subType   = subExpr->type;
         result.insert(result.end(), subResult.begin(), subResult.end());
         type.insert(type.end(), subType.begin(), subType.end());

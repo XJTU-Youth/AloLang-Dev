@@ -27,6 +27,7 @@ foreach                                 token = tok_key_foreach;    return token
 goto                                    token = tok_key_goto;       return token;
 if                                      token = tok_key_if;         return token;
 while                                   token = tok_key_while;      return token;
+sizeof                                  token = tok_key_sizeof;     return token;
 
 case|switch                             token = tok_key_switch;     return token;
 
@@ -37,6 +38,7 @@ func                                    token = tok_fun;            return token
 extern                                  token = tok_extern;         return token;
 return                                  token = tok_return;         return token;
 [a-zA-Z_][a-zA-Z_0-9]*                  token = tok_identifier;     return token;
+0\.[0-9]+                               token = tok_number;         return token;
 0b[01]+                                 token = tok_number;         return token;
 0x[1-9a-fA-F][0-9a-fA-F]*               token = tok_number;         return token;
 0B[01]+                                 token = tok_number;         return token;
@@ -46,6 +48,8 @@ return                                  token = tok_return;         return token
 0                                       token = tok_number;         return token;
 
 ->                                      token = tok_syntax;         return token;
+\<\<                                      token = tok_syntax;         return token;
+>>                                      token = tok_syntax;         return token;
 ==                                      token = tok_syntax;         return token;
 !=                                      token = tok_syntax;         return token;
 \>=                                     token = tok_syntax;         return token;

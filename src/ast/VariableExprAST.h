@@ -15,13 +15,10 @@ class VariableExprAST : public ExprAST
     VariableExprAST(CompileUnit *unit, CodeBlockAST *codeblock,
                     const std::string &idName);
     virtual ~VariableExprAST();
-    llvm::Value *              getAlloca();
+    virtual llvm::Value *      getAlloca(llvm::IRBuilder<> *builder);
     std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
     std::string                idName;
     CodeBlockAST *             codeblock;
-
-  private:
-    llvm::Value *alloca;
 };
 
 #endif /* COMPILER_AST_VARIABLEEXPRAST_H_ */

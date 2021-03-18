@@ -1,0 +1,20 @@
+%ifndef _STRING_
+%def _STRING_
+
+%import array.alo
+
+class string
+{
+    //private:
+    array<char> data;
+	func length()->int
+	{
+		return this->data.size();
+	}
+	func charAt(int index)->char
+	{
+		return *this->data.get(index);
+	}
+}
+
+%endif

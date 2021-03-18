@@ -13,7 +13,6 @@ Token::Token()
 {
     tokenValue = "";
     type       = tok_err;
-    lineno     = 0;
 }
 
 Token::~Token()
@@ -99,8 +98,8 @@ std::string Token::dump()
     default:
         typeStr = "not defined";
     }
-    ss << std::right << std::setw(25) << file << ":" << std::left
-       << std::setw(6) << lineno << " type:" << std::setw(16) << typeStr
+    ss << std::right << std::setw(25) << source.file << ":" << std::left
+       << std::setw(6) << source.lineno << " type:" << std::setw(16) << typeStr
        << " data:" << tokenValue;
     return ss.str();
 }

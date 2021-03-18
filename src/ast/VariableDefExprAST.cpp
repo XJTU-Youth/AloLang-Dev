@@ -9,6 +9,7 @@
 
 #include "../CompileError.hpp"
 #include "CodeBlockAST.h"
+#include "FunctionAST.h"
 #include "IntExprAST.h"
 #include "TypeAST.h"
 #include <iostream>
@@ -40,7 +41,8 @@ static llvm::AllocaInst *CreateEntryBlockAlloca(CompileUnit *      unit,
 {
     llvm::IRBuilder<> builder(&function->getEntryBlock(),
                               function->getEntryBlock().begin());
-    return builder.CreateAlloca(typeAST->Codegen(), 0, VarName.c_str());
+    llvm::Type *      varType = typeAST->Codegen();
+    return builder.CreateAlloca(varType, 0, VarName.c_str());
 }
 
 std::vector<llvm::Value *>
@@ -51,16 +53,16 @@ VariableDefExprAST::Codegen(llvm::IRBuilder<> *builder)
             *unit->module, variableType->Codegen(), false,
             llvm::GlobalValue::ExternalLinkage, nullptr, idName);
         // todo:初始填0
-        if (variableType->name == "int") {
+        if (variableType->getName() == "int") {
             llvm::IntegerType *itype =
                 llvm::IntegerType::get(*unit->context, 64);
             llvm::ConstantInt *res = llvm::ConstantInt::get(itype, 0, true);
             gVar->setInitializer(res);
-        } else if (variableType->name == "double") {
+        } else if (variableType->getName() == "double") {
             llvm::Type *    ftype = llvm::Type::getDoubleTy(*unit->context);
             llvm::Constant *res   = llvm::ConstantFP::get(ftype, 0);
             gVar->setInitializer(res);
-        } else if (variableType->name == "bool") {
+        } else if (variableType->getName() == "bool") {
             llvm::IntegerType *itype =
                 llvm::IntegerType::get(*unit->context, 1);
             llvm::ConstantInt *res = llvm::ConstantInt::get(itype, 0, true);
@@ -100,6 +102,9 @@ VariableDefExprAST *VariableDefExprAST::ParseVar(CompileUnit * unit,
                                                  CodeBlockAST *codeblock)
 {
     TypeAST *typeAST = TypeAST::ParseType(unit);
+    if (codeblock != nullptr) {
+        typeAST->inClass = codeblock->baseFunction->parentClass;
+    }
 
     Token       nexToken = *(unit->icurTok);
     std::string idName   = nexToken.tokenValue;
@@ -115,13 +120,13 @@ VariableDefExprAST *VariableDefExprAST::ParseVar(CompileUnit * unit,
             unit->next_tok();
             initValue = ExprAST::ParseExpression(unit, codeblock, false);
         } else {
-            CompileError e("Unknown token:" + nexToken.dump(),nexToken.file,nexToken.lineno);
+            CompileError e("Unknown token:" + nexToken.dump(), nexToken.source);
             throw e;
         }
     }
 
     std::cout << std::left << std::setw(35)
               << "Variable definition found:" << idName
-              << " with type:" << typeAST->name << std::endl;
+              << " with type:" << typeAST->baseClass << std::endl;
     return new VariableDefExprAST(unit, codeblock, idName, typeAST, initValue);
 }

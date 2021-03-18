@@ -11,10 +11,12 @@ class ExprAST : public BaseAST
     virtual ~ExprAST();
     virtual std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder) = 0;
     std::vector<llvm::Value *>         CodegenChain(llvm::IRBuilder<> *builder);
+    virtual llvm::Value *              getAlloca(llvm::IRBuilder<> *builder);
     static ExprAST *ParseExpression(CompileUnit *unit, CodeBlockAST *codeblock,
                                     bool root);
     static ExprAST *ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
                                  bool root = false);
+    void            appendSubExpr(ExprAST *expr);
     std::vector<TypeAST *> type;
     ExprAST *              subExpr;
 };

@@ -1,7 +1,9 @@
 #include "preprocessor.h"
+#include "boost/filesystem.hpp"
 #include "utils.h"
 #include <CompileError.hpp>
 #include <vector>
+
 std::ifstream t_fin__;
 
 std::map<std::string, std::string> variable;
@@ -32,20 +34,25 @@ std::pair<std::string, std::string> genFactor(const std::string &line)
     }
 }
 
-std::vector<Tline> processPreInstruction(const std::string &line, int cnt, int lineno)
+std::vector<Tline> processPreInstruction(const std::string &line, int cnt,
+                                         int lineno, const std::string &FN)
 {
+    boost::filesystem::path             curFile(FN);
     std::pair<std::string, std::string> instruction =
         genFactor(line); //解析后的预编译指令
     if (instruction.first == "import") {
-        t_fin__.open(instruction.second);
+        std::string realPath =
+            curFile.parent_path().string() + "/" + instruction.second;
+        t_fin__.open(realPath);
         if (!t_fin__.is_open()) {
-            CompileError e("import file " + instruction.second + " not found");
+            CompileError e("import file " + realPath + " not found",
+                           TokenSource(FN, lineno));
             throw e;
         }
         std::string importFileContent;
         std::getline(t_fin__, importFileContent, char(EOF));
         t_fin__.close();
-        return preProcess(importFileContent, cnt + 1, instruction.second);
+        return preProcess(importFileContent, cnt + 1, realPath);
     } else if (instruction.first == "def") {
         //解析宏定义
         std::string var, data;
@@ -68,7 +75,7 @@ std::vector<Tline> processPreInstruction(const std::string &line, int cnt, int l
             data = instruction.second.substr(i + 1, len - i - 1);
         }
         variable[var] = data;
-        return std::vector<Tline>{Tline(std::pair<std::string,int>("",lineno),"")};
+        return std::vector<Tline>{Tline(TokenSource("", lineno), "")};
     } else if (instruction.first == "rmdef") {
         if (instruction.second.length() == 0) {
             CompileError e("no second instruction");
@@ -80,7 +87,7 @@ std::vector<Tline> processPreInstruction(const std::string &line, int cnt, int l
             throw e;
             //找不到宏定义
         }
-        return std::vector<Tline>{Tline(std::pair<std::string,int>("",lineno),"")};
+        return std::vector<Tline>{Tline(TokenSource("", lineno), "")};
     } else if (instruction.first == "ifdef") {
         if (instruction.second.length() == 0) {
             CompileError e("no second instruction");
@@ -93,7 +100,7 @@ std::vector<Tline> processPreInstruction(const std::string &line, int cnt, int l
             closeifstack++;
         }
         currentifstack++;
-        return std::vector<Tline>{Tline(std::pair<std::string,int>("",lineno),"")};
+        return std::vector<Tline>{Tline(TokenSource("", lineno), "")};
     } else if (instruction.first == "ifndef") {
         if (instruction.second.length() == 0) {
             CompileError e("no second instruction");
@@ -106,7 +113,7 @@ std::vector<Tline> processPreInstruction(const std::string &line, int cnt, int l
             closeifstack++;
         }
         currentifstack++;
-        return std::vector<Tline>{Tline(std::pair<std::string,int>("",lineno),"")};
+        return std::vector<Tline>{Tline(TokenSource("", lineno), "")};
     } else if (instruction.first == "endif") {
         if (currentifstack == 0) {
             CompileError e("no second instruction");
@@ -116,9 +123,10 @@ std::vector<Tline> processPreInstruction(const std::string &line, int cnt, int l
             closeifstack--;
         }
         currentifstack--;
-        return std::vector<Tline>{Tline(std::pair<std::string,int>("",lineno),"")};
+        return std::vector<Tline>{Tline(TokenSource("", lineno), "")};
     } else {
-        CompileError e("Unrecognized preprocessor command");
+        CompileError e("Unrecognized preprocessor command " +
+                       instruction.first);
         throw e;
     }
 }
@@ -169,7 +177,7 @@ std::vector<Tline> preProcess(const std::string &code, int cnt, std::string FN)
     std::vector<Tline> processedLines;
     std::string        temp;
     bool               isCommented = false;
-    int lineno = 0;
+    int                lineno      = 0;
     while (std::getline(buft_fin__, temp)) {
         lineno++;
         if (closeifstack > 0 && temp.substr(0, 6) != "%endif" &&
@@ -178,9 +186,11 @@ std::vector<Tline> preProcess(const std::string &code, int cnt, std::string FN)
         }
         if (temp[0] == '%') {
             auto processedPreInstruction =
-                processPreInstruction(temp, cnt, lineno);
+                processPreInstruction(temp, cnt, lineno, FN);
             if (processedPreInstruction.size() > 0)
-                std::move(processedPreInstruction.begin(), processedPreInstruction.end(), std::back_inserter(processedLines));
+                std::move(processedPreInstruction.begin(),
+                          processedPreInstruction.end(),
+                          std::back_inserter(processedLines));
         } else {
             std::string replaced = doReplace(temp);
             //处理块注释
@@ -219,7 +229,8 @@ std::vector<Tline> preProcess(const std::string &code, int cnt, std::string FN)
             }
             int plen = result.length();
             if (plen > 0) {
-                processedLines.push_back(Tline(std::pair<std::string,int>(FN,lineno),result));
+                processedLines.push_back(
+                    Tline(TokenSource(FN, lineno), result));
             }
         }
         temp.erase();

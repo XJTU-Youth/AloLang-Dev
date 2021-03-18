@@ -33,71 +33,37 @@ UnaryExprAST::~UnaryExprAST()
 {
     // TODO Auto-generated destructor stub
 }
+llvm::Value *UnaryExprAST::getAlloca(llvm::IRBuilder<> *builder)
+{
+    if (op == "*") {
+        type.clear();
+        llvm::Value *ret = operand->Codegen(builder)[0];
+        type.push_back(operand->type[0]->pointee);
+        return ret;
+    } else {
+        CompileError e("Operator " + op + " can not be used as assignment",
+                       source);
+        throw e;
+    }
+}
 
 std::vector<llvm::Value *> UnaryExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
+    type.clear();
     std::vector<llvm::Value *> result;
     if (op == "&") {
-        if (VariableExprAST *v = dynamic_cast<VariableExprAST *>(operand)) {
-            result.push_back(v->getAlloca());
-            this->type.push_back(new TypeAST(unit, operand->type[0]));
-        } else if (MemberExprAST *v = dynamic_cast<MemberExprAST *>(operand)) {
-            llvm::Value *          pointer;
-            std::vector<ExprAST *> chain;
-            ExprAST *              curAST = operand;
-            while (true) {
-                chain.push_back(curAST);
-                if (MemberExprAST *v = dynamic_cast<MemberExprAST *>(curAST)) {
-                    curAST = v->LHS;
-                } else if (VariableExprAST *v =
-                               dynamic_cast<VariableExprAST *>(curAST)) {
-                    break;
-                } else {
-                    CompileError e("Unknown AST.");
-                    throw e;
-                }
-            }
-            VariableExprAST *start =
-                dynamic_cast<VariableExprAST *>(chain[chain.size() - 1]);
-            pointer = start->getAlloca();
-            std::vector<unsigned int> idx;
-            std::string               curType = start->type[0]->baseClass;
-            for (int i = chain.size() - 2; i >= 0; i--) {
-                MemberExprAST *v      = dynamic_cast<MemberExprAST *>(chain[i]);
-                std::string    member = v->member;
-                ClassAST *     baseClass = unit->classes[curType];
-                auto           memberAST = baseClass->members.find(member);
-                if (memberAST == baseClass->members.end()) {
-                    CompileError e("Member" + member + " not found.");
-                    throw e;
-                }
-                unsigned int index =
-                    std::distance(std::begin(baseClass->members), memberAST);
-                idx.push_back(index);
-                curType = baseClass->members[member]->variableType->name;
-            }
-            std::vector<llvm::Value *> idxl;
-            llvm::IntegerType *        itype =
-                llvm::IntegerType::get(*unit->context, 32);
-
-            idxl.push_back(llvm::ConstantInt::get(itype, 0, true));
-            for (unsigned int pid : idx) {
-                idxl.push_back(llvm::ConstantInt::get(itype, pid, true));
-            }
-            if (idx.size() != 0) {
-                pointer = builder->CreateGEP(start->type[0]->Codegen(), pointer,
-                                             idxl);
-            }
-            result.push_back(pointer);
-        } else {
-            CompileError e("& can only be used with variable");
+        llvm::Value *pointer = operand->getAlloca(builder);
+        if (pointer == nullptr) {
+            CompileError e("No memory allocaed", source);
             throw e;
         }
+        type.push_back(new TypeAST(unit, operand->type[0]));
+        result.push_back(pointer);
     } else {
         //值操作
         std::vector<llvm::Value *> Rs = operand->CodegenChain(builder);
         if (Rs.size() != 1) {
-            CompileError e("Unary Expr length != 1");
+            CompileError e("Unary Expr length != 1", source);
             throw e;
         }
 
@@ -106,13 +72,13 @@ std::vector<llvm::Value *> UnaryExprAST::Codegen(llvm::IRBuilder<> *builder)
             result.push_back(builder->CreateXor(Rs[0], 1));
         } else if (op == "*") {
             if (operand->type[0]->pointee == nullptr) {
-                CompileError e("operator * must be used on pointer");
+                CompileError e("operator * must be used on pointer", source);
                 throw e;
             }
             this->type.push_back(operand->type[0]->pointee);
             result.push_back(builder->CreateLoad(Rs[0]));
         } else {
-            CompileError e("一元运算符:" + op + "未实现");
+            CompileError e("一元运算符:" + op + "未实现", source);
             throw e;
         }
     }

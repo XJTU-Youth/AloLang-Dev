@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message msg
+{
+    int64 version = 1;
+    int64 length = 2;
+    int64 command = 3;
+    message Data
+    {
+        int64 id = 1;
+        bytes dat = 2;
+    }
+    repeated Data data = 4;
+}

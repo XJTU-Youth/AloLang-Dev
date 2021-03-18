@@ -1,0 +1,50 @@
+%ifndef _UNSAFE_
+%def _UNSAFE_
+
+
+extern func __cfree(int addr);
+extern func __cmalloc(int size)->int;
+extern func __cmemcpy(int src,int dst,int size);
+
+func memcpy(int src,int dst,int size)
+{
+	__cmemcpy(src,dst,size);
+	return;
+}
+
+class UnsafePointer<A>
+{
+	int addr;
+	func __alolang_inner_load()->A*
+	{
+		//编译器实现
+	}
+	/*func __alolang_inner_set(A data){
+		//编译器实现
+	}*/
+	func __alolang_inner_toObj(A* pointer)
+	{
+		//编译器实现
+	}
+	func load()->A*
+	{
+		return this->__alolang_inner_load();
+	}
+	func toObj(A* pointer)
+	{
+		this->__alolang_inner_toObj(pointer);
+		return;
+	}
+	func malloc(int count)
+	{
+		this->addr=__cmalloc(count*sizeof(A));
+		return;
+	}
+	func free()
+	{
+		__cfree(this->addr);
+		return;
+	}
+}
+
+%endif

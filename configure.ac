@@ -1,6 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
+AC_CONFIG_MACRO_DIR([m4])
 AC_PREREQ([2.69])
 AC_INIT([AloLang Compiler], [Dev Beta], [https://github.com/XJTU-Youth/AloLang-Dev/issues])
 
@@ -49,5 +50,8 @@ AC_CONFIG_FILES([
     src/lib/Makefile
 ])
 
+AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
+
 AM_INIT_AUTOMAKE
+LT_INIT
 AC_OUTPUT
