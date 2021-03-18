@@ -1,10 +1,10 @@
 #include <climits>
+#include <codecvt>
 #include <cstring>
 #include <cuchar>
 #include <iomanip>
 #include <string>
 #include <string_view>
-#include <codecvt>
 // #include <iostream>
 
 typedef int mfchar_t; // 无符号的4字节，用于容纳UCS-4的一个字符
@@ -109,7 +109,7 @@ extern "C" void string2char(int *data, long long length, char *dst)
     std::string result = UCS4ToUTF8(src);
     // std::cout << result << std::endl;
     // return result.c_str();
-    std::strncpy(dst,result.c_str(),result.length()+1);
+    std::strncpy(dst, result.c_str(), result.length() + 1);
     // return "";
 }
 
