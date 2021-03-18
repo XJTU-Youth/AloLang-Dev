@@ -10,18 +10,16 @@ def listen(pipename):
     else:
        
         fl = 0
-        a=''
+        a = ''
+        r=''
         while True:
-            s = os.read(rd, 128)
-            if (len(s) == 0):
-                fl+=1
-                time.sleep(1)
-            else:
-                fl == 0
-                a += s
-            if (fl == 3):
+            s = os.read(rd, 256)
+            a += s
+            tmp=r+s
+            if 'end_package_from_alolang2py' in tmp:
                 os.close(rd)
                 return a
+            r=s
 
 def makedict(pbstr):
     dict = {}
