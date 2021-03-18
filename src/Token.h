@@ -35,7 +35,9 @@ enum TokenType {
     tok_key_while,
     tok_key_switch,
     tok_key_class,
-    tok_key_sizeof
+    tok_key_sizeof,
+    tok_kernel_comp,
+    tok_kernel_call
 };
 
 class Token

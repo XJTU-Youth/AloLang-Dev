@@ -33,6 +33,9 @@ case|switch                             token = tok_key_switch;     return token
 
 class                                   token = tok_key_class;      return token;
 
+__compile__                             token = tok_kernel_comp;    return token;
+__call__                                token = tok_kernel_call;    return token;
+
 fun                                     token = tok_fun;            return token;
 func                                    token = tok_fun;            return token;
 extern                                  token = tok_extern;         return token;
