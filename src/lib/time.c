@@ -1,8 +1,14 @@
+/*
+ * time.c
+ *
+ *  Created on: Mar 18, 2021
+ *      Author: zbc
+ */
+
 #include <inttypes.h>
 #include <math.h>
 #include <stdlib.h>
 #include <sys/time.h>
-extern long long _alolang_8testRand(void) { return rand(); }
 
 int64_t currentTimeMillis()
 {
@@ -13,4 +19,4 @@ int64_t currentTimeMillis()
     return s1 + s2;
 }
 
-extern long long _alolang_8testTime(void) { return currentTimeMillis(); }
+extern long long _alolang_4time(void) { return currentTimeMillis(); }

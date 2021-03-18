@@ -1,3 +1,6 @@
+%ifndef _STRING_
+%def _STRING_
+
 %import array.alo
 
 class string
@@ -13,3 +16,5 @@ class string
 		return *this->data.get(index);
 	}
 }
+
+%endif

@@ -97,8 +97,6 @@ std::string UCS4ToUTF8(const std::u32string &s)
 
 // TODO: Support for other chatsets
 
-// for alolang
-
 extern "C" void string2char(int *data, long long length, char *dst)
 {
     std::u32string src;
@@ -109,8 +107,14 @@ extern "C" void string2char(int *data, long long length, char *dst)
     std::strncpy(dst, result.c_str(), result.length() + 1);
 }
 
+extern "C" long long char2string(char *str, int *dest)
+{
+    return UTF8ToUCS4(std::string(str), dest);
+}
+
+// for alolang
+
 extern "C" long long __alolang_inner_load_string(char *str, long long addr)
 {
-    long long length = UTF8ToUCS4(std::string(str), (int *)addr);
-    return length;
+    return char2string(str, (int *)addr);
 }

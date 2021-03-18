@@ -1,17 +1,6 @@
+#include "types/alostring.h"
+#include "ucs4support.h"
 #include <stdio.h>
-
-struct aloptr {
-    long long addr;
-};
-struct aloarray_char {
-    struct aloptr pointer;
-    long long     size;
-};
-struct alostring {
-    struct aloarray_char data;
-};
-
-extern void string2char(int *data, long long length, char *dst);
 
 // print(int)
 extern void _alolang_5print3inte(long long a) { printf("%lld\n", a); }
