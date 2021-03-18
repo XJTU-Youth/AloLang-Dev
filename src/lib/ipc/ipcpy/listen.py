@@ -8,8 +8,6 @@ def listen(pipename):
     except IOError:
         print("不存在指定管道")
     else:
-       
-        fl = 0
         a = ''
         r=''
         while True:
