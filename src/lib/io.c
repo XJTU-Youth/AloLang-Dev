@@ -1,11 +1,5 @@
 #include <stdio.h>
 
-extern void string2char(int *data, long long length, char *dst);
-
-extern void _alolang_8testPuts(void) { puts("AloLang Test Function"); }
-
-extern void _alolang_12testPrintInt3inte(long long a) { printf("%lld\n", a); }
-extern void _alolang_15testPrintDouble6doublee(double a) { printf("%lf\n", a); }
 struct aloptr {
     long long addr;
 };
@@ -17,14 +11,24 @@ struct alostring {
     struct aloarray_char data;
 };
 
-extern void _alolang_15testPrintString6stringe(struct alostring str)
+extern void string2char(int *data, long long length, char *dst);
+
+// print(int)
+extern void _alolang_5print3inte(long long a) { printf("%lld\n", a); }
+
+// print(double)
+extern void _alolang_5print6doublee(double a) { printf("%lf\n", a); }
+
+// print(string)
+extern void _alolang_5print6stringe(struct alostring str)
 {
     char buff[str.data.size * 4 + 1];
     string2char((int *)str.data.pointer.addr, str.data.size, buff);
     printf("%s\n", buff);
 };
 
-extern void _alolang_13testPrintBool4boole(int a)
+// print(bool)
+extern void _alolang_5print4boole(int a)
 {
     if (a) {
         printf("true\n");
@@ -33,7 +37,8 @@ extern void _alolang_13testPrintBool4boole(int a)
     }
 }
 
-extern void _alolang_13testPrintChar4chare(int alochar)
+// print(char)
+extern void _alolang_5print4chare(int alochar)
 {
     char a[5];
     string2char(&alochar, 1, a);

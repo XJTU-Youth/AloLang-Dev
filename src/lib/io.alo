@@ -1,0 +1,13 @@
+%ifndef _TESTIO_
+%def _TESTIO_
+
+extern func print(int i);
+extern func print(double f);
+extern func print(bool b);
+extern func print(string s);
+extern func print(char c);
+
+extern "S" func testGetInt() -> int;
+extern "S" func testGetDouble() -> double;
+
+%endif

@@ -21,6 +21,8 @@ DoubleExprAST::~DoubleExprAST()
 
 std::vector<llvm::Value *> DoubleExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
+    this->type.clear();
+    this->type.push_back(new TypeAST(unit, "double"));
     std::vector<llvm::Value *> result;
     llvm::Type *               rtype = llvm::Type::getDoubleTy(*unit->context);
     llvm::Value *              res   = llvm::ConstantFP::get(rtype, val);
