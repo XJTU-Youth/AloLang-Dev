@@ -6,6 +6,7 @@
  */
 
 #include "KernelCompileExprAST.h"
+#include "TypeAST.h"
 
 KernelCompileExprAST::KernelCompileExprAST(CompileUnit * unit,
                                            CodeBlockAST *codeblock,
@@ -27,5 +28,19 @@ std::vector<llvm::Value *>
 KernelCompileExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
     std::vector<llvm::Value *> result;
+    std::string dname = "__alolang__inner_ipckernel_compile"; // todo:硬编码
+    llvm::Function *CalleeF = unit->module->getFunction(dname);
+    if (CalleeF == nullptr) {
+        llvm::FunctionType *FT = llvm::FunctionType::get(
+            llvm::Type::getVoidTy(*unit->context),
+            std::vector<llvm::Type *>{TypeAST(unit, "string").Codegen()},
+            false);
+        CalleeF = llvm::Function::Create(FT, llvm::GlobalValue::ExternalLinkage,
+                                         dname, unit->module);
+    }
+    std::vector<llvm::Value *> args;
+    args.push_back(this->source->Codegen(builder)[0]);
+    builder->CreateCall(CalleeF, args);
+
     return result;
 }
