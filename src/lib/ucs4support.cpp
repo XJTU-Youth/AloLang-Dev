@@ -1,12 +1,14 @@
 #include <climits>
+#include <codecvt>
 #include <cstring>
 #include <cuchar>
 #include <iomanip>
 #include <string>
 #include <string_view>
+// #include <iostream>
 
 typedef int mfchar_t; // 无符号的4字节，用于容纳UCS-4的一个字符
-typedef std::basic_string<mfchar_t> mfstring; // 自定义的UCS-4字符串
+typedef std::u32string mfstring; // 自定义的UCS-4字符串
 
 // 把utf-8编码的字符串转换成UCS-4编码的字符串
 unsigned int UTF8ToUCS4(const std::string &src, mfchar_t *dest)
@@ -87,34 +89,25 @@ unsigned int UTF8ToUCS4(const std::string &src, mfchar_t *dest)
     return curIndex;
 }
 
-std::string UCS4ToUTF8(const mfstring &src)
+std::string UCS4ToUTF8(const std::u32string &s)
 {
-    std::string    result;
-    char           out[MB_LEN_MAX];
-    std::mbstate_t state{};
-    for (char32_t c : src) {
-        std::size_t rc = std::c32rtomb(out, c, &state);
-        if (rc != (std::size_t)-1)
-            for (char c8 : std::string_view{out, rc})
-                result.push_back(c8);
-    }
-    return result;
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+    return conv.to_bytes(s);
 }
 
 // TODO: Support for other chatsets
 
 // for alolang
 
-extern "C" const char *string2char(int *data, long long length)
+extern "C" void string2char(int *data, long long length, char *dst)
 {
-    mfstring src;
+    std::u32string src;
     for (long long i = 0; i < length; i++) {
         src.push_back(data[i]);
         printf("%lld\n", data[i]);
     }
-    /*std::string result = UCS4ToUTF8(src);
-    return result.c_str();*/
-    return "";
+    std::string result = UCS4ToUTF8(src);
+    std::strncpy(dst, result.c_str(), result.length() + 1);
 }
 
 extern "C" long long __alolang_inner_load_string(char *str, long long addr)
