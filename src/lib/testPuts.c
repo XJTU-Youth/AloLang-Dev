@@ -16,6 +16,7 @@ struct aloarray_char {
 struct alostring {
     struct aloarray_char data;
 };
+
 extern void _alolang_15testPrintString6stringe(struct alostring str)
 {
     char *rstr = string2char((int *)str.data.pointer.addr, str.data.size);
@@ -29,6 +30,13 @@ extern void _alolang_13testPrintBool4boole(int a)
     } else {
         printf("false\n");
     }
+}
+
+extern void _alolang_13testPrintChar4chare(int alochar)
+{
+    char *a;
+    char *p=string2char(&alochar, 1);
+    printf("%s", p);
 }
 
 extern long long _alolang_10testGetInte()
