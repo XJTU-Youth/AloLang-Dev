@@ -109,7 +109,7 @@ extern "C" void string2char(int *data, long long length, char *dst)
     std::string result = UCS4ToUTF8(src);
     std::cout << result << std::endl;
     // return result.c_str();
-    std::strncpy(dst,result.c_str(),result.length());
+    std::strncpy(dst,result.c_str(),result.length()+1);
     // return "";
 }
 
