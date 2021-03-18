@@ -19,4 +19,6 @@ struct TokenSource {
     TokenSource() : file("<unknown>"), lineno(0) {}
 };
 
+typedef std::pair<TokenSource, std::string> Tline;
+
 #endif /* SRC_TOKENSOURCE_H_ */

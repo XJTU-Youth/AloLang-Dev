@@ -8,8 +8,8 @@
 #ifndef COMPILER_COMPILEUNIT_H_
 #define COMPILER_COMPILEUNIT_H_
 
+#include "Preprocessor.h"
 #include "Token.h"
-#include "preprocessor.h"
 #include <FlexLexer.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
@@ -24,12 +24,14 @@ class PrototypeAST;
 class CompileUnit
 {
   public:
-    CompileUnit(std::string name, std::vector<Tline> lines);
+    CompileUnit(std::string name);
     virtual ~CompileUnit();
     void  compile();
     Token next_tok();
+    void  ScanToken(std::vector<Tline> srclines);
     void  build();
 
+    Preprocessor *                    preprocessor;
     std::string                       name;
     std::vector<Tline>                srclines;
     llvm::LLVMContext *               context;

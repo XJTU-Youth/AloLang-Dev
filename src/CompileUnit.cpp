@@ -157,9 +157,9 @@ void initInnerOperations(CompileUnit *unit)
                                         nullptr, new TypeAST(unit, "bool"))));
 }
 
-void scanToken(CompileUnit *unit)
+void CompileUnit::ScanToken(std::vector<Tline> srclines)
 {
-    for (Tline line : unit->srclines) {
+    for (Tline line : srclines) {
         std::istringstream is(line.second);
         FlexLexer *        lexer = new yyFlexLexer(is, std::cerr);
         Token              token;
@@ -191,27 +191,28 @@ void scanToken(CompileUnit *unit)
             } else if (token.type == tok_str) {
                 std::string str  = token.tokenValue;
                 token.tokenValue = str.substr(1, str.length() - 2);
+                token.tokenValue = ReplaceAll(token.tokenValue, "\\n", "\n");
             }
 
             // Debug token dump
             // std::cout << token.dump() << std::endl;
             if (token.type == tok_eof)
                 break;
-            unit->tokenList.push_back(token);
+            this->tokenList.push_back(token);
         }
     }
     Token TEOF;
     TEOF.type = tok_eof;
-    unit->tokenList.push_back(TEOF);
-    unit->icurTok = unit->tokenList.begin();
+    this->tokenList.push_back(TEOF);
+    this->icurTok = this->tokenList.begin();
 }
 
-CompileUnit::CompileUnit(std::string Iname, std::vector<Tline> lines)
+CompileUnit::CompileUnit(std::string Iname)
 {
-    name     = Iname;
-    srclines = lines;
-    context  = new llvm::LLVMContext();
-    module   = new llvm::Module(name, *context);
+    name         = Iname;
+    context      = new llvm::LLVMContext();
+    module       = new llvm::Module(name, *context);
+    preprocessor = new Preprocessor(this);
 }
 
 CompileUnit::~CompileUnit() {}
@@ -226,10 +227,17 @@ Token CompileUnit::next_tok()
 
 void CompileUnit::compile()
 {
+    std::cout << "Start preproccessing and lexer:" << name << std::endl;
+    std::vector<Tline> srclines = preprocessor->process();
+    for (Tline line : srclines) {
+        std::cout << line.second << std::endl;
+    }
+
+    ScanToken(srclines);
     std::cout << "Start compiling:" << name << std::endl;
+
     initInnerType(this);
     initInnerOperations(this);
-    scanToken(this);
     while (icurTok->type != tok_eof) {
         switch (icurTok->type) {
         case tok_fun: {
@@ -302,6 +310,7 @@ void CompileUnit::compile()
     }
 
     build();
+    std::cout << "Build finished." << std::endl;
 }
 
 void CompileUnit::build()

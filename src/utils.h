@@ -19,5 +19,7 @@ std::string demangle(const std::string &           fnName,
 bool isSyntax(char c);
 void skipSpace(const std::vector<std::string> &words, long unsigned int &i);
 void skipSpace(std::istream &in);
+std::string ReplaceAll(std::string str, const std::string &from,
+                       const std::string &to);
 
 #endif /* COMPILER_UTILS_H_ */
