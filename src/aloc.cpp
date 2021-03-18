@@ -1,6 +1,5 @@
 #include "CompileError.hpp"
 #include "CompileUnit.h"
-#include "preprocessor.h"
 #include "utils.h"
 #include <boost/program_options.hpp>
 #include <exception>
@@ -9,11 +8,6 @@
 #include <map>
 #include <regex>
 #include <sstream>
-
-int opt;
-
-std::ifstream fin;
-std::ofstream fout;
 
 using std::cerr;
 using std::cout;
@@ -92,26 +86,10 @@ int main(int argc, char *argv[])
                     output_file_name = vm["output"].as<std::string>();
                 else
                     output_file_name = "a.out";
-                fin.open(input_file_name);
-                if (!fin.is_open()) {
-                    cerr << argv[0]
-                         << ": fatal error: file not found\ncompilation "
-                            "terminated\n";
-                    return 1;
-                }
-                std::string buff; //源码
-                std::getline(fin, buff, char(EOF));
-                std::vector<Tline> preProcessed;
-                fin.close();
-                // std::string header = "%import types\n";
-                // buff = header + buff;
+
                 try {
-                    preProcessed = preProcess(buff, 0, input_file_name);
-                    for (Tline line : preProcessed) {
-                        std::cout << line.second << std::endl;
-                    }
                     // todo:这行代码写的极不规范，尽快修改
-                    CompileUnit(input_file_name, preProcessed).compile();
+                    CompileUnit(input_file_name).compile();
                     system(("llc ./" + input_file_name +
                             ".bc --relocation-model=pic")
                                .c_str());
