@@ -1,3 +1,7 @@
+%ifndef _UNSAFE_
+%def _UNSAFE_
+
+
 extern func __cfree(int addr);
 extern func __cmalloc(int size)->int;
 extern func __cmemcpy(int src,int dst,int size);
@@ -42,3 +46,5 @@ class UnsafePointer<A>
 		return;
 	}
 }
+
+%endif

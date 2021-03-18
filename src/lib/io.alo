@@ -1,5 +1,5 @@
-%ifndef _TESTIO_
-%def _TESTIO_
+%ifndef _IO_
+%def _IO_
 
 extern func print(int i);
 extern func print(double f);
