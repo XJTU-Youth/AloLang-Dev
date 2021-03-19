@@ -30,7 +30,7 @@ def makedict(pbstr):
     dict = {}
     msg = ipc_pb2.msg()
     msg.ParseFromString(pbstr)
-    for data in msg.Data:
+    for data in msg.data:
         dict[data.id]=data.dat
     return dict
 
