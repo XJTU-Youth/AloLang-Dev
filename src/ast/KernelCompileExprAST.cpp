@@ -43,7 +43,7 @@ KernelCompileExprAST::Codegen(llvm::IRBuilder<> *builder)
     }
 
     std::string dname = "__alolang__inner_ipckernel_compile"; // todo:硬编码
-    llvm::Type *sType = llvm::ArrayType::get(TypeAST(unit, "VarPair").Codegen(),
+    llvm::Type *sType = llvm::ArrayType::get(TypeAST(unit, "string").Codegen(),
                                              passedVariable.size());
 
     llvm::Function *CalleeF = unit->module->getFunction(dname);
@@ -74,20 +74,23 @@ KernelCompileExprAST::Codegen(llvm::IRBuilder<> *builder)
     for (piter = passedVariable.begin(); piter != passedVariable.end();
          piter++) {
         //存入Name
-        llvm::Value *pointer = builder->CreateGEP(
-            sType, vararray_alloca,
-            std::vector<llvm::Value *>{llvm::ConstantInt::get(itype, 0, true),
-                                       llvm::ConstantInt::get(itype, cnt, true),
-                                       llvm::ConstantInt::get(itype, 0, true)});
+        llvm::Value *pointer =
+            builder->CreateGEP(sType, vararray_alloca,
+                               std::vector<llvm::Value *>{
+                                   llvm::ConstantInt::get(itype, 0, true),
+                                   llvm::ConstantInt::get(itype, cnt, true)});
         builder->CreateStore(
             StringExprAST(unit, piter->first).Codegen(builder)[0], pointer);
         //存入value
-        pointer = builder->CreateGEP(
+        /*pointer = builder->CreateGEP(
             sType, vararray_alloca,
             std::vector<llvm::Value *>{llvm::ConstantInt::get(itype, 0, true),
                                        llvm::ConstantInt::get(itype, cnt, true),
                                        llvm::ConstantInt::get(itype, 1, true)});
-        // builder->CreateStore(piter->second, pointer);
+        llvm::Value *var_addr = builder->CreatePtrToInt(
+            piter->second, llvm::IntegerType::get(*unit->context, 64));
+
+        builder->CreateStore(var_addr, pointer);*/
         cnt++;
     }
 

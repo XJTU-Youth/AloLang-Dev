@@ -20,7 +20,7 @@ int pipeid;
 
 struct args {
     alostring name;
-    int       value;
+    long long addr;
 };
 
 std::string random_string()
@@ -37,13 +37,15 @@ std::string random_string()
 
 extern "C" void string2char(int *data, long long length, char *dst);
 
-extern "C" void __alolang__inner_ipckernel_compile(long long kernel_addr,
-                                                   long long argCnt,
-                                                   long long argsAddr,
-                                                   alostring str)
+extern "C" void __alolang__inner_ipckernel_compile(long long  kernel_addr,
+                                                   long long  argCnt,
+                                                   alostring *argsAddr,
+                                                   alostring  str)
 {
     std::string kernel_id = random_string();
-    std::cout << "Received variable size:" << argCnt << std::endl;
+    char        tbuff[256];
+
+    std::cout << std::endl;
     alokernel *kernel = (alokernel *)kernel_addr;
     char       buff[str.data.size * 4 + 1];
     string2char((int *)str.data.pointer.addr, str.data.size, buff);
@@ -51,8 +53,13 @@ extern "C" void __alolang__inner_ipckernel_compile(long long kernel_addr,
     if (!client_file.is_open()) {
         std::cout << "未成功打开文件" << std::endl;
     }
-
     client_file << "def alolang_run(alolang_var):" << std::endl;
+    for (long long i = 0; i < argCnt; i++) {
+        string2char((int *)argsAddr[i].data.pointer.addr, argsAddr[i].data.size,
+                    tbuff);
+        client_file << "    " << tbuff << "=alolang_var[\"" << tbuff << "\"]"
+                    << std::endl;
+    }
     client_file << buff;
     client_file.close();
     system("cp src/lib/ipc/ipcpy/ipc_pb2.py ./ipc_pb2.py");
@@ -90,7 +97,9 @@ extern "C" void __alolang__inner_ipckernel_compile(long long kernel_addr,
     }
 }
 
-extern "C" void __alolang__inner_ipckernel_call(long long kernel_addr)
+extern "C" void __alolang__inner_ipckernel_call(long long kernel_addr,
+                                                long long argCnt,
+                                                args *    argsAddr)
 {
     alokernel *   kernel = (alokernel *)kernel_addr;
     std::fstream &output = *(std::fstream *)kernel->outputaddr;
@@ -99,7 +108,16 @@ extern "C" void __alolang__inner_ipckernel_call(long long kernel_addr)
     msg new_msg;
     new_msg.set_version(1);
     new_msg.set_command(1);
+    char tbuff[256];
 
+    for (long long i = 0; i < argCnt; i++) {
+        string2char((int *)argsAddr[i].name.data.pointer.addr,
+                    argsAddr[i].name.data.size, tbuff);
+        msg::Data *varData = new_msg.add_data();
+        varData->set_id(tbuff);
+        long long value = *(long long *)argsAddr[i].addr;
+        varData->set_dat(value);
+    }
     std::string result = new_msg.SerializeAsString();
     int         len    = result.length();
     output.write(reinterpret_cast<const char *>(&len), sizeof(len));

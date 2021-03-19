@@ -1,0 +1,51 @@
+anytype r_num {int,long,double}
+func abs(r_num x) -> r_num
+{
+    if(x<0) return -x;
+    return x;
+}
+
+
+anytype i_num {int, long}；
+func pow(i_num a,i_num b,i_num p) -> i_num
+{
+    if (p == 0)
+        return 0;
+    i_num ans = 1;
+    while (b != 0)
+        if (b & 1)
+            ans = ans * a % p;
+        a = a * a % p;
+        b = b >> 1;
+    return ans;
+}
+
+func gcd(i_num a,i_num b) -> i_num
+{
+    if (b == 0)
+        return a;
+    return gcd(b, a%b);
+}
+
+func exgcd(i_num a,i_num b,i_num *x,i_num *y) -> i_num
+{
+    if (b == 0)
+        x = 1, y = 0;
+        return a;
+    i_num g = exgcd(b,a%b,x,y);
+    i_num tmp=x;
+    x=tmp-a/b*y;
+    y=x;
+    return g;
+}
+
+func inv(i_num a,i_num p) -> i_num
+{
+    if gcd(a, p) == 1:
+        i_num ans = 1, tmp;
+        exgcd(a, p, ans, tmp);
+        ans = ((ans % p) + p) % p;
+        return ans;
+    else:
+        return -1;
+}

@@ -5,7 +5,7 @@
 
 class VarPair{
 	string name;
-	int value;
+	int addr;
 }
 
 class ipckernel{
