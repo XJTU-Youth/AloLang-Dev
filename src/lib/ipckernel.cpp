@@ -75,7 +75,6 @@ extern "C" void __alolang__inner_ipckernel_compile(long long kernel_addr,
     }
     client_file << "    return alolang_var" << std::endl;
     client_file.close();
-    std::cout << argCnt << std::endl;
     system("cp src/lib/ipc/ipcpy/ipc_pb2.py ./ipc_pb2.py");
     std::string   master_source; // master源码
     std::ifstream fin;
