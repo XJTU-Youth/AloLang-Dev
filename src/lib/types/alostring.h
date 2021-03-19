@@ -14,6 +14,7 @@ struct aloptr {
 struct aloarray_char {
     struct aloptr pointer;
     long long     size;
+    // long long     cap;
 };
 struct alostring {
     struct aloarray_char data;
