@@ -33,7 +33,6 @@ constexpr msg::msg(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : data_()
   , version_(PROTOBUF_LONGLONG(0))
-  , length_(PROTOBUF_LONGLONG(0))
   , command_(PROTOBUF_LONGLONG(0)){}
 struct msgDefaultTypeInternal {
   constexpr msgDefaultTypeInternal()
@@ -62,7 +61,6 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ipc_2eproto::offsets[] PROTOBU
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::msg, version_),
-  PROTOBUF_FIELD_OFFSET(::msg, length_),
   PROTOBUF_FIELD_OFFSET(::msg, command_),
   PROTOBUF_FIELD_OFFSET(::msg, data_),
 };
@@ -77,14 +75,13 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 };
 
 const char descriptor_table_protodef_ipc_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\tipc.proto\"q\n\003msg\022\017\n\007version\030\001 \001(\003\022\016\n\006l"
-  "ength\030\002 \001(\003\022\017\n\007command\030\003 \001(\003\022\027\n\004data\030\004 \003"
-  "(\0132\t.msg.Data\032\037\n\004Data\022\n\n\002id\030\001 \001(\t\022\013\n\003dat"
-  "\030\002 \001(\003b\006proto3"
+  "\n\tipc.proto\"a\n\003msg\022\017\n\007version\030\001 \001(\003\022\017\n\007c"
+  "ommand\030\002 \001(\003\022\027\n\004data\030\003 \003(\0132\t.msg.Data\032\037\n"
+  "\004Data\022\n\n\002id\030\001 \001(\t\022\013\n\003dat\030\002 \001(\003b\006proto3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_ipc_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_ipc_2eproto = {
-  false, false, 134, descriptor_table_protodef_ipc_2eproto, "ipc.proto", 
+  false, false, 118, descriptor_table_protodef_ipc_2eproto, "ipc.proto", 
   &descriptor_table_ipc_2eproto_once, nullptr, 0, 2,
   schemas, file_default_instances, TableStruct_ipc_2eproto::offsets,
   file_level_metadata_ipc_2eproto, file_level_enum_descriptors_ipc_2eproto, file_level_service_descriptors_ipc_2eproto,
@@ -402,30 +399,23 @@ const char* msg::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::intern
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // int64 length = 2;
+      // int64 command = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
-          length_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
-          CHK_(ptr);
-        } else goto handle_unusual;
-        continue;
-      // int64 command = 3;
-      case 3:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
           command_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // repeated .msg.Data data = 4;
-      case 4:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 34)) {
+      // repeated .msg.Data data = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
           ptr -= 1;
           do {
             ptr += 1;
             ptr = ctx->ParseMessage(_internal_add_data(), ptr);
             CHK_(ptr);
             if (!ctx->DataAvailable(ptr)) break;
-          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<26>(ptr));
         } else goto handle_unusual;
         continue;
       default: {
@@ -462,24 +452,18 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt64ToArray(1, this->_internal_version(), target);
   }
 
-  // int64 length = 2;
-  if (this->length() != 0) {
-    target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt64ToArray(2, this->_internal_length(), target);
-  }
-
-  // int64 command = 3;
+  // int64 command = 2;
   if (this->command() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt64ToArray(3, this->_internal_command(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt64ToArray(2, this->_internal_command(), target);
   }
 
-  // repeated .msg.Data data = 4;
+  // repeated .msg.Data data = 3;
   for (unsigned int i = 0,
       n = static_cast<unsigned int>(this->_internal_data_size()); i < n; i++) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(4, this->_internal_data(i), target, stream);
+      InternalWriteMessage(3, this->_internal_data(i), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -498,7 +482,7 @@ size_t msg::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // repeated .msg.Data data = 4;
+  // repeated .msg.Data data = 3;
   total_size += 1UL * this->_internal_data_size();
   for (const auto& msg : this->data_) {
     total_size +=
@@ -512,14 +496,7 @@ size_t msg::ByteSizeLong() const {
         this->_internal_version());
   }
 
-  // int64 length = 2;
-  if (this->length() != 0) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int64Size(
-        this->_internal_length());
-  }
-
-  // int64 command = 3;
+  // int64 command = 2;
   if (this->command() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int64Size(
@@ -560,9 +537,6 @@ void msg::MergeFrom(const msg& from) {
   data_.MergeFrom(from.data_);
   if (from.version() != 0) {
     _internal_set_version(from._internal_version());
-  }
-  if (from.length() != 0) {
-    _internal_set_length(from._internal_length());
   }
   if (from.command() != 0) {
     _internal_set_command(from._internal_command());

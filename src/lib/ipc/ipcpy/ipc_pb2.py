@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\tipc.proto\"q\n\x03msg\x12\x0f\n\x07version\x18\x01 \x01(\x03\x12\x0e\n\x06length\x18\x02 \x01(\x03\x12\x0f\n\x07\x63ommand\x18\x03 \x01(\x03\x12\x17\n\x04\x64\x61ta\x18\x04 \x03(\x0b\x32\t.msg.Data\x1a\x1f\n\x04\x44\x61ta\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0b\n\x03\x64\x61t\x18\x02 \x01(\x0c\x62\x06proto3'
+  serialized_pb=b'\n\tipc.proto\"a\n\x03msg\x12\x0f\n\x07version\x18\x01 \x01(\x03\x12\x0f\n\x07\x63ommand\x18\x02 \x01(\x03\x12\x17\n\x04\x64\x61ta\x18\x03 \x03(\x0b\x32\t.msg.Data\x1a\x1f\n\x04\x44\x61ta\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0b\n\x03\x64\x61t\x18\x02 \x01(\x03\x62\x06proto3'
 )
 
 
@@ -35,15 +35,15 @@ _MSG_DATA = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='id', full_name='msg.Data.id', index=0,
-      number=1, type=3, cpp_type=2, label=1,
-      has_default_value=False, default_value=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='dat', full_name='msg.Data.dat', index=1,
-      number=2, type=12, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"",
+      number=2, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -59,8 +59,8 @@ _MSG_DATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=95,
-  serialized_end=126,
+  serialized_start=79,
+  serialized_end=110,
 )
 
 _MSG = _descriptor.Descriptor(
@@ -79,22 +79,15 @@ _MSG = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='length', full_name='msg.length', index=1,
+      name='command', full_name='msg.command', index=1,
       number=2, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='command', full_name='msg.command', index=2,
-      number=3, type=3, cpp_type=2, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='data', full_name='msg.data', index=3,
-      number=4, type=11, cpp_type=10, label=3,
+      name='data', full_name='msg.data', index=2,
+      number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -112,7 +105,7 @@ _MSG = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=13,
-  serialized_end=126,
+  serialized_end=110,
 )
 
 _MSG_DATA.containing_type = _MSG

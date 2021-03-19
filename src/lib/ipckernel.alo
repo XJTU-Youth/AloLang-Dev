@@ -3,6 +3,11 @@
 
 %import string.alo
 
+class VarPair{
+	string name;
+	int value;
+}
+
 class ipckernel{
 	int outputaddr;
 	int inputaddr;

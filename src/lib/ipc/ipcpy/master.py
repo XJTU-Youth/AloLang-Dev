@@ -1,7 +1,6 @@
 import os
 import time
 import ipc_pb2
-import client
 import struct
 
 def listen(pipename):
@@ -14,7 +13,6 @@ def listen(pipename):
         while True:
             totallen = rd.read(4)
             if len(totallen)==0:
-                print("EOF detected")
                 break
             messagelen=int.from_bytes(totallen,byteorder='little')
             message = rd.read(messagelen)

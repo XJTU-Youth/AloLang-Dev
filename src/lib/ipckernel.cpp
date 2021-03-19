@@ -12,20 +12,42 @@
 
 #include <fstream>
 #include <iostream>
+#include <random>
 #include <stdlib.h>
 #include <string>
 
 int pipeid;
 
+struct args {
+    alostring name;
+    int       value;
+};
+
+std::string random_string()
+{
+    std::string str("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+
+    std::random_device rd;
+    std::mt19937       generator(rd());
+
+    std::shuffle(str.begin(), str.end(), generator);
+
+    return str.substr(0, 32); // assumes 32 < number of characters in str
+}
+
 extern "C" void string2char(int *data, long long length, char *dst);
 
 extern "C" void __alolang__inner_ipckernel_compile(long long kernel_addr,
+                                                   long long argCnt,
+                                                   long long argsAddr,
                                                    alostring str)
 {
+    std::string kernel_id = random_string();
+    std::cout << "Received variable size:" << argCnt << std::endl;
     alokernel *kernel = (alokernel *)kernel_addr;
     char       buff[str.data.size * 4 + 1];
     string2char((int *)str.data.pointer.addr, str.data.size, buff);
-    std::ofstream client_file("client.py", std::ios::out);
+    std::ofstream client_file("ALOLANG_" + kernel_id + ".py", std::ios::out);
     if (!client_file.is_open()) {
         std::cout << "未成功打开文件" << std::endl;
     }
@@ -46,23 +68,23 @@ extern "C" void __alolang__inner_ipckernel_compile(long long kernel_addr,
     if (!master_file.is_open()) {
         std::cout << "未成功打开master文件" << std::endl;
     }
+    std::string pipeName = ".alolangpipe_" + kernel_id;
+    master_file << "import "
+                << "ALOLANG_" + kernel_id << " as client" << std::endl;
     master_file << master_source;
-    master_file << std::endl
-                << "listen(\""
-                << "test_pipe"
-                << "\")" << std::endl;
+    master_file << std::endl << "listen(\"" << pipeName << "\")" << std::endl;
     master_file.close();
-    mkfifo("test_pipe_out", 0666);
-    mkfifo("test_pipe_in", 0666);
+    mkfifo((pipeName + "_out").c_str(), 0666);
+    mkfifo((pipeName + "_in").c_str(), 0666);
     if (0 == fork()) {
         execl("/bin/sh", "sh", "-c", "python ./master.py", (char *)0);
         _exit(127);
     } else {
-        std::fstream *output =
-            new std::fstream("test_pipe_out", std::ios::out | std::ios::trunc |
-                                                  std::ios::binary);
+        std::fstream *output = new std::fstream(
+            pipeName + "_out",
+            std::ios::out | std::ios::trunc | std::ios::binary);
         std::fstream *input =
-            new std::fstream("test_pipe_in", std::ios::in | std::ios::binary);
+            new std::fstream(pipeName + "_in", std::ios::in | std::ios::binary);
         kernel->outputaddr = (long long)output;
         kernel->inputaddr  = (long long)input;
     }
@@ -86,9 +108,6 @@ extern "C" void __alolang__inner_ipckernel_call(long long kernel_addr)
     input.read((char *)&len, sizeof(len));
     char buff[512];
     input.read(buff, len);
-    /*if (!new_msg.ParseFromIstream(&input)) {
-        std::cerr << "Failed to parse pipe." << std::endl;
-    }*/
     new_msg.ParseFromString(buff);
     // google::protobuf::ShutdownProtobufLibrary();
 }
