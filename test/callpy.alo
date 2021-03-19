@@ -3,12 +3,20 @@
 
 func main() {
     ipckernel k;
+    int a = 42;
+    int b = 24;
     __compile__(&k,""""
     import time
     time.sleep(1)
-    print(42)
+    print(a)
+    print(b)
+    b += a
 """");
-    print("Now call python");
+    print(a);
+    print(b);
+    print("Call Python");
     __call__(&k);
     print("Call finished");
+    print(a);
+    print(b);
 }
