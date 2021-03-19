@@ -337,12 +337,11 @@ class msg PROTOBUF_FINAL :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kDataFieldNumber = 4,
+    kDataFieldNumber = 3,
     kVersionFieldNumber = 1,
-    kLengthFieldNumber = 2,
-    kCommandFieldNumber = 3,
+    kCommandFieldNumber = 2,
   };
-  // repeated .msg.Data data = 4;
+  // repeated .msg.Data data = 3;
   int data_size() const;
   private:
   int _internal_data_size() const;
@@ -369,16 +368,7 @@ class msg PROTOBUF_FINAL :
   void _internal_set_version(::PROTOBUF_NAMESPACE_ID::int64 value);
   public:
 
-  // int64 length = 2;
-  void clear_length();
-  ::PROTOBUF_NAMESPACE_ID::int64 length() const;
-  void set_length(::PROTOBUF_NAMESPACE_ID::int64 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::int64 _internal_length() const;
-  void _internal_set_length(::PROTOBUF_NAMESPACE_ID::int64 value);
-  public:
-
-  // int64 command = 3;
+  // int64 command = 2;
   void clear_command();
   ::PROTOBUF_NAMESPACE_ID::int64 command() const;
   void set_command(::PROTOBUF_NAMESPACE_ID::int64 value);
@@ -396,7 +386,6 @@ class msg PROTOBUF_FINAL :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::msg_Data > data_;
   ::PROTOBUF_NAMESPACE_ID::int64 version_;
-  ::PROTOBUF_NAMESPACE_ID::int64 length_;
   ::PROTOBUF_NAMESPACE_ID::int64 command_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ipc_2eproto;
@@ -517,27 +506,7 @@ inline void msg::set_version(::PROTOBUF_NAMESPACE_ID::int64 value) {
   // @@protoc_insertion_point(field_set:msg.version)
 }
 
-// int64 length = 2;
-inline void msg::clear_length() {
-  length_ = PROTOBUF_LONGLONG(0);
-}
-inline ::PROTOBUF_NAMESPACE_ID::int64 msg::_internal_length() const {
-  return length_;
-}
-inline ::PROTOBUF_NAMESPACE_ID::int64 msg::length() const {
-  // @@protoc_insertion_point(field_get:msg.length)
-  return _internal_length();
-}
-inline void msg::_internal_set_length(::PROTOBUF_NAMESPACE_ID::int64 value) {
-  
-  length_ = value;
-}
-inline void msg::set_length(::PROTOBUF_NAMESPACE_ID::int64 value) {
-  _internal_set_length(value);
-  // @@protoc_insertion_point(field_set:msg.length)
-}
-
-// int64 command = 3;
+// int64 command = 2;
 inline void msg::clear_command() {
   command_ = PROTOBUF_LONGLONG(0);
 }
@@ -557,7 +526,7 @@ inline void msg::set_command(::PROTOBUF_NAMESPACE_ID::int64 value) {
   // @@protoc_insertion_point(field_set:msg.command)
 }
 
-// repeated .msg.Data data = 4;
+// repeated .msg.Data data = 3;
 inline int msg::_internal_data_size() const {
   return data_.size();
 }
