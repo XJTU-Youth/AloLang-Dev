@@ -12,4 +12,6 @@ class ipckernel{
 	int outputaddr;
 	int inputaddr;
 }
+
+extern func __destory__(ipckernel* k);
 %endif

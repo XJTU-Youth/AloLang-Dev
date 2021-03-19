@@ -37,6 +37,14 @@ std::string random_string()
 
 extern "C" void string2char(int *data, long long length, char *dst);
 
+extern "C" void _alolang_11__destory__P9ipckernele(alokernel *kernel)
+{
+    std::fstream &output = *(std::fstream *)kernel->outputaddr;
+    std::fstream &input  = *(std::fstream *)kernel->inputaddr;
+    output.close();
+    input.close();
+}
+
 extern "C" void __alolang__inner_ipckernel_compile(long long kernel_addr,
                                                    long long argCnt,
                                                    long long argNameAddrs,
