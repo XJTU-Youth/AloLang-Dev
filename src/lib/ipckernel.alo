@@ -4,5 +4,7 @@
 %import string.alo
 
 class ipckernel{
+	int outputaddr;
+	int inputaddr;
 }
 %endif

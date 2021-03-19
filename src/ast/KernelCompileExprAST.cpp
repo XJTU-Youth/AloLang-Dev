@@ -33,12 +33,18 @@ KernelCompileExprAST::Codegen(llvm::IRBuilder<> *builder)
     if (CalleeF == nullptr) {
         llvm::FunctionType *FT = llvm::FunctionType::get(
             llvm::Type::getVoidTy(*unit->context),
-            std::vector<llvm::Type *>{TypeAST(unit, "string").Codegen()},
+            std::vector<llvm::Type *>{
+                llvm::IntegerType::get(*unit->context, 64),
+                TypeAST(unit, "string").Codegen()},
             false);
         CalleeF = llvm::Function::Create(FT, llvm::GlobalValue::ExternalLinkage,
                                          dname, unit->module);
     }
     std::vector<llvm::Value *> args;
+    llvm::Value *              kernel_addr =
+        builder->CreatePtrToInt(kernelPointer->Codegen(builder)[0],
+                                llvm::IntegerType::get(*unit->context, 64));
+    args.push_back(kernel_addr);
     args.push_back(this->source->Codegen(builder)[0]);
     builder->CreateCall(CalleeF, args);
 

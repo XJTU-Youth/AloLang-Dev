@@ -5,6 +5,7 @@
  *      Author: zbc
  */
 #include "ipc/ipccxx/ipc.pb.h"
+#include "types/aloipckernel.h"
 #include "types/alostring.h"
 #include <sys/stat.h>
 #include <unistd.h>
@@ -18,9 +19,11 @@ int pipeid;
 
 extern "C" void string2char(int *data, long long length, char *dst);
 
-extern "C" void __alolang__inner_ipckernel_compile(alostring str)
+extern "C" void __alolang__inner_ipckernel_compile(long long kernel_addr,
+                                                   alostring str)
 {
-    char buff[str.data.size * 4 + 1];
+    alokernel *kernel = (alokernel *)kernel_addr;
+    char       buff[str.data.size * 4 + 1];
     string2char((int *)str.data.pointer.addr, str.data.size, buff);
     std::ofstream client_file("client.py", std::ios::out);
     if (!client_file.is_open()) {
@@ -55,19 +58,25 @@ extern "C" void __alolang__inner_ipckernel_compile(alostring str)
         execl("/bin/sh", "sh", "-c", "python ./master.py", (char *)0);
         _exit(127);
     } else {
+        std::fstream *output =
+            new std::fstream("test_pipe_out", std::ios::out | std::ios::trunc |
+                                                  std::ios::binary);
+        std::fstream *input =
+            new std::fstream("test_pipe_in", std::ios::in | std::ios::binary);
+        kernel->outputaddr = (long long)output;
+        kernel->inputaddr  = (long long)input;
     }
 }
 
-extern "C" void __alolang__inner_ipckernel_call()
+extern "C" void __alolang__inner_ipckernel_call(long long kernel_addr)
 {
+    alokernel *   kernel = (alokernel *)kernel_addr;
+    std::fstream &output = *(std::fstream *)kernel->outputaddr;
+    std::fstream &input  = *(std::fstream *)kernel->inputaddr;
 
     msg new_msg;
     new_msg.set_version(1);
     new_msg.set_command(1);
-
-    std::fstream output("test_pipe_out",
-                        std::ios::out | std::ios::trunc | std::ios::binary);
-    std::fstream input("test_pipe_in", std::ios::in | std::ios::binary);
 
     std::string result = new_msg.SerializeAsString();
     int         len    = result.length();
