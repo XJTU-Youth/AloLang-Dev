@@ -254,7 +254,7 @@ ExprAST *ExprAST::ParsePrimary(CompileUnit *unit, CodeBlockAST *codeblock,
             CompileError e("期待一个参数");
             throw e;
         }
-        result = new KernelCallExprAST(unit, args);
+        result = new KernelCallExprAST(unit, codeblock, args);
         break;
     }
     default: {

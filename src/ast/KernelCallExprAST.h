@@ -13,11 +13,13 @@
 class KernelCallExprAST : public ExprAST
 {
   public:
-    KernelCallExprAST(CompileUnit *unit, ExprAST *kernel);
+    KernelCallExprAST(CompileUnit *unit, CodeBlockAST *codeblock,
+                      ExprAST *kernel);
     virtual ~KernelCallExprAST();
     std::vector<llvm::Value *> Codegen(llvm::IRBuilder<> *builder);
 
-    ExprAST *kernel;
+    ExprAST *     kernel;
+    CodeBlockAST *codeblock;
 };
 
 #endif /* SRC_AST_KERNELCALLEXPRAST_H_ */

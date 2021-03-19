@@ -4,8 +4,8 @@
 %import string.alo
 
 class VarPair{
-	string name;
 	int addr;
+	string name;
 }
 
 class ipckernel{

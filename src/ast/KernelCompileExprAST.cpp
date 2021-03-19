@@ -32,16 +32,19 @@ KernelCompileExprAST::Codegen(llvm::IRBuilder<> *builder)
     std::vector<llvm::Value *>           result;
     std::map<std::string, llvm::Value *> passedVariable;
     std::map<std::string, std::pair<TypeAST *, llvm::Value *>>::iterator iter;
-    llvm::IntegerType *itype = llvm::IntegerType::get(*unit->context, 32);
+    llvm::IntegerType *itype    = llvm::IntegerType::get(*unit->context, 32);
+    CodeBlockAST *     curBlock = this->codeblock;
 
-    for (iter = this->codeblock->namedValues.begin();
-         iter != this->codeblock->namedValues.end(); iter++) {
-        if (iter->second.first->baseClass == "int") {
-            passedVariable.insert(std::pair<std::string, llvm::Value *>(
-                iter->first, iter->second.second));
+    while (curBlock != nullptr) {
+        for (iter = curBlock->namedValues.begin();
+             iter != curBlock->namedValues.end(); iter++) {
+            if (iter->second.first->baseClass == "int") {
+                passedVariable.insert(std::pair<std::string, llvm::Value *>(
+                    iter->first, iter->second.second));
+            }
         }
+        curBlock = curBlock->parent;
     }
-
     std::string dname = "__alolang__inner_ipckernel_compile"; // todo:硬编码
     llvm::Type *sType = llvm::ArrayType::get(TypeAST(unit, "string").Codegen(),
                                              passedVariable.size());
@@ -81,16 +84,6 @@ KernelCompileExprAST::Codegen(llvm::IRBuilder<> *builder)
                                    llvm::ConstantInt::get(itype, cnt, true)});
         builder->CreateStore(
             StringExprAST(unit, piter->first).Codegen(builder)[0], pointer);
-        //存入value
-        /*pointer = builder->CreateGEP(
-            sType, vararray_alloca,
-            std::vector<llvm::Value *>{llvm::ConstantInt::get(itype, 0, true),
-                                       llvm::ConstantInt::get(itype, cnt, true),
-                                       llvm::ConstantInt::get(itype, 1, true)});
-        llvm::Value *var_addr = builder->CreatePtrToInt(
-            piter->second, llvm::IntegerType::get(*unit->context, 64));
-
-        builder->CreateStore(var_addr, pointer);*/
         cnt++;
     }
 

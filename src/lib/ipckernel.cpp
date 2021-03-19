@@ -19,8 +19,8 @@
 int pipeid;
 
 struct args {
-    alostring name;
     long long addr;
+    alostring name;
 };
 
 std::string random_string()
@@ -45,7 +45,6 @@ extern "C" void __alolang__inner_ipckernel_compile(long long  kernel_addr,
     std::string kernel_id = random_string();
     char        tbuff[256];
 
-    std::cout << std::endl;
     alokernel *kernel = (alokernel *)kernel_addr;
     char       buff[str.data.size * 4 + 1];
     string2char((int *)str.data.pointer.addr, str.data.size, buff);
