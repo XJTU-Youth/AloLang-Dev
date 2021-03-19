@@ -60,6 +60,13 @@ extern "C" void __alolang__inner_ipckernel_compile(long long  kernel_addr,
                     << std::endl;
     }
     client_file << buff;
+    for (long long i = 0; i < argCnt; i++) {
+        string2char((int *)argsAddr[i].data.pointer.addr, argsAddr[i].data.size,
+                    tbuff);
+        client_file << "    alolang_var[\"" << tbuff << "\"]=" << tbuff
+                    << std::endl;
+    }
+    client_file << "    return alolang_var" << std::endl;
     client_file.close();
     system("cp src/lib/ipc/ipcpy/ipc_pb2.py ./ipc_pb2.py");
     std::string   master_source; // master源码
@@ -125,6 +132,11 @@ extern "C" void __alolang__inner_ipckernel_call(long long kernel_addr,
     input.read((char *)&len, sizeof(len));
     char buff[512];
     input.read(buff, len);
-    new_msg.ParseFromString(buff);
-    // google::protobuf::ShutdownProtobufLibrary();
+    msg retData;
+    retData.ParseFromString(buff);
+    for (long long i = 0; i < argCnt; i++) {
+        long long value                = retData.data(i).dat();
+        *(long long *)argsAddr[i].addr = value;
+    }
+    google::protobuf::ShutdownProtobufLibrary();
 }

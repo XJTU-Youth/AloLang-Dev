@@ -17,10 +17,14 @@ def listen(pipename):
             messagelen=int.from_bytes(totallen,byteorder='little')
             message = rd.read(messagelen)
             dict=makedict(message)
-            client.alolang_run(dict)
+            dict=client.alolang_run(dict)
             retData = ipc_pb2.msg()
             retData.version=1
             retData.command=2
+            for k in dict:
+                varData = retData.data.add()
+                varData.id = k
+                varData.dat = dict[k]
             feedback=retData.SerializeToString()
             wd.write(len(feedback).to_bytes(4, byteorder="little"))
             wd.write(feedback)

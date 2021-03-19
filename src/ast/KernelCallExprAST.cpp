@@ -27,6 +27,7 @@ KernelCallExprAST::~KernelCallExprAST()
 std::vector<llvm::Value *>
 KernelCallExprAST::Codegen(llvm::IRBuilder<> *builder)
 {
+    // todo:处理内存泄漏
     std::vector<llvm::Value *> result;
     std::string     dname = "__alolang__inner_ipckernel_call"; // todo:硬编码
     llvm::Function *CalleeF = unit->module->getFunction(dname);
