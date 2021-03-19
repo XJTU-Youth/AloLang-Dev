@@ -1,0 +1,14 @@
+%import ../src/lib/ipckernel.alo
+%import ../src/lib/io.alo
+
+func main() {
+    ipckernel k;
+    __compile__(&k,""""
+    import time
+    time.sleep(1)
+    print(42)
+"""");
+    print("Now call python");
+    __call__(&k);
+    print("Call finished");
+}
