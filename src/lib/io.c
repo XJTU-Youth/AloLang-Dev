@@ -34,14 +34,14 @@ extern void _alolang_5print4chare(int alochar)
     printf("%s\n", a);
 }
 
-extern long long _alolang_10testGetInte()
+extern long long _alolang_10testGetInt()
 {
     long long a;
     scanf("%lld", &a);
     return a;
 }
 
-extern double _alolang_13testGetDoublee()
+extern double _alolang_13testGetDouble()
 {
     double a;
     scanf("%lf", &a);
